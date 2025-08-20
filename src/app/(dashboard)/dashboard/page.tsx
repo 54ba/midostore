@@ -4,11 +4,13 @@ import { useAuth } from '@/app/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import AuthNavigation from '@/components/AuthNavigation';
+import AnalyticsDashboard from '@/components/AnalyticsDashboard';
 
 export default function DashboardPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [clerkUser, setClerkUser] = useState<any>(null);
+  const [showAnalytics, setShowAnalytics] = useState(false);
 
   // Check if Clerk is available and load user data
   useEffect(() => {
@@ -54,61 +56,90 @@ export default function DashboardPage() {
       <AuthNavigation />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-6">
-            Welcome to Your Dashboard
-          </h1>
+        {/* Dashboard Toggle */}
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">
+              {showAnalytics ? 'Analytics Dashboard' : 'Welcome to Your Dashboard'}
+            </h1>
+            <p className="text-gray-600 mt-2">
+              {showAnalytics ? 'AI-powered insights and trends for your dropshipping store' : 'Manage your dropshipping business'}
+            </p>
+          </div>
+          <button
+            onClick={() => setShowAnalytics(!showAnalytics)}
+            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+          >
+            {showAnalytics ? (
+              <>
+                <span>Basic Dashboard</span>
+              </>
+            ) : (
+              <>
+                <span>Analytics Dashboard</span>
+              </>
+            )}
+          </button>
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* User Info Card */}
-            <div className="bg-blue-50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-blue-900 mb-4">User Information</h3>
-              <div className="space-y-2">
-                <p><span className="font-medium">Name:</span> {user.full_name}</p>
-                <p><span className="font-medium">Email:</span> {user.email}</p>
-                <p><span className="font-medium">Phone:</span> {user.phone}</p>
-                <p><span className="font-medium">User ID:</span> {user.user_id}</p>
-                {clerkUser && (
-                  <p><span className="font-medium">Clerk User:</span> Yes</p>
-                )}
+        {showAnalytics ? (
+          <AnalyticsDashboard />
+        ) : (
+          <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+              Dashboard Overview
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* User Info Card */}
+              <div className="bg-blue-50 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-blue-900 mb-4">User Information</h3>
+                <div className="space-y-2">
+                  <p><span className="font-medium">Name:</span> {user.full_name}</p>
+                  <p><span className="font-medium">Email:</span> {user.email}</p>
+                  <p><span className="font-medium">Phone:</span> {user.phone}</p>
+                  <p><span className="font-medium">User ID:</span> {user.user_id}</p>
+                  {clerkUser && (
+                    <p><span className="font-medium">Clerk User:</span> Yes</p>
+                  )}
+                </div>
               </div>
-            </div>
 
-            {/* Quick Actions Card */}
-            <div className="bg-blue-50 rounded-lg p-6 hover-lift">
-              <h3 className="text-lg font-semibold text-blue-900 mb-4">Quick Actions</h3>
-              <div className="space-y-3">
-                <button className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-all duration-300 hover:scale-105">
-                  Add New Product
-                </button>
-                <button className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-all duration-300 hover:scale-105">
-                  View Orders
-                </button>
-                <button className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-all duration-300 hover:scale-105">
-                  Analytics
-                </button>
+              {/* Quick Actions Card */}
+              <div className="bg-blue-50 rounded-lg p-6 hover-lift">
+                <h3 className="text-lg font-semibold text-blue-900 mb-4">Quick Actions</h3>
+                <div className="space-y-3">
+                  <button className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-all duration-300 hover:scale-105">
+                    Add New Product
+                  </button>
+                  <button className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-all duration-300 hover:scale-105">
+                    View Orders
+                  </button>
+                  <button className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-all duration-300 hover:scale-105">
+                    Analytics
+                  </button>
+                </div>
               </div>
-            </div>
 
-            {/* Project Links Card */}
-            <div className="bg-purple-50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-purple-900 mb-4">Connected Projects</h3>
-              <div className="space-y-3">
-                <a
-                  href="https://clerk-netlify-template.netlify.app"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block w-full bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition-colors text-center"
-                >
-                  Auth Template
-                </a>
-                <p className="text-sm text-purple-700">
-                  Your authentication is powered by Clerk and shared across both projects.
-                </p>
+              {/* Project Links Card */}
+              <div className="bg-purple-50 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-purple-900 mb-4">Connected Projects</h3>
+                <div className="space-y-3">
+                  <a
+                    href="https://clerk-netlify-template.netlify.app"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block w-full bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition-colors text-center"
+                  >
+                    Auth Template
+                  </a>
+                  <p className="text-sm text-purple-700">
+                    Your authentication is powered by Clerk and shared across both projects.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
         {/* Stats Section */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -138,6 +169,7 @@ export default function DashboardPage() {
             <p className="text-sm mt-2">Start by exploring products and creating your first listing!</p>
           </div>
         </div>
+        )}
       </div>
     </div>
   );
