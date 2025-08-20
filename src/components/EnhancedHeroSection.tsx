@@ -41,7 +41,9 @@ export default function EnhancedHeroSection({ className = '' }: EnhancedHeroSect
   ]
 
   return (
-    <section className={`relative overflow-hidden bg-gradient-to-br from-primary via-primary/90 to-primary/80 ${className}`}>
+    <section className={`relative overflow-hidden ${className}`} style={{
+      background: 'linear-gradient(to bottom right, rgb(59, 130, 246), rgba(59, 130, 246, 0.9), rgba(59, 130, 246, 0.8))'
+    }}>
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute inset-0" style={{
@@ -81,7 +83,7 @@ export default function EnhancedHeroSection({ className = '' }: EnhancedHeroSect
                 />
                 <button
                   type="submit"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-secondary text-white px-6 py-2 rounded-lg hover:bg-secondary/90 transition-colors font-medium"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-purple-500 text-white px-6 py-2 rounded-lg hover:bg-purple-500/90 transition-colors font-medium"
                 >
                   Search
                 </button>
@@ -92,7 +94,7 @@ export default function EnhancedHeroSection({ className = '' }: EnhancedHeroSect
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Link
                 href="/products"
-                className="inline-flex items-center justify-center px-8 py-4 bg-secondary text-white font-semibold rounded-xl hover:bg-secondary/90 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                className="inline-flex items-center justify-center px-8 py-4 bg-purple-500 text-white font-semibold rounded-xl hover:bg-purple-500/90 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
               >
                 <ShoppingBag className="w-5 h-5 mr-2" />
                 Shop Now
@@ -130,7 +132,7 @@ export default function EnhancedHeroSection({ className = '' }: EnhancedHeroSect
               </div>
 
               {/* Floating Elements */}
-              <div className="absolute -top-4 -right-4 bg-secondary text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg">
+              <div className="absolute -top-4 -right-4 bg-purple-500 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg">
                 Save 33%
               </div>
               <div className="absolute -bottom-4 -left-4 bg-white px-4 py-2 rounded-full text-sm font-medium shadow-lg text-gray-900">
@@ -140,7 +142,7 @@ export default function EnhancedHeroSection({ className = '' }: EnhancedHeroSect
 
             {/* Background Decorative Elements */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
-            <div className="absolute top-1/4 right-1/4 w-32 h-32 bg-secondary/30 rounded-full blur-2xl" />
+            <div className="absolute top-1/4 right-1/4 w-32 h-32 bg-purple-500/30 rounded-full blur-2xl" />
           </div>
         </div>
       </div>
@@ -151,7 +153,7 @@ export default function EnhancedHeroSection({ className = '' }: EnhancedHeroSect
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {features.map((feature, index) => (
               <div key={index} className="text-center group">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mb-4 group-hover:bg-primary/20 transition-colors">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-500/10 rounded-full mb-4 group-hover:bg-blue-500/20 transition-colors">
                   <feature.icon className="w-8 h-8 text-primary" />
                 </div>
                 <h3 className="font-semibold text-gray-900 mb-2">{feature.title}</h3>

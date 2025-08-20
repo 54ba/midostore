@@ -66,7 +66,7 @@ export default function SearchAndFilter({
                     placeholder="Search products..."
                     value={searchQuery}
                     onChange={(e) => handleSearch(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl bg-white shadow-sm focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                 />
                 {searchQuery && (
                     <button
@@ -109,7 +109,7 @@ export default function SearchAndFilter({
                             <button
                                 onClick={() => handleFilterChange({ category: 'all' })}
                                 className={`px-3 py-2 text-sm rounded-lg transition-colors ${filters.category === 'all'
-                                        ? 'bg-primary text-white'
+                                        ? 'bg-blue-500 text-white'
                                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                     }`}
                             >
@@ -120,7 +120,7 @@ export default function SearchAndFilter({
                                     key={category}
                                     onClick={() => handleFilterChange({ category })}
                                     className={`px-3 py-2 text-sm rounded-lg transition-colors ${filters.category === category
-                                            ? 'bg-primary text-white'
+                                            ? 'bg-blue-500 text-white'
                                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                         }`}
                                 >

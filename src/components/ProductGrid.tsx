@@ -118,7 +118,7 @@ export default function ProductGrid({
 
                         {/* Category Badge */}
                         <div className="absolute top-3 left-3">
-                            <span className="px-2 py-1 text-xs font-medium bg-primary text-white rounded-full">
+                            <span className="px-2 py-1 text-xs font-medium bg-blue-500 text-white rounded-full">
                                 {product.category}
                             </span>
                         </div>
@@ -134,7 +134,7 @@ export default function ProductGrid({
 
                     {/* Product Info */}
                     <div className="p-4">
-                        <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                        <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-500 transition-colors">
                             {product.product_name}
                         </h3>
 
@@ -158,7 +158,7 @@ export default function ProductGrid({
                         {/* Add to Cart Button */}
                         <button
                             onClick={() => onAddToCart(product.product_id, 1)}
-                            className="w-full bg-primary text-white py-2 px-4 rounded-lg font-medium hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
+                            className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-500/90 transition-colors flex items-center justify-center gap-2"
                         >
                             <ShoppingCart className="w-4 h-4" />
                             Add to Cart

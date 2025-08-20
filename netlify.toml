@@ -1,5 +1,5 @@
 [build]
-  command = "npm run netlify:build"
+  command = "npm run build"
   publish = ".next"
   functions = "netlify/functions"
 
@@ -13,12 +13,9 @@
 [build.processing]
   skip_processing = false
 
-# Build hooks for database operations
-[[build.hooks]]
-  command = "npm run netlify:prebuild"
-
-[[build.hooks]]
-  command = "npm run netlify:postbuild"
+# Next.js plugin for Netlify
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
 
 # Redirects for API routes to Netlify functions
 [[redirects]]
@@ -32,13 +29,21 @@
   to = "/ai-recommendations"
   status = 200
 
+# Handle Next.js static files
+[[redirects]]
+  from = "/_next/static/*"
+  to = "/_next/static/:splat"
+  status = 200
+
+# Handle Next.js image optimization
+[[redirects]]
+  from = "/_next/image"
+  to = "/_next/image"
+  status = 200
+
 [functions]
   node_bundler = "esbuild"
   external_node_modules = ["@prisma/client", "prisma"]
-
-# Prisma plugin configuration
-[[plugins]]
-  package = "@netlify/plugin-prisma"
 
 # Environment-specific configurations
 [context.production.environment]

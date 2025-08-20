@@ -9,7 +9,7 @@
     ],
     "allowJs": true,
     "types": [
-      "node"
+      "@types/node"
     ],
     "skipLibCheck": true,
     "strict": true,

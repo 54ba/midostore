@@ -1,8 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-    // Standalone output for modern Netlify deployment
-    output: "standalone",
+    // Remove standalone output to fix build issues
+    // output: "standalone",
 
     // Do not fail production builds on ESLint issues
     eslint: {
@@ -17,6 +17,12 @@ const nextConfig: NextConfig = {
     // Optimize for Netlify deployment
     trailingSlash: false,
 
+    // Enable experimental features for better Netlify compatibility
+    experimental: {
+        // Remove appDir as it's not valid in Next.js 15
+        // appDir: true,
+    },
+
     images: {
         remotePatterns: [
             {
@@ -27,6 +33,9 @@ const nextConfig: NextConfig = {
         // Disable image optimization for Netlify compatibility
         unoptimized: true,
     },
+
+    // Optimize for production builds
+    swcMinify: true,
 };
 
 export default nextConfig;
