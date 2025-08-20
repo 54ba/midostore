@@ -2,7 +2,7 @@ import { prisma } from './db';
 import { ExchangeRateService } from './exchange-rate-service';
 import { config } from '../env.config';
 // import { ScrapedProduct } from './scraping-service';
-import { zonedTimeToUtc } from 'date-fns-tz';
+// import { format, zonedTimeToUtc } from '@date-fns/tz';
 
 export class ProductService {
     private exchangeRateService: ExchangeRateService;
