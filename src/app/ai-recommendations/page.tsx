@@ -74,7 +74,7 @@ export default function PublicAIRecommendations() {
                         <h2 className="text-3xl font-bold text-gray-900">Explore by Category</h2>
                     </div>
                     <p className="text-gray-600 mb-8">
-                        Browse recommendations by category to find exactly what you're looking for.
+                        Browse recommendations by category to find exactly what you&apos;re looking for.
                     </p>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
