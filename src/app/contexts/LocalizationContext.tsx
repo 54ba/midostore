@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { config } from '../../env.config';
+import { config } from '../../../env.config';
 
 export interface LocaleConfig {
     code: string;
