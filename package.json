@@ -27,6 +27,7 @@
     "zod": "^4.0.17"
   },
   "devDependencies": {
+    "@21yunbox/netlify-plugin-21yunbox-deploy-to-china-cdn": "^1.0.7",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20.19.11",
     "@types/react": "^19",
