@@ -43,3 +43,7 @@ next-env.d.ts
 /dist/linux-unpacked/
 /.npm/
 *.tar.gz
+
+# Local Netlify folder
+.netlify
+venv
