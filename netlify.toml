@@ -1,12 +1,11 @@
 [build]
   command = "npm run build"
-  publish = ".next"
+  publish = "out"
 
 [build.environment]
   NEXT_USE_NETLIFY_EDGE = "true"
-
-# No plugins section - this will prevent any plugins from being loaded
-# The problematic plugins were configured through Netlify UI and should be removed there
+  NODE_VERSION = "18"
+  NPM_VERSION = "9"
 
 # Handle Next.js static assets
 [[redirects]]

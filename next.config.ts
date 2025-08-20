@@ -1,16 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-    // Enable standalone output so Electron can run the
-    // production Next.js server without dev dependencies
-    output: "standalone",
+    // Static export for Netlify compatibility
+    output: "export",
 
     // Do not fail production builds on ESLint issues
     eslint: {
         ignoreDuringBuilds: true,
     },
 
-    // Allow build to pass even with TS errors (to package Electron app)
+    // Allow build to pass even with TS errors
     typescript: {
         ignoreBuildErrors: true,
     },
