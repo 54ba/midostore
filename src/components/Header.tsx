@@ -53,6 +53,20 @@ export default function Header({ id }: HeaderProps) {
               AI Recommendations
             </Link>
             <Link
+              href="/ai-powered-scraping"
+              id="header-nav-ai-scraping"
+              className="text-gray-700 hover:text-teal-600 font-medium transition-colors"
+            >
+              AI Scraping
+            </Link>
+            <Link
+              href="/social-trend-analysis"
+              id="header-nav-social-trends"
+              className="text-gray-700 hover:text-teal-600 font-medium transition-colors"
+            >
+              Social Trends
+            </Link>
+            <Link
               href="/localization-demo"
               id="header-nav-localization-demo"
               className="text-gray-700 hover:text-teal-600 font-medium transition-colors"
