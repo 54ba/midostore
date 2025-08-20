@@ -1,6 +1,58 @@
 @import "tailwindcss";
 
 @layer base {
+  :root {
+    /* Modern Color Palette */
+    --color-primary: 59 130 246;
+    /* Blue-500 */
+    --color-primary-dark: 37 99 235;
+    /* Blue-600 */
+    --color-primary-light: 147 197 253;
+    /* Blue-300 */
+
+    --color-secondary: 147 51 234;
+    /* Purple-600 */
+    --color-secondary-dark: 126 34 206;
+    /* Purple-700 */
+    --color-secondary-light: 196 181 253;
+    /* Purple-300 */
+
+    --color-accent: 236 72 153;
+    /* Pink-500 */
+    --color-accent-dark: 219 39 119;
+    /* Pink-600 */
+    --color-accent-light: 251 207 232;
+    /* Pink-200 */
+
+    --color-success: 34 197 94;
+    /* Green-500 */
+    --color-success-dark: 22 163 74;
+    /* Green-600 */
+    --color-success-light: 187 247 208;
+    /* Green-200 */
+
+    --color-warning: 245 158 11;
+    /* Amber-500 */
+    --color-warning-dark: 217 119 6;
+    /* Amber-600 */
+    --color-warning-light: 254 243 199;
+    /* Amber-200 */
+
+    --color-error: 239 68 68;
+    /* Red-500 */
+    --color-error-dark: 220 38 38;
+    /* Red-600 */
+    --color-error-light: 254 226 226;
+    /* Red-200 */
+
+    --color-neutral: 107 114 128;
+    /* Gray-500 */
+    --color-neutral-dark: 75 85 99;
+    /* Gray-600 */
+    --color-neutral-light: 209 213 219;
+    /* Gray-300 */
+  }
+
   @keyframes spin {
     to {
       transform: rotate(360deg);
@@ -79,6 +131,65 @@
     }
   }
 
+  /* Enhanced Modern Animations */
+  @keyframes shimmer {
+    0% {
+      background-position: -200px 0;
+    }
+
+    100% {
+      background-position: calc(200px + 100%) 0;
+    }
+  }
+
+  @keyframes pulse-glow {
+
+    0%,
+    100% {
+      box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+    }
+
+    50% {
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.8);
+    }
+  }
+
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-30px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   /* Line clamp utilities for text truncation */
   .line-clamp-1 {
     overflow: hidden;
@@ -101,223 +212,109 @@
     -webkit-line-clamp: 3;
   }
 
-  :root {
-    --background: 249 250 251;
-    /* light gray #f9fafb */
-    --foreground: 55 65 81;
-    /* charcoal #374151 */
-    --card: 255 255 255;
-    --card-foreground: 55 65 81;
-    --primary: 15 118 110;
-    /* deep teal #0f766e */
-    --primary-foreground: 255 255 255;
-    --secondary: 245 158 11;
-    /* warm amber #f59e0b */
-    --secondary-foreground: 55 65 81;
-    --success: 16 185 129;
-    /* emerald #10b981 */
-    --error: 239 68 68;
-    /* red #ef4444 */
-    --border: 229 231 235;
-    --input: 229 231 235;
-    --ring: 15 118 110;
-    --radius: 0.5rem;
+  /* Modern Animation Classes */
+  .animate-shimmer {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200px 100%;
+    animation: shimmer 1.5s infinite;
   }
 
-  *,
-  ::before,
-  ::after {
-    @apply border-[rgb(var(--border))];
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
   }
 
-  html {
-    @apply scroll-smooth;
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
   }
 
-  body {
-    @apply bg-[rgb(var(--background))] text-[rgb(var(--foreground))] antialiased;
-    min-height: 100vh;
-    font-feature-settings: "rlig" 1, "calt" 1;
+  .animate-slide-up {
+    animation: slideUp 0.6s ease-out;
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply font-bold tracking-tight text-balance;
+  .animate-slide-down {
+    animation: slideDown 0.6s ease-out;
   }
 
-  h1 {
-    @apply text-4xl;
-  }
-
-  h2 {
-    @apply text-3xl;
-  }
-
-  h3 {
-    @apply text-2xl;
-  }
-
-  h4 {
-    @apply text-xl;
-  }
-
-  h5 {
-    @apply text-lg;
-  }
-
-  h6 {
-    @apply text-base;
-  }
-
-  p {
-    @apply leading-7 text-balance;
-  }
-
-  a {
-    @apply text-[rgb(var(--secondary))] underline-offset-4 transition-colors hover:underline hover:text-[rgb(var(--primary))];
-  }
-
-  input,
-  textarea,
-  select {
-    @apply block w-full rounded-[var(--radius)] border bg-white px-3 py-2 text-sm;
-    @apply ring-offset-[rgb(var(--background))] file:border-0 file:bg-transparent file:text-sm file:font-medium;
-    @apply placeholder:text-gray-500;
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--ring))] focus-visible:ring-offset-2;
-    @apply disabled:cursor-not-allowed disabled:opacity-50;
-  }
-
-  button {
-    @apply inline-flex items-center justify-center whitespace-nowrap rounded-[var(--radius)] text-sm font-medium ring-offset-[rgb(var(--background))] transition-colors;
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--ring))] focus-visible:ring-offset-2;
-    @apply disabled:pointer-events-none disabled:opacity-50;
-  }
-}
-
-@layer utilities {
-
-  /* Animation Utilities */
-  .animate-fade-in {
-    animation: fadeIn 0.6s ease-out;
-  }
-
-  .animate-slide-in-left {
-    animation: slideInFromLeft 0.6s ease-out;
-  }
-
-  .animate-slide-in-right {
-    animation: slideInFromRight 0.6s ease-out;
-  }
-
-  .animate-scale-in {
-    animation: scaleIn 0.4s ease-out;
-  }
-
-  .animate-bounce-subtle {
-    animation: bounce 2s infinite;
-  }
-
-  /* Hover Effects */
+  /* Enhanced Hover Effects */
   .hover-lift {
-    @apply transition-transform duration-200 hover:-translate-y-1;
+    @apply transition-all duration-300 ease-out;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   }
 
   .hover-scale {
-    @apply transition-transform duration-200 hover:scale-105;
+    @apply transition-transform duration-300 ease-out;
+  }
+
+  .hover-scale:hover {
+    transform: scale(1.05);
   }
 
   .hover-glow {
-    @apply transition-shadow duration-200 hover:shadow-lg;
-    box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.25), 0 4px 6px -2px rgba(59, 130, 246, 0.25);
+    @apply transition-all duration-300 ease-out;
   }
 
-  /* Glass Morphism */
-  .glass {
-    @apply bg-white/10 backdrop-blur-md border border-white/20;
+  .hover-glow:hover {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
   }
 
-  .glass-dark {
-    @apply bg-black/10 backdrop-blur-md border border-black/20;
+  /* Modern Color Utility Classes */
+  .bg-modern-primary {
+    background-color: rgb(var(--color-primary));
   }
 
-  /* Gradient Text */
-  .gradient-text {
-    @apply bg-gradient-to-r bg-clip-text text-transparent;
-    background-image: linear-gradient(to right, rgb(59, 130, 246), rgb(147, 51, 234));
+  .bg-modern-secondary {
+    background-color: rgb(var(--color-secondary));
   }
 
-  .gradient-text-secondary {
-    @apply bg-gradient-to-r bg-clip-text text-transparent;
-    background-image: linear-gradient(to right, rgb(147, 51, 234), rgb(249, 115, 22));
+  .bg-modern-accent {
+    background-color: rgb(var(--color-accent));
   }
 
-  /* Custom Shadows */
-  .shadow-soft {
-    box-shadow: 0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04);
+  .bg-modern-success {
+    background-color: rgb(var(--color-success));
   }
 
-  .shadow-medium {
-    box-shadow: 0 4px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  .text-modern-primary {
+    color: rgb(var(--color-primary));
   }
 
-  .shadow-strong {
-    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.15), 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  .text-modern-secondary {
+    color: rgb(var(--color-secondary));
   }
 
-  /* Border Radius */
-  .rounded-soft {
-    border-radius: 16px;
+  .text-modern-accent {
+    color: rgb(var(--color-accent));
   }
 
-  .rounded-medium {
-    border-radius: 20px;
+  .text-modern-success {
+    color: rgb(var(--color-success));
   }
 
-  .rounded-large {
-    border-radius: 24px;
+  .border-modern-primary {
+    border-color: rgb(var(--color-primary));
   }
 
-  /* Text Utilities */
-  .text-balance {
-    text-wrap: balance;
+  .border-modern-secondary {
+    border-color: rgb(var(--color-secondary));
   }
 
-  /* Scrollbar Styling */
-  .scrollbar-thin {
-    scrollbar-width: thin;
-    scrollbar-color: rgb(156 163 175) transparent;
+  .border-modern-accent {
+    border-color: rgb(var(--color-accent));
   }
 
-  .scrollbar-thin::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar-thumb {
-    background-color: rgb(156 163 175);
-    border-radius: 3px;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background-color: rgb(107 114 128);
-  }
-
-  /* Focus States */
-  .focus-ring {
+  /* Focus Ring Utilities */
+  .focus-ring-primary {
     @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
-    --tw-ring-color: rgb(59, 130, 246);
+    --tw-ring-color: rgb(var(--color-primary));
   }
 
   .focus-ring-secondary {
     @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
-    --tw-ring-color: rgb(147, 51, 234);
+    --tw-ring-color: rgb(var(--color-secondary));
   }
 
   /* Loading States */
@@ -362,34 +359,38 @@
 
   /* Button Variants */
   .btn-primary {
-    @apply bg-blue-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-600 transition-colors shadow-md hover:shadow-lg;
+    @apply bg-modern-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-modern-primary-dark transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105;
   }
 
   .btn-secondary {
-    @apply bg-purple-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-purple-600 transition-colors shadow-md hover:shadow-lg;
+    @apply bg-modern-secondary text-white px-6 py-3 rounded-lg font-medium hover:bg-modern-secondary-dark transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105;
+  }
+
+  .btn-accent {
+    @apply bg-modern-accent text-white px-6 py-3 rounded-lg font-medium hover:bg-modern-accent-dark transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105;
   }
 
   .btn-outline {
-    @apply border-2 border-blue-500 text-blue-500 px-6 py-3 rounded-lg font-medium hover:bg-blue-500 hover:text-white transition-colors;
+    @apply border-2 border-modern-primary text-modern-primary px-6 py-3 rounded-lg font-medium hover:bg-modern-primary hover:text-white transition-all duration-300;
   }
 
   .btn-ghost {
-    @apply text-gray-700 hover:text-blue-500 hover:bg-gray-100 px-6 py-3 rounded-lg font-medium transition-colors;
+    @apply text-gray-700 hover:text-modern-primary hover:bg-gray-100 px-6 py-3 rounded-lg font-medium transition-all duration-300;
   }
 
   /* Input Variants */
   .input-primary {
     @apply border-gray-300;
     --tw-border-opacity: 1;
-    border-color: rgb(59, 130, 246);
-    --tw-ring-color: rgb(59, 130, 246);
+    border-color: rgb(var(--color-primary));
+    --tw-ring-color: rgb(var(--color-primary));
   }
 
   .input-secondary {
     @apply border-gray-300;
     --tw-border-opacity: 1;
-    border-color: rgb(147, 51, 234);
-    --tw-ring-color: rgb(147, 51, 234);
+    border-color: rgb(var(--color-secondary));
+    --tw-ring-color: rgb(var(--color-secondary));
   }
 
   .input-error {

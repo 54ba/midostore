@@ -47,10 +47,10 @@ export default function LocalizationDemoPage() {
                             <p className="text-sm text-gray-600">Language</p>
                             <p className="text-lg font-semibold text-gray-900">{currentLocale}</p>
                         </div>
-                        <div className="text-center p-4 bg-green-50 rounded-lg">
-                            <DollarSign className="w-8 h-8 text-green-600 mx-auto mb-2" />
-                            <p className="text-sm text-gray-600">Currency</p>
-                            <p className="text-lg font-semibold text-gray-900">{currentCurrency}</p>
+                        <div className="text-center p-4 bg-blue-50 rounded-lg hover-lift">
+                            <DollarSign className="w-8 h-8 text-blue-600 mx-auto mb-2 animate-float" />
+                            <h3 className="text-lg font-semibold text-gray-900 mb-2">Currency Conversion</h3>
+                            <p className="text-gray-600 text-sm">Real-time exchange rates for accurate pricing</p>
                         </div>
                         <div className="text-center p-4 bg-purple-50 rounded-lg">
                             <MapPin className="w-8 h-8 text-purple-600 mx-auto mb-2" />

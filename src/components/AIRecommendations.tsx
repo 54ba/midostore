@@ -351,7 +351,7 @@ export default function AIRecommendations({
                                     <button
                                         onClick={() => recordInteraction(product.externalId, 'view')}
                                         disabled={interactionLoading === product.externalId}
-                                        className="flex-1 bg-blue-600 text-white py-2 px-3 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                                        className="flex-1 bg-blue-600 text-white py-2 px-3 rounded-lg hover:bg-blue-700 transition-all duration-300 disabled:opacity-50 hover:scale-105"
                                     >
                                         <Eye className="w-4 h-4 inline mr-1" />
                                         View
@@ -362,7 +362,7 @@ export default function AIRecommendations({
                                             <button
                                                 onClick={() => recordInteraction(product.externalId, 'like')}
                                                 disabled={interactionLoading === product.externalId}
-                                                className="p-2 text-gray-600 hover:text-red-500 transition-colors disabled:opacity-50"
+                                                className="p-2 text-gray-600 hover:text-pink-500 transition-all duration-300 disabled:opacity-50 hover:scale-105"
                                                 title="Add to favorites"
                                             >
                                                 <Heart className="w-4 h-4" />
@@ -371,7 +371,7 @@ export default function AIRecommendations({
                                             <button
                                                 onClick={() => recordInteraction(product.externalId, 'cart')}
                                                 disabled={interactionLoading === product.externalId}
-                                                className="p-2 text-gray-600 hover:text-green-500 transition-colors disabled:opacity-50"
+                                                className="p-2 text-gray-600 hover:text-blue-500 transition-all duration-300 disabled:opacity-50 hover:scale-105"
                                                 title="Add to cart"
                                             >
                                                 <ShoppingCart className="w-4 h-4" />

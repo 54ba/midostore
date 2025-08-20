@@ -95,8 +95,8 @@ export default function LocalizationPanel({
                             <button
                                 onClick={() => setActiveTab('language')}
                                 className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${activeTab === 'language'
-                                        ? 'text-blue-600 border-b-2 border-blue-600'
-                                        : 'text-gray-500 hover:text-gray-700'
+                                    ? 'text-blue-600 border-b-2 border-blue-600'
+                                    : 'text-gray-500 hover:text-gray-700'
                                     }`}
                             >
                                 {t('language')}
@@ -104,8 +104,8 @@ export default function LocalizationPanel({
                             <button
                                 onClick={() => setActiveTab('currency')}
                                 className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${activeTab === 'currency'
-                                        ? 'text-blue-600 border-b-2 border-blue-600'
-                                        : 'text-gray-500 hover:text-gray-700'
+                                    ? 'text-blue-600 border-b-2 border-blue-600'
+                                    : 'text-gray-500 hover:text-gray-700'
                                     }`}
                             >
                                 {t('currency')}
@@ -121,8 +121,8 @@ export default function LocalizationPanel({
                                             key={locale.locale}
                                             onClick={() => handleLocaleSelect(locale.locale)}
                                             className={`w-full flex items-center gap-3 p-3 rounded-lg transition-colors ${currentLocale === locale.locale
-                                                    ? 'bg-blue-50 border border-blue-200'
-                                                    : 'hover:bg-gray-50'
+                                                ? 'bg-blue-50 border border-blue-200'
+                                                : 'hover:bg-gray-50'
                                                 }`}
                                         >
                                             <div className="text-2xl">{locale.flag}</div>
@@ -147,13 +147,13 @@ export default function LocalizationPanel({
                                             key={currency}
                                             onClick={() => handleCurrencySelect(currency)}
                                             className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors ${currentCurrency === currency
-                                                    ? 'bg-blue-50 border border-blue-200'
-                                                    : 'hover:bg-gray-50'
+                                                ? 'bg-blue-50 border border-blue-200'
+                                                : 'hover:bg-gray-50'
                                                 }`}
                                         >
                                             <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                                                    <span className="text-green-600 font-semibold text-sm">
+                                                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center animate-float">
+                                                    <span className="text-blue-600 font-semibold text-sm">
                                                         {currency}
                                                     </span>
                                                 </div>
@@ -217,8 +217,8 @@ export default function LocalizationPanel({
                                         key={locale.locale}
                                         onClick={() => handleLocaleSelect(locale.locale)}
                                         className={`w-full flex items-center gap-2 p-2 rounded text-sm transition-colors ${currentLocale === locale.locale
-                                                ? 'bg-blue-50 text-blue-700'
-                                                : 'hover:bg-gray-50 text-gray-700'
+                                            ? 'bg-blue-50 text-blue-700'
+                                            : 'hover:bg-gray-50 text-gray-700'
                                             }`}
                                     >
                                         <span>{locale.flag}</span>
@@ -237,8 +237,8 @@ export default function LocalizationPanel({
                                         key={currency}
                                         onClick={() => handleCurrencySelect(currency)}
                                         className={`w-full flex items-center gap-2 p-2 rounded text-sm transition-colors ${currentCurrency === currency
-                                                ? 'bg-blue-50 text-blue-700'
-                                                : 'hover:bg-gray-50 text-gray-700'
+                                            ? 'bg-blue-50 text-blue-700'
+                                            : 'hover:bg-gray-50 text-gray-700'
                                             }`}
                                     >
                                         <span className="font-mono">{currency}</span>
@@ -296,8 +296,8 @@ export default function LocalizationPanel({
                                                 key={locale.locale}
                                                 onClick={() => handleLocaleSelect(locale.locale)}
                                                 className={`flex items-center gap-3 p-3 rounded-lg border transition-colors ${currentLocale === locale.locale
-                                                        ? 'border-blue-500 bg-blue-50'
-                                                        : 'border-gray-200 hover:border-gray-300'
+                                                    ? 'border-blue-500 bg-blue-50'
+                                                    : 'border-gray-200 hover:border-gray-300'
                                                     }`}
                                             >
                                                 <span className="text-2xl">{locale.flag}</span>
@@ -326,12 +326,12 @@ export default function LocalizationPanel({
                                                 key={currency}
                                                 onClick={() => handleCurrencySelect(currency)}
                                                 className={`flex items-center gap-3 p-3 rounded-lg border transition-colors ${currentCurrency === currency
-                                                        ? 'border-blue-500 bg-blue-50'
-                                                        : 'border-gray-200 hover:border-gray-300'
+                                                    ? 'border-blue-500 bg-blue-50'
+                                                    : 'border-gray-200 hover:border-gray-300'
                                                     }`}
                                             >
-                                                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                                                    <span className="text-green-600 font-semibold">{currency}</span>
+                                                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center animate-float">
+                                                    <span className="text-blue-600 font-semibold">{currency}</span>
                                                 </div>
                                                 <div className="flex-1 text-left">
                                                     <div className="font-medium text-gray-900">{currency}</div>

@@ -25,7 +25,7 @@ export default function CategoryShowcase({ className = '' }: CategoryShowcasePro
     {
       id: 'electronics',
       name: 'Electronics',
-      description: 'Latest gadgets and tech devices',
+      description: 'Latest gadgets and electronics',
       icon: Zap,
       color: 'from-blue-500 to-purple-600',
       productCount: 156,

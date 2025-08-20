@@ -32,6 +32,9 @@ interface ProductCardProps {
     totalPrice?: number;
     savings?: number;
     savingsPercentage?: number;
+    isSale?: boolean;
+    isLimited?: boolean;
+    winMargin?: number;
   };
   variant?: 'default' | 'compact' | 'featured';
   onAddToCart?: (productId: string) => void;
@@ -54,12 +57,12 @@ export default function ProductCard({
   const [showBreakdown, setShowBreakdown] = useState(false);
 
   const getBadgeColor = () => {
-    if (product.isNew) return 'bg-green-500';
+    if (product.isNew) return 'bg-blue-500';
     if (product.isHot) return 'bg-red-500';
-    if (product.isBestSeller) return 'bg-purple-500';
-    if (product.discount) return 'bg-orange-500';
-    return '';
-  };
+    if (product.isSale) return 'bg-purple-500';
+    if (product.isLimited) return 'bg-amber-500';
+    return null;
+  }
 
   const getBadgeText = () => {
     if (product.isNew) return 'New';
@@ -74,32 +77,35 @@ export default function ProductCard({
       case 'electronics':
         return 'from-blue-500 to-purple-600';
       case 'toys':
-      case 'games':
-        return 'from-green-500 to-blue-600';
-      case 'beauty':
+        return 'from-purple-500 to-pink-600';
       case 'cosmetics':
-        return 'from-pink-500 to-purple-600';
+        return 'from-pink-500 to-rose-600';
+      case 'clothing':
+        return 'from-indigo-500 to-blue-600';
       case 'home':
-      case 'kitchen':
-        return 'from-yellow-500 to-orange-600';
+        return 'from-emerald-500 to-teal-600';
+      case 'sports':
+        return 'from-orange-500 to-red-600';
       default:
-        return 'from-gray-500 to-gray-600';
+        return 'from-blue-500 to-purple-600';
     }
-  };
+  }
 
-  const getWinMarginColor = (margin: number) => {
-    if (margin >= 30) return 'text-green-600';
-    if (margin >= 20) return 'text-blue-600';
-    if (margin >= 15) return 'text-yellow-600';
+  const getWinMarginColor = () => {
+    const margin = product.winMargin || 0;
+    if (margin >= 30) return 'text-blue-600';
+    if (margin >= 20) return 'text-purple-600';
+    if (margin >= 10) return 'text-amber-600';
     return 'text-gray-600';
-  };
+  }
 
-  const getWinMarginBadge = (margin: number) => {
-    if (margin >= 30) return 'bg-green-100 text-green-800';
-    if (margin >= 20) return 'bg-blue-100 text-blue-800';
-    if (margin >= 15) return 'bg-yellow-100 text-yellow-800';
+  const getWinMarginBgColor = () => {
+    const margin = product.winMargin || 0;
+    if (margin >= 30) return 'bg-blue-100 text-blue-800';
+    if (margin >= 20) return 'bg-purple-100 text-purple-800';
+    if (margin >= 10) return 'bg-amber-100 text-amber-800';
     return 'bg-gray-100 text-gray-800';
-  };
+  }
 
   const renderPricingBreakdown = () => {
     if (!showPricingBreakdown || !product.alibabaPrice) return null;
@@ -128,7 +134,7 @@ export default function ProductCard({
             {product.profitMargin && (
               <div className="flex justify-between">
                 <span className="text-gray-600">Win Margin:</span>
-                <span className={`font-medium ${getWinMarginColor(product.profitMargin)}`}>
+                <span className={`font-medium ${getWinMarginColor()}`}>
                   +{product.profitMargin}%
                 </span>
               </div>
@@ -161,7 +167,7 @@ export default function ProductCard({
     if (!product.profitMargin) return null;
 
     return (
-      <div className={`absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-bold ${getWinMarginBadge(product.profitMargin)}`}>
+      <div className={`absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-bold ${getWinMarginBgColor()}`}>
         <TrendingUp className="w-3 h-3 inline mr-1" />
         +{product.profitMargin}%
       </div>
@@ -195,7 +201,25 @@ export default function ProductCard({
               {getBadgeText()}
             </div>
           )}
-          {renderWinMarginBadge()}
+          {/* Win Margin Badge */}
+          {product.profitMargin && (
+            <div className={`absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-bold ${getWinMarginBgColor()} animate-slide-up`}>
+              <TrendingUp className="w-3 h-3 inline mr-1" />
+              +{product.profitMargin}%
+            </div>
+          )}
+
+          {/* Pricing Breakdown */}
+          {renderPricingBreakdown() && (
+            <div className="mb-4 p-2 bg-blue-50 rounded-lg hover-scale">
+              <div className="flex items-center gap-2 text-blue-700">
+                <span>💰</span>
+                <span className="text-sm font-medium">
+                  Win Margin: +{product.profitMargin}%
+                </span>
+              </div>
+            </div>
+          )}
         </div>
         <div className="p-4">
           <h4 className="font-medium text-gray-900 mb-2 text-sm line-clamp-1 group-hover:text-blue-600 transition-colors">

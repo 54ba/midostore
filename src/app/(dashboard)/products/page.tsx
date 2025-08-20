@@ -7,6 +7,7 @@ import SearchAndFilter from '@/components/SearchAndFilter';
 import ProductGrid from '@/components/ProductGrid';
 import LocalizationPanel from '@/components/LocalizationPanel';
 import { useLocalization } from '@/app/contexts/LocalizationContext';
+import { useRouter } from 'next/navigation';
 
 interface Product {
     id: string;
@@ -41,6 +42,7 @@ interface ProductResponse {
 
 export default function ProductsPage() {
     const { currentLocale, currentCurrency, formatPrice, t } = useLocalization();
+    const router = useRouter();
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
@@ -179,23 +181,17 @@ export default function ProductsPage() {
 
                             {/* Popular Products */}
                             <div>
-                                <h3 className="text-lg font-medium text-gray-900 mb-3">{t('popularProducts')}</h3>
-                                <div className="bg-gray-50 rounded-lg p-4 min-h-[200px] flex items-center justify-center">
-                                    <div className="text-center">
-                                        <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                                            <span className="text-green-600 text-xl">🔥</span>
-                                        </div>
-                                        <p className="text-sm text-gray-600 mb-3">
-                                            {t('trendingProductsInRegion')}
-                                        </p>
-                                        <button
-                                            onClick={() => window.location.href = '/ai-recommendations'}
-                                            className="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
-                                        >
-                                            {t('viewPopular')}
-                                        </button>
-                                    </div>
+                                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3 animate-float">
+                                    <span className="text-blue-600 text-xl">🔥</span>
                                 </div>
+                                <h3 className="text-lg font-semibold text-gray-900 mb-2">AI Recommendations</h3>
+                                <p className="text-gray-600 text-sm mb-4">Get personalized product suggestions based on your preferences</p>
+                                <button
+                                    className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-all duration-300 hover:scale-105 hover-lift"
+                                    onClick={() => router.push('/ai-recommendations')}
+                                >
+                                    View Recommendations
+                                </button>
                             </div>
                         </div>
                     </div>

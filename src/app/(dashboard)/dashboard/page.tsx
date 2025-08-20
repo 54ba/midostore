@@ -75,16 +75,16 @@ export default function DashboardPage() {
             </div>
 
             {/* Quick Actions Card */}
-            <div className="bg-green-50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-green-900 mb-4">Quick Actions</h3>
+            <div className="bg-blue-50 rounded-lg p-6 hover-lift">
+              <h3 className="text-lg font-semibold text-blue-900 mb-4">Quick Actions</h3>
               <div className="space-y-3">
-                <button className="w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors">
-                  View Products
+                <button className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-all duration-300 hover:scale-105">
+                  Add New Product
                 </button>
-                <button className="w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors">
-                  Manage Orders
+                <button className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-all duration-300 hover:scale-105">
+                  View Orders
                 </button>
-                <button className="w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors">
+                <button className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-all duration-300 hover:scale-105">
                   Analytics
                 </button>
               </div>

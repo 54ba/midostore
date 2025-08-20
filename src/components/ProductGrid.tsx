@@ -152,7 +152,7 @@ export default function ProductGrid({
                         {/* Savings */}
                         {product.alibaba_price < product.price && (
                             <div className="mb-3">
-                                <span className="inline-block px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+                                <span className="inline-block px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full animate-slide-up">
                                     Save ${((product.price - product.alibaba_price) / product.price * 100).toFixed(0)}%
                                 </span>
                             </div>

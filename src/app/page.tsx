@@ -10,6 +10,7 @@ import TestimonialCard from '@/components/TestimonialCard'
 import Footer from '@/components/Footer'
 import Button from '@/components/Button'
 import AuthNavigation from '@/components/AuthNavigation'
+import { TrendingUp } from 'lucide-react'
 
 export default function LandingPage() {
   const router = useRouter()
@@ -134,7 +135,7 @@ export default function LandingPage() {
             <div className="group relative overflow-hidden bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2">
               <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <div className="relative p-8">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 animate-float">
                   <span className="text-2xl">📱</span>
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">Electronics</h3>
@@ -152,11 +153,11 @@ export default function LandingPage() {
                   </div>
                   <span className="text-sm font-medium text-blue-600">Starting from $29</span>
                 </div>
-                <button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                <button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl hover-lift">
                   Explore Electronics
                 </button>
               </div>
-              <div className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+              <div className="absolute top-4 right-4 bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse-glow">
                 Hot
               </div>
             </div>
@@ -165,7 +166,7 @@ export default function LandingPage() {
             <div className="group relative overflow-hidden bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2">
               <div className="absolute inset-0 bg-gradient-to-br from-green-600/10 to-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <div className="relative p-8">
-                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 animate-float">
                   <span className="text-2xl">🎮</span>
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">Toys & Games</h3>
@@ -183,11 +184,11 @@ export default function LandingPage() {
                   </div>
                   <span className="text-sm font-medium text-green-600">Starting from $15</span>
                 </div>
-                <button className="w-full bg-gradient-to-r from-green-600 to-blue-600 text-white py-3 px-6 rounded-xl font-semibold hover:from-green-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                <button className="w-full bg-gradient-to-r from-green-600 to-blue-600 text-white py-3 px-6 rounded-xl font-semibold hover:from-green-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl hover-lift">
                   Explore Toys
                 </button>
               </div>
-              <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+              <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse-glow">
                 New
               </div>
             </div>
@@ -196,7 +197,7 @@ export default function LandingPage() {
             <div className="group relative overflow-hidden bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2">
               <div className="absolute inset-0 bg-gradient-to-br from-pink-600/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               <div className="relative p-8">
-                <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 animate-float">
                   <span className="text-2xl">💄</span>
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">Beauty & Cosmetics</h3>
@@ -214,11 +215,11 @@ export default function LandingPage() {
                   </div>
                   <span className="text-sm font-medium text-pink-600">Starting from $12</span>
                 </div>
-                <button className="w-full bg-gradient-to-r from-pink-600 to-purple-600 text-white py-3 px-6 rounded-xl font-semibold hover:from-pink-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                <button className="w-full bg-gradient-to-r from-pink-600 to-purple-600 text-white py-3 px-6 rounded-xl font-semibold hover:from-pink-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl hover-lift">
                   Explore Beauty
                 </button>
               </div>
-              <div className="absolute top-4 right-4 bg-pink-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+              <div className="absolute top-4 right-4 bg-pink-500 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse-glow">
                 Popular
               </div>
             </div>
@@ -252,79 +253,30 @@ export default function LandingPage() {
                     Hot
                   </div>
                   {/* Win Margin Badge */}
-                  <div className="absolute top-3 left-16 bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-bold">
-                    <span className="mr-1">📈</span>
-                    +28%
+                  <div className="absolute top-3 left-16 bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-bold animate-slide-up">
+                    Save 25%
                   </div>
                 </div>
                 <div className="p-6">
                   <h4 className="font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-                    Smartphone Pro Max
+                    Premium Smartphone
                   </h4>
-                  <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-                    Latest smartphone with advanced features and premium design
+                  <p className="text-gray-600 mb-4 line-clamp-2">
+                    Latest model with advanced features and premium design
                   </p>
-
-                  {/* Shipping Info */}
-                  <div className="flex items-center gap-1 text-xs text-gray-600 mb-4">
-                    <span className="mr-1">🚚</span>
-                    <span>Shipping: $12.50</span>
-                  </div>
-
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="flex text-amber-400">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <span key={i} className="text-sm">⭐</span>
-                      ))}
-                    </div>
-                    <span className="text-xs text-gray-500">(128)</span>
-                  </div>
-
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-xl font-bold text-blue-600">$299</span>
                     <span className="text-sm text-gray-500 line-through">$399</span>
                   </div>
-
-                  {/* Savings Badge */}
-                  <div className="mb-4 p-2 bg-green-50 rounded-lg">
-                    <div className="flex items-center gap-2 text-green-700">
-                      <span className="text-sm font-medium">
-                        💰 Save $100 (25%)
-                      </span>
+                  <div className="mb-4 p-2 bg-blue-50 rounded-lg">
+                    <div className="flex items-center gap-2 text-blue-700">
+                      <span>💰</span>
+                      <span className="text-sm">Win Margin: $50 (20%)</span>
                     </div>
                   </div>
-
-                  <button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105">
+                  <button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 hover-lift">
                     Add to Cart
                   </button>
-
-                  {/* Pricing Breakdown */}
-                  <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-gray-700">Pricing Breakdown</span>
-                      <button className="text-xs text-blue-600 hover:text-blue-800">
-                        Show Details
-                      </button>
-                    </div>
-                    <div className="space-y-2 text-xs">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Alibaba Price:</span>
-                        <span className="font-medium">$199.99</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Win Margin:</span>
-                        <span className="font-medium text-green-600">+28%</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Shipping:</span>
-                        <span className="font-medium">$12.50</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">You Save:</span>
-                        <span className="font-medium text-green-600">$100 (25%)</span>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </div>
 
@@ -660,14 +612,12 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div id="ai-feature-2" className="text-center p-6 bg-green-50 rounded-lg">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl">🎯</span>
+            <div id="ai-feature-2" className="text-center p-6 bg-blue-50 rounded-lg hover-lift animate-slide-up">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-float">
+                <TrendingUp className="w-8 h-8 text-blue-600" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Personalized Results</h3>
-              <p className="text-gray-600">
-                Get product suggestions tailored specifically to your interests, budget, and shopping behavior.
-              </p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Smart Recommendations</h3>
+              <p className="text-gray-600">AI-powered product suggestions based on your preferences and market trends</p>
             </div>
 
             <div id="ai-feature-3" className="text-center p-6 bg-purple-50 rounded-lg">
