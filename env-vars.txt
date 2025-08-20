@@ -13,9 +13,10 @@ NEXT_TELEMETRY_DISABLED=1
 BASELINE_ANALYTICS=true
 BASELINE_ANALYTICS_DEBUG_EDGE_FUNCTION=true
 
-# Database Configuration
-NETLIFY_DATABASE_URL=your_database_url_here
-NETLIFY_DATABASE_URL_UNPOOLED=your_database_url_unpooled_here
+# Neon Database Configuration
+# Replace with your actual Neon connection string from: https://console.neon.tech/app/projects/cool-recipe-86871818/integrations#netlify
+NETLIFY_DATABASE_URL=postgresql://username:password@host:port/database
+NETLIFY_DATABASE_URL_UNPOOLED=postgresql://username:password@host:port/database
 
 # Stripe Configuration (if using payments)
 STRIPE_SECRET_KEY=your_stripe_secret_key_here
