@@ -1,8 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { AIPoweredScrapingService } from '@/lib/ai-powered-scraping-service';
 import { prisma } from '@/lib/db';
+import { createAIScrapingService } from '@/lib/ai-powered-scraping-factory';
 
-const scrapingService = new AIPoweredScrapingService(prisma);
+// Dynamic import to avoid webpack issues during build
+let scrapingService: any = null;
+
+async function getScrapingService() {
+    if (!scrapingService) {
+        scrapingService = await createAIScrapingService(prisma);
+    }
+    return scrapingService;
+}
 
 export async function POST(request: NextRequest) {
     try {
@@ -83,7 +91,8 @@ async function handleStartScraping(config: any) {
         });
 
         // Start AI-powered scraping session
-        const sessionId = await scrapingService.startScrapingSession(config);
+        const service = await getScrapingService();
+        const sessionId = await service.startScrapingSession(config);
 
         // Update job with session ID
         await prisma.scrapingJob.update({
@@ -122,7 +131,8 @@ async function handlePauseSession(sessionId: string) {
             );
         }
 
-        const success = scrapingService.pauseSession(sessionId);
+        const service = await getScrapingService();
+        const success = service.pauseSession(sessionId);
 
         if (success) {
             // Update job status in database
@@ -161,7 +171,8 @@ async function handleResumeSession(sessionId: string) {
             );
         }
 
-        const success = scrapingService.resumeSession(sessionId);
+        const service = await getScrapingService();
+        const success = service.resumeSession(sessionId);
 
         if (success) {
             // Update job status in database
@@ -200,7 +211,8 @@ async function handleStopSession(sessionId: string) {
             );
         }
 
-        const success = scrapingService.stopSession(sessionId);
+        const service = await getScrapingService();
+        const success = service.stopSession(sessionId);
 
         if (success) {
             // Update job status in database
@@ -243,7 +255,8 @@ async function handleGetStatus(sessionId: string) {
             );
         }
 
-        const session = scrapingService.getSessionStatus(sessionId);
+        const service = await getScrapingService();
+        const session = service.getSessionStatus(sessionId);
 
         if (session) {
             return NextResponse.json({
@@ -267,7 +280,8 @@ async function handleGetStatus(sessionId: string) {
 
 async function handleGetAllSessions() {
     try {
-        const sessions = scrapingService.getAllSessions();
+        const service = await getScrapingService();
+        const sessions = service.getAllSessions();
 
         return NextResponse.json({
             success: true,
