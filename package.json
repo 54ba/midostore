@@ -31,33 +31,33 @@
     "ai:start": "cd ai && ./start_ai_service.sh",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
-    "db:studio": "prisma studioc"
+    "db:studio": "prisma studio"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.31.3",
     "@faker-js/faker": "^9.9.0",
     "@hookform/resolvers": "^5.2.1",
-    "@prisma/client": "^5.0.0",
+    "@prisma/client": "^6.14.0",
     "axios": "^1.11.0",
     "crypto-js": "^4.2.0",
     "currency.js": "^2.0.4",
-    "date-fns": "^2.30.0",
-    "date-fns-tz": "^2.0.0",
-    "dotenv": "^16.3.1",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "dotenv": "^17.2.1",
     "lodash": "^4.17.21",
     "lucide-react": "^0.540.0",
-    "netlify": "^23.2.0",
-    "next": "15.3.5",
-    "next-intl": "^3.0.0",
-    "node-cron": "^3.0.3",
-    "prisma": "^5.0.0",
-    "puppeteer": "^21.0.0",
+    "netlify": "^23.2.1",
+    "next": "^15.5.0",
+    "next-intl": "^4.3.4",
+    "node-cron": "^4.2.1",
+    "prisma": "^6.14.0",
+    "puppeteer": "^24.17.0",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-adblocker": "^2.13.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
     "python-shell": "^5.0.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
     "react-hook-form": "^7.62.0",
     "recharts": "^3.1.2",
     "stripe": "^18.4.0",
@@ -67,16 +67,16 @@
   "devDependencies": {
     "@netlify/plugin-nextjs": "^5.12.1",
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20.19.11",
+    "@types/node": "^24.3.0",
     "@types/node-cron": "^3.0.11",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "concurrently": "^9.1.0",
-    "cross-env": "^7.0.3",
-    "electron": "^31",
-    "electron-builder": "^24",
-    "eslint": "9.31.0",
-    "eslint-config-next": "15.4.1",
+    "cross-env": "^10.0.0",
+    "electron": "^37.3.1",
+    "electron-builder": "^26.0.12",
+    "eslint": "^9.33.0",
+    "eslint-config-next": "^15.5.0",
     "tailwindcss": "^4",
     "tsx": "^4.0.0",
     "typescript": "^5",
@@ -98,18 +98,24 @@
       {
         "from": ".next/static",
         "to": ".next/static"
-      },
-      {
-        "from": "public",
-        "to": "public"
       }
     ],
+    "directories": {
+      "output": "dist"
+    },
     "linux": {
       "target": [
-        "AppImage"
-      ],
-      "category": "Utility",
-      "artifactName": "${productName}-${version}-linux-x64.${ext}"
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
     }
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
   }
 }
