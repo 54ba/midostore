@@ -3,9 +3,11 @@
 import { PrismaClient } from '@prisma/client';
 import { config } from '../env.config';
 import { ExchangeRateService } from '../lib/exchange-rate-service';
+import { ReviewSeedingService } from '../lib/review-seeding-service';
 
 const prisma = new PrismaClient();
 const exchangeRateService = new ExchangeRateService();
+const reviewService = new ReviewSeedingService(prisma);
 
 async function main() {
   console.log('🌱 Starting database seeding...');
@@ -199,6 +201,16 @@ async function main() {
     }
 
     console.log('✅ Database seeding completed successfully!');
+
+    // Generate reviews for all products
+    console.log('🌟 Generating reviews for all products...');
+    try {
+      await reviewService.generateReviewsForAllProducts(15, 'generated');
+      console.log('✅ Reviews generated successfully!');
+    } catch (error) {
+      console.error('⚠️ Warning: Could not generate reviews:', error);
+      console.log('📝 You can manually generate reviews later using the review seeding script');
+    }
 
     // Display cache statistics
     const cacheStats = exchangeRateService.getCacheStats();
