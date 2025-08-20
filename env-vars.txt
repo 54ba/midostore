@@ -1,0 +1,17 @@
+# Copy these environment variables to your .env file
+
+# Netlify Deployment Environment Variables
+NEXT_USE_NETLIFY_EDGE=true
+NODE_VERSION=18
+NPM_VERSION=9
+
+# Next.js Configuration
+NEXT_PUBLIC_APP_URL=https://your-site-name.netlify.app
+
+# Build Configuration
+NEXT_TELEMETRY_DISABLED=1
+
+# Optional: Add your actual environment variables below
+# DATABASE_URL=your_database_url_here
+# STRIPE_SECRET_KEY=your_stripe_secret_key_here
+# STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key_here

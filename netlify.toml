@@ -1,11 +1,16 @@
 [build]
   command = "npm run build"
   publish = "out"
+  base = "."
 
 [build.environment]
   NEXT_USE_NETLIFY_EDGE = "true"
   NODE_VERSION = "18"
   NPM_VERSION = "9"
+
+# Explicitly disable plugins to prevent conflicts
+[build.processing]
+  skip_processing = false
 
 # Handle Next.js static assets
 [[redirects]]
