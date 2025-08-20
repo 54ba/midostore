@@ -4,14 +4,15 @@ export const config = {
         url: process.env.DATABASE_URL || "postgresql://username:password@localhost:5432/midostore_db",
     },
 
-    // Clerk Authentication
+    // Clerk Authentication - Updated for Netlify integration
     clerk: {
         publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || "",
         secretKey: process.env.CLERK_SECRET_KEY || "",
-        signInUrl: "https://handy-cow-68.accounts.dev/sign-in",
-        signUpUrl: "https://handy-cow-68.accounts.dev/sign-up",
-        afterSignInUrl: "https://handy-cow-68.accounts.dev/",
-        afterSignUpUrl: "https://handy-cow-68.accounts.dev/",
+        // Use Clerk's built-in auth routes instead of custom ones
+        signInUrl: "/sign-in",
+        signUpUrl: "/sign-up",
+        afterSignInUrl: "/dashboard",
+        afterSignUpUrl: "/dashboard",
     },
 
     // Alibaba API (if available)

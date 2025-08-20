@@ -25,9 +25,6 @@ export const metadata: Metadata = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  // Check if Clerk environment variables are available
-  const isClerkAvailable = process.env.NEXT_PUBLIC_CLERK_FRONTEND_API && process.env.CLERK_SECRET_KEY
-
   const content = (
     <>
       <Suspense fallback={null}>
@@ -52,13 +49,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="h-full">
       <body className={`${inter.className} h-full`}>
-        {isClerkAvailable ? (
-          <ClerkProviderWrapper>
-            {content}
-          </ClerkProviderWrapper>
-        ) : (
-          content
-        )}
+        <ClerkProviderWrapper>
+          {content}
+        </ClerkProviderWrapper>
       </body>
     </html>
   )

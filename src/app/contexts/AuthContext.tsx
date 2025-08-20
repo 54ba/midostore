@@ -1,9 +1,6 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { config } from "../../../env.config";
-
-type ApiResponse<T> = { success: boolean; data?: T };
 
 export interface User {
   user_id: string;
@@ -23,28 +20,20 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-const AUTH_ME_ENDPOINT = "/api/auth/login";
-const AUTH_LOGIN_ENDPOINT = "/api/auth/login";
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [isClerkLoaded, setIsClerkLoaded] = useState(false);
 
   // Check if Clerk is available
   const isClerkAvailable = typeof window !== 'undefined' &&
-    config.clerk.publishableKey &&
-    config.clerk.secretKey;
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
-  // Conditionally import Clerk hooks
-  const [clerkUser, setClerkUser] = useState<any>(null);
-  const [isClerkLoaded, setIsClerkLoaded] = useState(false);
-
-  // Load Clerk user if available
+  // Load Clerk hooks if available
   useEffect(() => {
     if (isClerkAvailable) {
-      // Dynamically import Clerk hooks
       import('@clerk/nextjs').then(({ useUser, useAuth }) => {
-        // This will be handled by the ClerkProvider when it's available
+        // Clerk is available, mark as loaded
         setIsClerkLoaded(true);
       }).catch(() => {
         setIsClerkLoaded(true);
@@ -53,17 +42,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setIsClerkLoaded(true);
     }
   }, [isClerkAvailable]);
-
-  // Validates only absolutely required User fields (as per DB schema).
-  // Do NOT check optional fields like created_at — their absence should not fail validation.
-  const isValidUser = (u: any): u is User => {
-    return (
-      typeof u?.user_id === "string" &&
-      typeof u?.email === "string" &&
-      typeof u?.full_name === "string" &&
-      typeof u?.phone === "string"
-    );
-  };
 
   // Convert Clerk user to our User format
   const convertClerkUser = (clerkUser: any): User | null => {
@@ -78,67 +56,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   };
 
-  // Restore session on first mount
-  useEffect(() => {
-    let cancelled = false;
-
-    const checkAuth = async () => {
-      try {
-        // If Clerk user is available, use it
-        if (clerkUser && isClerkLoaded) {
-          const convertedUser = convertClerkUser(clerkUser);
-          if (convertedUser && !cancelled) {
-            setUser(convertedUser);
-            setLoading(false);
-            return;
-          }
-        }
-
-        // Fallback to legacy auth if no Clerk user
-        if (!clerkUser && isClerkLoaded) {
-          const res = await fetch(AUTH_ME_ENDPOINT, {
-            method: "GET",
-            credentials: "include"
-          });
-
-          if (res.status === 204 || res.status === 401) {
-            if (!cancelled) setUser(null);
-          } else if (res.ok) {
-            const body = (await res.json()) as ApiResponse<{ user: User }>;
-            if (body?.success && body.data?.user && isValidUser(body.data.user)) {
-              if (!cancelled) setUser(body.data.user);
-            } else {
-              if (!cancelled) setUser(null);
-            }
-          } else {
-            // Unexpected error status — don't overwrite user with bad data
-            console.error("Unexpected session restore status:", res.status);
-          }
-        }
-      } catch {
-        // swallow network errors
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    };
-
-    checkAuth();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [clerkUser, isClerkLoaded]);
-
-  // Update user when Clerk user changes
-  useEffect(() => {
-    if (clerkUser && isClerkLoaded) {
-      const convertedUser = convertClerkUser(clerkUser);
-      setUser(convertedUser);
-    } else if (!clerkUser && isClerkLoaded) {
-      setUser(null);
-    }
-  }, [clerkUser, isClerkLoaded]);
-
   const login = async (email: string, password: string) => {
     // This function is kept for backward compatibility
     // In Clerk, authentication is handled by the SignIn component
@@ -146,20 +63,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = async () => {
-    if (clerkUser && isClerkAvailable) {
-      try {
-        // For now, just clear local state and redirect
-        // Clerk will handle the sign out through the UI components
-        setUser(null);
-        // Redirect to home page
-        window.location.href = '/';
-      } catch (error) {
-        console.error('Error during logout:', error);
-        // Fallback to clearing local state
-        setUser(null);
-      }
-    } else {
-      // Fallback to legacy logout
+    try {
+      setUser(null);
+    } catch (error) {
+      console.error('Error during logout:', error);
       setUser(null);
     }
   };
@@ -170,7 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       loading: loading || !isClerkLoaded,
       login,
       logout,
-      isClerkUser: !!clerkUser
+      isClerkUser: false // Will be updated when Clerk is properly integrated
     }}>
       {children}
     </AuthContext.Provider>

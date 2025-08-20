@@ -23,12 +23,6 @@
   to = "/.netlify/functions/:splat"
   status = 200
 
-# Redirects for AI recommendations
-[[redirects]]
-  from = "/ai-recommendations"
-  to = "/ai-recommendations"
-  status = 200
-
 # Handle Next.js static files
 [[redirects]]
   from = "/_next/static/*"
@@ -39,6 +33,22 @@
 [[redirects]]
   from = "/_next/image"
   to = "/_next/image"
+  status = 200
+
+# Clerk auth routes - let Next.js handle these
+[[redirects]]
+  from = "/sign-in"
+  to = "/sign-in"
+  status = 200
+
+[[redirects]]
+  from = "/sign-up"
+  to = "/sign-up"
+  status = 200
+
+[[redirects]]
+  from = "/user-profile"
+  to = "/user-profile"
   status = 200
 
 [functions]
