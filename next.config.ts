@@ -15,6 +15,14 @@ const nextConfig: NextConfig = {
         ignoreBuildErrors: true,
     },
 
+    // Optimize for Netlify deployment
+    trailingSlash: false,
+
+    // Ensure proper static generation
+    generateStaticParams: async () => {
+        return [];
+    },
+
     images: {
         remotePatterns: [
             {
@@ -22,6 +30,14 @@ const nextConfig: NextConfig = {
                 hostname: "**", // wildcard for any domain
             },
         ],
+        // Disable image optimization for Netlify compatibility
+        unoptimized: true,
+    },
+
+    // Ensure proper export for Netlify
+    experimental: {
+        // Enable app directory features
+        appDir: true,
     },
 };
 
