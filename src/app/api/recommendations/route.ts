@@ -11,21 +11,20 @@ export async function GET(request: NextRequest) {
         const nItems = parseInt(searchParams.get('nItems') || '10');
         const category = searchParams.get('category') || 'all';
 
-        if (!userId && type === 'personalized') {
-            return NextResponse.json(
-                { error: 'userId is required for personalized recommendations' },
-                { status: 400 }
-            );
-        }
-
         let recommendations;
         switch (type) {
             case 'personalized':
-                recommendations = await recommendationService.getPersonalizedRecommendations(
-                    userId!,
-                    nItems,
-                    category
-                );
+                if (!userId) {
+                    // For guest users, fall back to popular recommendations
+                    console.log('👤 Guest user requesting personalized recommendations, falling back to popular');
+                    recommendations = await recommendationService.getPopularItems(nItems, category);
+                } else {
+                    recommendations = await recommendationService.getPersonalizedRecommendations(
+                        userId,
+                        nItems,
+                        category
+                    );
+                }
                 break;
 
             case 'popular':
@@ -43,10 +42,11 @@ export async function GET(request: NextRequest) {
             success: true,
             data: {
                 recommendations,
-                type,
+                type: userId ? type : 'popular', // Indicate fallback for guests
                 category,
                 nItems,
-                userId: userId || null
+                userId: userId || null,
+                isGuest: !userId
             },
             timestamp: new Date().toISOString()
         });

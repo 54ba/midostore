@@ -55,6 +55,13 @@ export default function AIRecommendations({
         fetchRecommendations();
     }, [type, category, nItems, sourceProductId, user?.user_id]);
 
+    // Initialize guest session for tracking
+    useEffect(() => {
+        if (!user?.user_id && !localStorage.getItem('guestSessionId')) {
+            localStorage.setItem('guestSessionId', `guest_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
+        }
+    }, [user?.user_id]);
+
     const fetchRecommendations = async () => {
         try {
             setLoading(true);
@@ -117,7 +124,32 @@ export default function AIRecommendations({
     };
 
     const recordInteraction = async (productId: string, interactionType: 'view' | 'like' | 'cart') => {
-        if (!user?.user_id) return;
+        // For guest users, we can't record interactions, but we can still show the UI
+        if (!user?.user_id) {
+            console.log('👤 Guest user interaction:', { productId, interactionType });
+
+            // Store guest interactions in localStorage for potential future use
+            try {
+                const guestInteractions = JSON.parse(localStorage.getItem('guestInteractions') || '[]');
+                guestInteractions.push({
+                    productId,
+                    type: interactionType,
+                    timestamp: new Date().toISOString(),
+                    sessionId: localStorage.getItem('guestSessionId') || `guest_${Date.now()}`
+                });
+                localStorage.setItem('guestInteractions', JSON.stringify(guestInteractions));
+
+                // Show a subtle notification for guest interactions
+                if (interactionType === 'like') {
+                    alert('Product added to your favorites! Sign in to sync across devices.');
+                } else if (interactionType === 'cart') {
+                    alert('Product added to cart! Sign in to complete your purchase.');
+                }
+            } catch (error) {
+                console.error('Error storing guest interaction:', error);
+            }
+            return;
+        }
 
         try {
             setInteractionLoading(productId);
@@ -147,7 +179,7 @@ export default function AIRecommendations({
     const getTitle = () => {
         switch (type) {
             case 'personalized':
-                return 'Recommended for You';
+                return user?.user_id ? 'Recommended for You' : 'Popular Products for You';
             case 'popular':
                 return 'Popular Products';
             case 'similar':
@@ -226,6 +258,27 @@ export default function AIRecommendations({
                 </div>
             )}
 
+            {/* Guest User Notice */}
+            {!user?.user_id && type === 'personalized' && (
+                <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div className="flex items-start gap-3">
+                        <div className="flex-shrink-0">
+                            <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                                <span className="text-blue-600 text-sm font-semibold">ℹ️</span>
+                            </div>
+                        </div>
+                        <div className="flex-1">
+                            <h3 className="text-sm font-medium text-blue-900 mb-1">
+                                Sign in for personalized recommendations
+                            </h3>
+                            <p className="text-sm text-blue-700">
+                                Currently showing popular products. Sign in to get personalized recommendations based on your preferences and browsing history.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {recommendations.map((recommendation) => {
                     const product = products.find(p => p.externalId === recommendation.item_id);
@@ -299,21 +352,42 @@ export default function AIRecommendations({
                                         View
                                     </button>
 
-                                    <button
-                                        onClick={() => recordInteraction(product.externalId, 'like')}
-                                        disabled={interactionLoading === product.externalId}
-                                        className="p-2 text-gray-600 hover:text-red-500 transition-colors disabled:opacity-50"
-                                    >
-                                        <Heart className="w-4 h-4" />
-                                    </button>
+                                    {user?.user_id ? (
+                                        <>
+                                            <button
+                                                onClick={() => recordInteraction(product.externalId, 'like')}
+                                                disabled={interactionLoading === product.externalId}
+                                                className="p-2 text-gray-600 hover:text-red-500 transition-colors disabled:opacity-50"
+                                                title="Add to favorites"
+                                            >
+                                                <Heart className="w-4 h-4" />
+                                            </button>
 
-                                    <button
-                                        onClick={() => recordInteraction(product.externalId, 'cart')}
-                                        disabled={interactionLoading === product.externalId}
-                                        className="p-2 text-gray-600 hover:text-green-500 transition-colors disabled:opacity-50"
-                                    >
-                                        <ShoppingCart className="w-4 h-4" />
-                                    </button>
+                                            <button
+                                                onClick={() => recordInteraction(product.externalId, 'cart')}
+                                                disabled={interactionLoading === product.externalId}
+                                                className="p-2 text-gray-600 hover:text-green-500 transition-colors disabled:opacity-50"
+                                                title="Add to cart"
+                                            >
+                                                <ShoppingCart className="w-4 h-4" />
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <div className="flex gap-1">
+                                            <button
+                                                className="p-2 text-gray-400 cursor-not-allowed"
+                                                title="Sign in to like products"
+                                            >
+                                                <Heart className="w-4 h-4" />
+                                            </button>
+                                            <button
+                                                className="p-2 text-gray-400 cursor-not-allowed"
+                                                title="Sign in to add to cart"
+                                            >
+                                                <ShoppingCart className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Recommendation Metadata */}

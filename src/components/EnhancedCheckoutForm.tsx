@@ -7,6 +7,12 @@ interface CheckoutFormProps {
   onSubmit: (formData: CheckoutFormData) => Promise<void>
   loading?: boolean
   className?: string
+  user?: {
+    user_id: string
+    email: string
+    full_name: string
+    phone: string
+  } | null
 }
 
 interface CheckoutFormData {
@@ -28,22 +34,23 @@ interface CheckoutFormData {
 export default function EnhancedCheckoutForm({
   onSubmit,
   loading = false,
-  className = ''
+  className = '',
+  user = null
 }: CheckoutFormProps) {
   const [formData, setFormData] = useState<CheckoutFormData>({
-    email: '',
-    firstName: '',
-    lastName: '',
+    email: user?.email || '',
+    firstName: user?.full_name?.split(' ')[0] || '',
+    lastName: user?.full_name?.split(' ').slice(1).join(' ') || '',
     address: '',
     city: '',
     state: '',
     zipCode: '',
     country: '',
-    phone: '',
+    phone: user?.phone || '',
     cardNumber: '',
     expiryDate: '',
     cvv: '',
-    cardholderName: ''
+    cardholderName: user?.full_name || ''
   })
 
   const [currentStep, setCurrentStep] = useState(1)
@@ -115,11 +122,10 @@ export default function EnhancedCheckoutForm({
         <div className="flex items-center justify-between">
           {steps.map((step, index) => (
             <div key={step.number} className="flex items-center">
-              <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${
-                currentStep >= step.number
-                  ? 'border-primary bg-blue-500 text-white'
-                  : 'border-gray-300 bg-white text-gray-500'
-              }`}>
+              <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${currentStep >= step.number
+                ? 'border-primary bg-blue-500 text-white'
+                : 'border-gray-300 bg-white text-gray-500'
+                }`}>
                 {currentStep > step.number ? (
                   <CheckCircle className="w-5 h-5" />
                 ) : (
@@ -127,9 +133,8 @@ export default function EnhancedCheckoutForm({
                 )}
               </div>
               {index < steps.length - 1 && (
-                <div className={`w-16 h-0.5 mx-4 ${
-                  currentStep > step.number ? 'bg-blue-500' : 'bg-gray-300'
-                }`} />
+                <div className={`w-16 h-0.5 mx-4 ${currentStep > step.number ? 'bg-blue-500' : 'bg-gray-300'
+                  }`} />
               )}
             </div>
           ))}
@@ -138,9 +143,8 @@ export default function EnhancedCheckoutForm({
           {steps.map((step) => (
             <span
               key={step.number}
-              className={`text-sm font-medium ${
-                currentStep >= step.number ? 'text-primary' : 'text-gray-500'
-              }`}
+              className={`text-sm font-medium ${currentStep >= step.number ? 'text-primary' : 'text-gray-500'
+                }`}
             >
               {step.title}
             </span>
@@ -160,9 +164,8 @@ export default function EnhancedCheckoutForm({
                   type="email"
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    errors.email ? 'border-red-500' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.email ? 'border-red-500' : 'border-gray-300'
+                    }`}
                   placeholder="your@email.com"
                 />
                 {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
@@ -173,9 +176,8 @@ export default function EnhancedCheckoutForm({
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => handleInputChange('phone', e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    errors.phone ? 'border-red-500' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.phone ? 'border-red-500' : 'border-gray-300'
+                    }`}
                   placeholder="+1 (555) 123-4567"
                 />
                 {errors.phone && <p className="mt-1 text-sm text-red-600">{errors.phone}</p>}
@@ -186,9 +188,8 @@ export default function EnhancedCheckoutForm({
                   type="text"
                   value={formData.firstName}
                   onChange={(e) => handleInputChange('firstName', e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    errors.firstName ? 'border-red-500' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.firstName ? 'border-red-500' : 'border-gray-300'
+                    }`}
                   placeholder="John"
                 />
                 {errors.firstName && <p className="mt-1 text-sm text-red-600">{errors.firstName}</p>}
@@ -199,9 +200,8 @@ export default function EnhancedCheckoutForm({
                   type="text"
                   value={formData.lastName}
                   onChange={(e) => handleInputChange('lastName', e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    errors.lastName ? 'border-red-500' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.lastName ? 'border-red-500' : 'border-gray-300'
+                    }`}
                   placeholder="Doe"
                 />
                 {errors.lastName && <p className="mt-1 text-sm text-red-600">{errors.lastName}</p>}
@@ -221,9 +221,8 @@ export default function EnhancedCheckoutForm({
                   type="text"
                   value={formData.address}
                   onChange={(e) => handleInputChange('address', e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    errors.address ? 'border-red-500' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.address ? 'border-red-500' : 'border-gray-300'
+                    }`}
                   placeholder="123 Main St"
                 />
                 {errors.address && <p className="mt-1 text-sm text-red-600">{errors.address}</p>}
@@ -235,9 +234,8 @@ export default function EnhancedCheckoutForm({
                     type="text"
                     value={formData.city}
                     onChange={(e) => handleInputChange('city', e.target.value)}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      errors.city ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.city ? 'border-red-500' : 'border-gray-300'
+                      }`}
                     placeholder="New York"
                   />
                   {errors.city && <p className="mt-1 text-sm text-red-600">{errors.city}</p>}
@@ -248,9 +246,8 @@ export default function EnhancedCheckoutForm({
                     type="text"
                     value={formData.state}
                     onChange={(e) => handleInputChange('state', e.target.value)}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      errors.state ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.state ? 'border-red-500' : 'border-gray-300'
+                      }`}
                     placeholder="NY"
                   />
                   {errors.state && <p className="mt-1 text-sm text-red-600">{errors.state}</p>}
@@ -261,9 +258,8 @@ export default function EnhancedCheckoutForm({
                     type="text"
                     value={formData.zipCode}
                     onChange={(e) => handleInputChange('zipCode', e.target.value)}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      errors.zipCode ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.zipCode ? 'border-red-500' : 'border-gray-300'
+                      }`}
                     placeholder="10001"
                   />
                   {errors.zipCode && <p className="mt-1 text-sm text-red-600">{errors.zipCode}</p>}
@@ -274,9 +270,8 @@ export default function EnhancedCheckoutForm({
                 <select
                   value={formData.country}
                   onChange={(e) => handleInputChange('country', e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    errors.country ? 'border-red-500' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.country ? 'border-red-500' : 'border-gray-300'
+                    }`}
                 >
                   <option value="">Select a country</option>
                   <option value="US">United States</option>
@@ -303,9 +298,8 @@ export default function EnhancedCheckoutForm({
                     type="text"
                     value={formData.cardNumber}
                     onChange={(e) => handleInputChange('cardNumber', e.target.value)}
-                    className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      errors.cardNumber ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.cardNumber ? 'border-red-500' : 'border-gray-300'
+                      }`}
                     placeholder="1234 5678 9012 3456"
                     maxLength={19}
                   />
@@ -319,9 +313,8 @@ export default function EnhancedCheckoutForm({
                     type="text"
                     value={formData.expiryDate}
                     onChange={(e) => handleInputChange('expiryDate', e.target.value)}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      errors.expiryDate ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.expiryDate ? 'border-red-500' : 'border-gray-300'
+                      }`}
                     placeholder="MM/YY"
                     maxLength={5}
                   />
@@ -333,9 +326,8 @@ export default function EnhancedCheckoutForm({
                     type="text"
                     value={formData.cvv}
                     onChange={(e) => handleInputChange('cvv', e.target.value)}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      errors.cvv ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.cvv ? 'border-red-500' : 'border-gray-300'
+                      }`}
                     placeholder="123"
                     maxLength={4}
                   />
@@ -347,9 +339,8 @@ export default function EnhancedCheckoutForm({
                     type="text"
                     value={formData.cardholderName}
                     onChange={(e) => handleInputChange('cardholderName', e.target.value)}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      errors.cardholderName ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.cardholderName ? 'border-red-500' : 'border-gray-300'
+                      }`}
                     placeholder="John Doe"
                   />
                   {errors.cardholderName && <p className="mt-1 text-sm text-red-600">{errors.cardholderName}</p>}

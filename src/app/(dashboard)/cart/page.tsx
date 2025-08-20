@@ -21,23 +21,17 @@ export default function CartPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [updating, setUpdating] = useState(false)
-  const { user, loading: authLoading } = useAuth()
+  const { user } = useAuth()
   const router = useRouter()
 
   useEffect(() => {
-    if (!authLoading && !user) {
-      router.push('/login')
-      return
-    }
-
-    if (user) {
-      loadCartItems()
-    }
-  }, [user, authLoading, router])
+    // Load cart items regardless of authentication status
+    loadCartItems()
+  }, [])
 
   const loadCartItems = () => {
     try {
-      const savedCart = localStorage.getItem('cart')
+      const savedCart = localStorage.getItem('midohub_cart')
       if (savedCart) {
         const parsedCart = JSON.parse(savedCart)
         if (Array.isArray(parsedCart)) {
@@ -52,9 +46,9 @@ export default function CartPage() {
     }
   }
 
-  const handleQuantityChange = (productId: string, newQuantity: number) => {
+  const updateCartItem = async (productId: string, newQuantity: number) => {
     if (newQuantity <= 0) {
-      handleRemoveItem(productId)
+      removeCartItem(productId)
       return
     }
 
@@ -65,35 +59,36 @@ export default function CartPage() {
           ? { ...item, quantity: newQuantity }
           : item
       )
+
       setCartItems(updatedItems)
-      localStorage.setItem('cart', JSON.stringify(updatedItems))
+      localStorage.setItem('midohub_cart', JSON.stringify(updatedItems))
     } catch (err) {
-      console.error('Failed to update quantity:', err)
-      setError('Failed to update item quantity')
+      console.error('Failed to update cart item:', err)
+      setError('Failed to update cart item')
     } finally {
       setUpdating(false)
     }
   }
 
-  const handleRemoveItem = (productId: string) => {
+  const removeCartItem = async (productId: string) => {
     setUpdating(true)
     try {
       const updatedItems = cartItems.filter(item => item.product_id !== productId)
       setCartItems(updatedItems)
-      localStorage.setItem('cart', JSON.stringify(updatedItems))
+      localStorage.setItem('midohub_cart', JSON.stringify(updatedItems))
     } catch (err) {
-      console.error('Failed to remove item:', err)
-      setError('Failed to remove item from cart')
+      console.error('Failed to remove cart item:', err)
+      setError('Failed to remove cart item')
     } finally {
       setUpdating(false)
     }
   }
 
-  const handleClearCart = () => {
+  const clearCart = async () => {
     setUpdating(true)
     try {
       setCartItems([])
-      localStorage.removeItem('cart')
+      localStorage.removeItem('midohub_cart')
     } catch (err) {
       console.error('Failed to clear cart:', err)
       setError('Failed to clear cart')
@@ -102,152 +97,191 @@ export default function CartPage() {
     }
   }
 
-  const handleProceedToCheckout = () => {
+  const calculateSubtotal = () => {
+    return cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+  }
+
+  const calculateShipping = () => {
+    return cartItems.length > 0 ? 15.00 : 0
+  }
+
+  const calculateTax = () => {
+    return calculateSubtotal() * 0.08
+  }
+
+  const calculateTotal = () => {
+    return calculateSubtotal() + calculateShipping() + calculateTax()
+  }
+
+  const handleCheckout = () => {
     if (cartItems.length === 0) {
       setError('Your cart is empty')
       return
     }
+
+    // Save cart to localStorage with a specific key for checkout
+    localStorage.setItem('midohub_cart', JSON.stringify(cartItems))
     router.push('/checkout')
   }
 
-  const handleContinueShopping = () => {
-    router.push('/dashboard')
-  }
-
-  const calculateSubtotal = () => {
-    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0)
-  }
-
-  const calculateShipping = () => {
-    return cartItems.length > 0 ? 10.00 : 0
-  }
-
-  const calculateTotal = () => {
-    return calculateSubtotal() + calculateShipping()
-  }
-
-  if (authLoading || loading) {
+  if (loading) {
     return (
-      <div id="cart-loading-container" className="min-h-screen bg-[rgb(var(--background))] flex items-center justify-center">
-        <LoadingSpinner id="cart-loading-spinner" size="lg" color="rgb(var(--primary))" />
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-red-600 mb-4">Error</h1>
+          <p className="text-gray-600">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
+          >
+            Retry
+          </button>
+        </div>
       </div>
     )
   }
 
   return (
-    <div id="cart-page" className="min-h-screen bg-[rgb(var(--background))]">
-      <div id="cart-content" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div id="cart-header" className="mb-8">
-          <h1 id="cart-title" className="text-3xl font-bold text-[rgb(var(--foreground))]">
-            Shopping Cart
-          </h1>
-          <p id="cart-subtitle" className="text-gray-600 mt-2">
-            Review your items and proceed to checkout
+    <div className="min-h-screen bg-gray-50">
+      <Header />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Shopping Cart</h1>
+          <p className="mt-2 text-gray-600">
+            {cartItems.length > 0
+              ? `${cartItems.length} item${cartItems.length > 1 ? 's' : ''} in your cart`
+              : 'Your cart is empty'
+            }
           </p>
         </div>
 
-        {error && (
-          <div id="cart-error" className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p id="cart-error-message" className="text-red-700">{error}</p>
-          </div>
-        )}
-
         {cartItems.length === 0 ? (
-          <div id="empty-cart" className="text-center py-16">
-            <div id="empty-cart-icon" className="mx-auto mb-6 w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center">
-              <svg id="empty-cart-svg" className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
+          <div className="text-center py-12">
+            <div className="max-w-md mx-auto">
+              <svg
+                className="mx-auto h-24 w-24 text-gray-400 mb-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1}
+                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                />
               </svg>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Your cart is empty</h2>
+              <p className="text-gray-600 mb-6">
+                Discover amazing products and add them to your cart.
+              </p>
+              <Button
+                onClick={() => router.push('/products')}
+                className="bg-blue-500 hover:bg-blue-600 text-white"
+              >
+                Continue Shopping
+              </Button>
             </div>
-            <h2 id="empty-cart-title" className="text-2xl font-bold text-[rgb(var(--foreground))] mb-4">
-              Your cart is empty
-            </h2>
-            <p id="empty-cart-description" className="text-gray-600 mb-8">
-              Looks like you haven&apos;t added any items to your cart yet.
-            </p>
-            <Button
-              id="continue-shopping-button"
-              variant="primary"
-              size="lg"
-              onClick={handleContinueShopping}
-            >
-              Continue Shopping
-            </Button>
           </div>
         ) : (
-          <div id="cart-with-items" className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div id="cart-items-section" className="lg:col-span-2 space-y-4">
-              <div id="cart-items-header" className="flex items-center justify-between mb-6">
-                <h2 id="cart-items-title" className="text-xl font-semibold text-[rgb(var(--foreground))]">
-                  Cart Items ({cartItems.length})
-                </h2>
-                <Button
-                  id="clear-cart-button"
-                  variant="outline"
-                  size="sm"
-                  onClick={handleClearCart}
-                  disabled={updating}
-                >
-                  Clear Cart
-                </Button>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Cart Items */}
+            <div className="lg:col-span-2 space-y-4">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+                <div className="p-6 border-b border-gray-200">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-semibold text-gray-900">Cart Items</h2>
+                    {cartItems.length > 0 && (
+                      <button
+                        onClick={clearCart}
+                        disabled={updating}
+                        className="text-red-600 hover:text-red-700 text-sm font-medium disabled:opacity-50"
+                      >
+                        Clear Cart
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                <div className="divide-y divide-gray-200">
+                  {cartItems.map((item) => (
+                    <CartItem
+                      key={item.product_id}
+                      item={item}
+                      onUpdateQuantity={(quantity) => updateCartItem(item.product_id, quantity)}
+                      onRemove={() => removeCartItem(item.product_id)}
+                      updating={updating}
+                    />
+                  ))}
+                </div>
               </div>
 
-              <div id="cart-items-list" className="space-y-4">
-                {cartItems.map((item, index) => (
-                  <CartItem
-                    key={item.product_id}
-                    id={`cart-item-${index}`}
-                    item={item}
-                    onQuantityChange={handleQuantityChange}
-                    onRemove={handleRemoveItem}
-                  />
-                ))}
-              </div>
-
-              <div id="cart-actions" className="pt-6 border-t border-gray-200">
+              {/* Continue Shopping */}
+              <div className="flex justify-start">
                 <Button
-                  id="continue-shopping-link"
+                  onClick={() => router.push('/products')}
                   variant="outline"
-                  size="md"
-                  onClick={handleContinueShopping}
+                  className="border-gray-300 text-gray-700 hover:bg-gray-50"
                 >
-                  Continue Shopping
+                  ← Continue Shopping
                 </Button>
               </div>
             </div>
 
-            <div id="order-summary-section" className="lg:col-span-1">
-              <div id="order-summary-sticky" className="sticky top-24">
+            {/* Order Summary */}
+            <div className="lg:col-span-1">
+              <div className="sticky top-8">
                 <OrderSummary
-                  id="cart-order-summary"
                   items={cartItems}
                   subtotal={calculateSubtotal()}
                   shipping={calculateShipping()}
+                  tax={calculateTax()}
                   total={calculateTotal()}
                 />
 
-                <div id="checkout-actions" className="mt-6 space-y-4">
+                <div className="mt-6">
                   <Button
-                    id="proceed-checkout-button"
-                    variant="primary"
-                    size="lg"
-                    onClick={handleProceedToCheckout}
-                    disabled={updating || cartItems.length === 0}
-                    loading={updating}
+                    onClick={handleCheckout}
+                    disabled={cartItems.length === 0 || updating}
+                    className="w-full bg-blue-500 hover:bg-blue-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Proceed to Checkout
+                    {updating ? 'Updating...' : 'Proceed to Checkout'}
                   </Button>
+                </div>
 
-                  <div id="secure-checkout-notice" className="text-center">
-                    <div id="security-icons" className="flex items-center justify-center space-x-2 text-gray-500 mb-2">
-                      <svg id="lock-icon" className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                      </svg>
-                      <span id="secure-text" className="text-sm">Secure Checkout</span>
-                    </div>
-                    <p id="security-description" className="text-xs text-gray-500">
-                      Your payment information is encrypted and secure
+                {!user && (
+                  <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <p className="text-sm text-blue-800 mb-2">
+                      <strong>Sign in for a better experience:</strong>
                     </p>
+                    <p className="text-sm text-blue-700">
+                      Save your cart, track orders, and manage your account.
+                    </p>
+                  </div>
+                )}
+
+                {/* Security badges */}
+                <div className="mt-6 flex items-center justify-center space-x-4 text-sm text-gray-500">
+                  <div className="flex items-center">
+                    <svg className="h-4 w-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                    </svg>
+                    <span>Secure Checkout</span>
+                  </div>
+                  <div className="flex items-center">
+                    <svg className="h-4 w-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                    </svg>
+                    <span>Free Returns</span>
                   </div>
                 </div>
               </div>

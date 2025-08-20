@@ -172,6 +172,65 @@ export default function ProductsPage() {
                     className="mb-8"
                 />
 
+                {/* AI Recommendations Section */}
+                <div className="mb-8">
+                    <div className="bg-white rounded-lg shadow-sm border p-6">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <span className="text-blue-600 text-lg">🧠</span>
+                            </div>
+                            <h2 className="text-xl font-semibold text-gray-900">AI-Powered Recommendations</h2>
+                        </div>
+                        <p className="text-gray-600 mb-4">
+                            Discover products tailored to your interests and trending items loved by our community.
+                        </p>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            {/* Personalized Recommendations */}
+                            <div>
+                                <h3 className="text-lg font-medium text-gray-900 mb-3">Recommended for You</h3>
+                                <div className="bg-gray-50 rounded-lg p-4 min-h-[200px] flex items-center justify-center">
+                                    <div className="text-center">
+                                        <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                            <span className="text-blue-600 text-xl">✨</span>
+                                        </div>
+                                        <p className="text-sm text-gray-600 mb-3">
+                                            Sign in to get personalized recommendations
+                                        </p>
+                                        <button
+                                            onClick={() => window.location.href = '/sign-in'}
+                                            className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
+                                        >
+                                            Sign In
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Popular Products */}
+                            <div>
+                                <h3 className="text-lg font-medium text-gray-900 mb-3">Popular Products</h3>
+                                <div className="bg-gray-50 rounded-lg p-4 min-h-[200px] flex items-center justify-center">
+                                    <div className="text-center">
+                                        <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                            <span className="text-green-600 text-xl">🔥</span>
+                                        </div>
+                                        <p className="text-sm text-gray-600 mb-3">
+                                            Trending products in your region
+                                        </p>
+                                        <button
+                                            onClick={() => window.location.href = '/ai-recommendations'}
+                                            className="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
+                                        >
+                                            View Popular
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 {/* Enhanced Products Grid */}
                 <ProductGrid
                     products={products.map(product => ({

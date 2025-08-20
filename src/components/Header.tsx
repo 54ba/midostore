@@ -45,6 +45,13 @@ export default function Header({ id }: HeaderProps) {
               Dashboard
             </Link>
             <Link
+              href="/ai-recommendations"
+              id="header-nav-ai-recommendations"
+              className="text-gray-700 hover:text-teal-600 font-medium transition-colors"
+            >
+              AI Recommendations
+            </Link>
+            <Link
               href="/orders"
               id="header-nav-orders"
               className="text-gray-700 hover:text-teal-600 font-medium transition-colors"
@@ -138,6 +145,14 @@ export default function Header({ id }: HeaderProps) {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Dashboard
+              </Link>
+              <Link
+                href="/ai-recommendations"
+                id="header-mobile-ai-recommendations"
+                className="text-gray-700 hover:text-teal-600 font-medium transition-colors px-2 py-1"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                AI Recommendations
               </Link>
               <Link
                 href="/orders"

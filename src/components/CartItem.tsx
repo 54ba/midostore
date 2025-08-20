@@ -11,26 +11,38 @@ interface CartItemProps {
     price: number
     quantity: number
   }
-  onQuantityChange: (productId: string, quantity: number) => void
-  onRemove: (productId: string) => void
+  onUpdateQuantity?: (quantity: number) => void
+  onQuantityChange?: (productId: string, quantity: number) => void
+  onRemove: (productId?: string) => void
+  updating?: boolean
 }
 
-export default function CartItem({ id, item, onQuantityChange, onRemove }: CartItemProps) {
+export default function CartItem({ id, item, onUpdateQuantity, onQuantityChange, onRemove, updating = false }: CartItemProps) {
   const defaultId = useId()
   const componentId = id || defaultId
 
   const handleQuantityDecrease = () => {
     if (item.quantity > 1) {
-      onQuantityChange(item.product_id, item.quantity - 1)
+      if (onUpdateQuantity) {
+        onUpdateQuantity(item.quantity - 1)
+      } else if (onQuantityChange) {
+        onQuantityChange(item.product_id, item.quantity - 1)
+      }
     }
   }
 
   const handleQuantityIncrease = () => {
-    onQuantityChange(item.product_id, item.quantity + 1)
+    if (onUpdateQuantity) {
+      onUpdateQuantity(item.quantity + 1)
+    } else if (onQuantityChange) {
+      onQuantityChange(item.product_id, item.quantity + 1)
+    }
   }
 
   const handleRemove = () => {
-    onRemove(item.product_id)
+    if (onRemove) {
+      onRemove(item.product_id)
+    }
   }
 
   const totalPrice = item.price * item.quantity
@@ -40,7 +52,7 @@ export default function CartItem({ id, item, onQuantityChange, onRemove }: CartI
       <div className="flex items-center gap-4">
         {/* Product Image Placeholder */}
         <div className="relative w-20 h-20 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden">
-          <div 
+          <div
             id="cart-item-product-image"
             className="w-full h-full bg-gradient-to-br from-teal-50 to-teal-100 flex items-center justify-center"
           >
@@ -52,13 +64,13 @@ export default function CartItem({ id, item, onQuantityChange, onRemove }: CartI
 
         {/* Product Details */}
         <div className="flex-1 min-w-0">
-          <h3 
+          <h3
             id="cart-item-product-name"
             className="text-lg font-semibold text-gray-900 truncate mb-1"
           >
             {item.product_name}
           </h3>
-          <p 
+          <p
             id="cart-item-product-price"
             className="text-teal-600 font-bold text-lg"
           >
@@ -72,25 +84,26 @@ export default function CartItem({ id, item, onQuantityChange, onRemove }: CartI
             <button
               id="cart-item-decrease-button"
               onClick={handleQuantityDecrease}
-              disabled={item.quantity <= 1}
+              disabled={item.quantity <= 1 || updating}
               className="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-teal-600 hover:bg-teal-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 rounded-l-lg"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
               </svg>
             </button>
-            
-            <div 
+
+            <div
               id="cart-item-quantity-display"
               className="w-12 h-10 flex items-center justify-center text-gray-900 font-semibold border-x border-gray-300 bg-gray-50"
             >
               {item.quantity}
             </div>
-            
+
             <button
               id="cart-item-increase-button"
               onClick={handleQuantityIncrease}
-              className="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-teal-600 hover:bg-teal-50 transition-colors duration-200 rounded-r-lg"
+              disabled={updating}
+              className="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-teal-600 hover:bg-teal-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 rounded-r-lg"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -101,13 +114,13 @@ export default function CartItem({ id, item, onQuantityChange, onRemove }: CartI
 
         {/* Total Price */}
         <div className="text-right min-w-0">
-          <p 
+          <p
             id="cart-item-total-label"
             className="text-sm text-gray-500 mb-1"
           >
             Total
           </p>
-          <p 
+          <p
             id="cart-item-total-price"
             className="text-xl font-bold text-gray-900"
           >
@@ -119,7 +132,8 @@ export default function CartItem({ id, item, onQuantityChange, onRemove }: CartI
         <button
           id="cart-item-remove-button"
           onClick={handleRemove}
-          className="ml-4 p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors duration-200 flex-shrink-0"
+          disabled={updating}
+          className="ml-4 p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors duration-200 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
           title="Remove item"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -132,7 +146,7 @@ export default function CartItem({ id, item, onQuantityChange, onRemove }: CartI
       <div className="sm:hidden mt-4 pt-4 border-t border-gray-200">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span 
+            <span
               id="cart-item-mobile-quantity-label"
               className="text-sm text-gray-600"
             >
@@ -149,14 +163,14 @@ export default function CartItem({ id, item, onQuantityChange, onRemove }: CartI
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
                 </svg>
               </button>
-              
-              <div 
+
+              <div
                 id="cart-item-mobile-quantity-display"
                 className="w-10 h-8 flex items-center justify-center text-gray-900 font-semibold border-x border-gray-300 bg-gray-50 text-sm"
               >
                 {item.quantity}
               </div>
-              
+
               <button
                 id="cart-item-mobile-increase-button"
                 onClick={handleQuantityIncrease}
@@ -168,9 +182,9 @@ export default function CartItem({ id, item, onQuantityChange, onRemove }: CartI
               </button>
             </div>
           </div>
-          
+
           <div className="text-right">
-            <p 
+            <p
               id="cart-item-mobile-total-price"
               className="text-lg font-bold text-gray-900"
             >

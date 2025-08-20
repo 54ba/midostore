@@ -138,6 +138,66 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* AI Recommendations Section */}
+      <section id="ai-recommendations-section" className="py-16 px-4 bg-white">
+        <div id="ai-recommendations-container" className="max-w-7xl mx-auto">
+          <div id="ai-recommendations-header" className="text-center mb-12">
+            <h2 id="ai-recommendations-title" className="text-3xl font-bold text-[rgb(var(--foreground))] mb-4">
+              AI-Powered Product Discovery
+            </h2>
+            <p id="ai-recommendations-description" className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Experience the future of shopping with our intelligent recommendation system that learns your preferences and suggests the perfect products.
+            </p>
+          </div>
+
+          <div id="ai-recommendations-grid" className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            <div id="ai-feature-1" className="text-center p-6 bg-blue-50 rounded-lg">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl">🧠</span>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Smart Learning</h3>
+              <p className="text-gray-600">
+                Our AI analyzes your browsing patterns and preferences to deliver increasingly accurate recommendations.
+              </p>
+            </div>
+
+            <div id="ai-feature-2" className="text-center p-6 bg-green-50 rounded-lg">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl">🎯</span>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Personalized Results</h3>
+              <p className="text-gray-600">
+                Get product suggestions tailored specifically to your interests, budget, and shopping behavior.
+              </p>
+            </div>
+
+            <div id="ai-feature-3" className="text-center p-6 bg-purple-50 rounded-lg">
+              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl">⚡</span>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Real-time Updates</h3>
+              <p className="text-gray-600">
+                Recommendations improve continuously as you interact with products and discover new preferences.
+              </p>
+            </div>
+          </div>
+
+          <div id="ai-recommendations-cta" className="text-center">
+            <Button
+              id="ai-recommendations-cta-button"
+              variant="outline"
+              size="lg"
+              onClick={() => router.push('/ai-recommendations')}
+            >
+              Explore AI Recommendations
+            </Button>
+            <p className="text-sm text-gray-500 mt-2">
+              No account required - start discovering amazing products now!
+            </p>
+          </div>
+        </div>
+      </section>
+
       <section id="testimonials-section" className="py-16 px-4 bg-white">
         <div id="testimonials-container" className="max-w-7xl mx-auto">
           <div id="testimonials-header" className="text-center mb-12">

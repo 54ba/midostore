@@ -14,6 +14,7 @@ interface OrderSummaryProps {
   items: OrderSummaryItem[]
   subtotal: number
   shipping: number
+  tax?: number
   total: number
 }
 
@@ -22,6 +23,7 @@ export default function OrderSummary({
   items = [],
   subtotal = 0,
   shipping = 0,
+  tax = 0,
   total = 0
 }: OrderSummaryProps) {
   const defaultId = useId()
@@ -112,6 +114,16 @@ export default function OrderSummary({
           </span>
           <span id="order-summary-shipping-amount" className="text-sm font-medium text-gray-900">
             {shipping === 0 ? 'Free' : formatPrice(shipping)}
+          </span>
+        </div>
+
+        {/* Tax */}
+        <div className="flex items-center justify-between">
+          <span id="order-summary-tax-label" className="text-sm text-gray-600">
+            Tax
+          </span>
+          <span id="order-summary-tax-amount" className="text-sm font-medium text-gray-900">
+            {formatPrice(tax || 0)}
           </span>
         </div>
 

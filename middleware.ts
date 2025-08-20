@@ -7,15 +7,28 @@ const isPublicRoute = createRouteMatcher([
     '/',
     '/products(.*)',
     '/contact',
+    '/cart',
     '/api/webhooks/(.*)',
     '/api/products',
     '/api/exchange-rates',
     '/api/recommendations',
     '/api/scraping/(.*)',
+    '/ai-recommendations(.*)',
+])
+
+// Define routes that require authentication
+const isProtectedRoute = createRouteMatcher([
+    '/checkout',
+    '/orders(.*)',
+    '/dashboard(.*)',
+    '/profile(.*)',
+    '/user-profile(.*)',
+    '/scraping(.*)',
 ])
 
 export default clerkMiddleware(async (auth, req) => {
-    if (!isPublicRoute(req)) {
+    // Only protect specific routes that require authentication
+    if (isProtectedRoute(req)) {
         await auth.protect()
     }
 })
