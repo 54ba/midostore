@@ -1,0 +1,9 @@
+version: 0.1.0
+files:
+  - url: TaskerNet-0.1.0-linux-x64.AppImage
+    sha512: 26H/bISQuOrqBvgx02UNQvHJJYyuu9bits4Ja5a7eXI+y2HU1zv5pupbWaQDzmsPnTHL9QZanS9RB7PDKL07Og==
+    size: 275001664
+    blockMapSize: 287060
+path: TaskerNet-0.1.0-linux-x64.AppImage
+sha512: 26H/bISQuOrqBvgx02UNQvHJJYyuu9bits4Ja5a7eXI+y2HU1zv5pupbWaQDzmsPnTHL9QZanS9RB7PDKL07Og==
+releaseDate: '2025-08-20T13:37:09.433Z'
