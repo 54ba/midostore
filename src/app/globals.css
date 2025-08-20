@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+@layer base {
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  :root {
+    --background: 249 250 251; /* light gray #f9fafb */
+    --foreground: 55 65 81;   /* charcoal #374151 */
+    --card: 255 255 255;
+    --card-foreground: 55 65 81;
+    --primary: 15 118 110;      /* deep teal #0f766e */
+    --primary-foreground: 255 255 255;
+    --secondary: 245 158 11;    /* warm amber #f59e0b */
+    --secondary-foreground: 55 65 81;
+    --success: 16 185 129;      /* emerald #10b981 */
+    --error: 239 68 68;        /* red #ef4444 */
+    --border: 229 231 235;
+    --input: 229 231 235;
+    --ring: 15 118 110;
+    --radius: 0.5rem;
+  }
+
+  *,
+  ::before,
+  ::after {
+    @apply border-[rgb(var(--border))];
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-[rgb(var(--background))] text-[rgb(var(--foreground))] antialiased;
+    min-height: 100vh;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-bold tracking-tight text-balance;
+  }
+
+  h1 {
+    @apply text-4xl;
+  }
+
+  h2 {
+    @apply text-3xl;
+  }
+
+  h3 {
+    @apply text-2xl;
+  }
+
+  h4 {
+    @apply text-xl;
+  }
+
+  h5 {
+    @apply text-lg;
+  }
+
+  h6 {
+    @apply text-base;
+  }
+
+  p {
+    @apply leading-7 text-balance;
+  }
+
+  a {
+    @apply text-[rgb(var(--secondary))] underline-offset-4 transition-colors hover:underline hover:text-[rgb(var(--primary))];
+  }
+
+  input,
+  textarea,
+  select {
+    @apply block w-full rounded-[var(--radius)] border bg-white px-3 py-2 text-sm;
+    @apply ring-offset-[rgb(var(--background))] file:border-0 file:bg-transparent file:text-sm file:font-medium;
+    @apply placeholder:text-gray-500;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--ring))] focus-visible:ring-offset-2;
+    @apply disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  button {
+    @apply inline-flex items-center justify-center whitespace-nowrap rounded-[var(--radius)] text-sm font-medium ring-offset-[rgb(var(--background))] transition-colors;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--ring))] focus-visible:ring-offset-2;
+    @apply disabled:pointer-events-none disabled:opacity-50;
+  }
+}

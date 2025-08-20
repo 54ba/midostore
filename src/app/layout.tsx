@@ -1,0 +1,47 @@
+import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+import './globals.css'
+import Script from 'next/script'
+import { Suspense } from 'react'
+import NavigationLogger from '@/components/NavigationLogger'
+import { AuthProvider } from '@/app/contexts/AuthContext'
+
+const inter = Inter({ subsets: ['latin'] })
+
+export const metadata: Metadata = {
+  title: 'MidoHub - Premium Dropshipping Platform',
+  description: 'Connect to affordable toys and cosmetics from Alibaba with MidoHub. Your trusted dropshipping partner in the Gulf region.',
+  keywords: 'dropshipping, toys, cosmetics, alibaba, gulf, middleeast, affordable products',
+  authors: [{ name: 'MidoHub' }],
+  viewport: 'width=device-width, initial-scale=1',
+  robots: 'index, follow',
+  openGraph: {
+    title: 'MidoHub - Premium Dropshipping Platform',
+    description: 'Connect to affordable toys and cosmetics from Alibaba with MidoHub',
+    type: 'website',
+    locale: 'en_US',
+  },
+}
+
+export default function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en" className="h-full">
+      <body className={`${inter.className} h-full`}>
+        <Suspense fallback={null}>
+          <NavigationLogger />
+        </Suspense>
+        <AuthProvider>
+          {children}
+        </AuthProvider>
+        <Script id="edit-config" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: `
+          window.APP_ID = "f0d77951-6589-4855-889a-e574b12631d5";
+          window.EDIT_CALLBACK_URL = "/api/edit-webhook";
+          window.EDIT_TOKEN = "4bd1e072-750b-43b6-a116-3f94dc658e65:1755685474917";
+          window.TASK_UUID = "f0d77951-6589-4855-889a-e574b12631d5";
+          window.EDIT_BASE_URL = "https://api.internal.tasker.ai";
+        `, }} />
+        <Script src="https://cdn.tasker.ai/EditModeLoader.js" strategy="afterInteractive" />
+      </body>
+    </html>
+  )
+}

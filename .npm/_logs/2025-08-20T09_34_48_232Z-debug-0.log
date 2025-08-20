@@ -1,0 +1,871 @@
+0 verbose cli /usr/local/bin/node /usr/local/bin/npm
+1 info using npm@10.5.0
+2 info using node@v21.7.3
+3 timing npm:load:whichnode Completed in 2ms
+4 timing config:load:defaults Completed in 3ms
+5 timing config:load:file:/usr/local/lib/node_modules/npm/npmrc Completed in 1ms
+6 timing config:load:builtin Completed in 1ms
+7 timing config:load:cli Completed in 4ms
+8 timing config:load:env Completed in 0ms
+9 timing config:load:project Completed in 2ms
+10 timing config:load:file:/home/user/.npmrc Completed in 0ms
+11 timing config:load:user Completed in 0ms
+12 timing config:load:file:/usr/local/etc/npmrc Completed in 1ms
+13 timing config:load:global Completed in 1ms
+14 timing config:load:setEnvs Completed in 2ms
+15 timing config:load Completed in 16ms
+16 timing npm:load:configload Completed in 16ms
+17 timing config:load:flatten Completed in 3ms
+18 timing npm:load:mkdirpcache Completed in 1ms
+19 timing npm:load:mkdirplogs Completed in 1ms
+20 verbose title npm install uuid crypto-js axios react-hook-form @hookform/resolvers zod lucide-react
+21 verbose argv "install" "uuid" "crypto-js" "axios" "react-hook-form" "@hookform/resolvers" "zod" "lucide-react"
+22 timing npm:load:setTitle Completed in 1ms
+23 timing npm:load:display Completed in 1ms
+24 verbose logfile logs-max:10 dir:/home/user/.npm/_logs/2025-08-20T09_34_48_232Z-
+25 verbose logfile /home/user/.npm/_logs/2025-08-20T09_34_48_232Z-debug-0.log
+26 timing npm:load:logFile Completed in 12ms
+27 timing npm:load:timers Completed in 0ms
+28 timing npm:load:configScope Completed in 0ms
+29 timing npm:load Completed in 68ms
+30 timing arborist:ctor Completed in 1ms
+31 silly logfile done cleaning log files
+32 timing idealTree:init Completed in 306ms
+33 timing idealTree:userRequests Completed in 3ms
+34 silly idealTree buildDeps
+35 silly fetch manifest uuid@*
+36 verbose shrinkwrap failed to load node_modules/.package-lock.json out of date, updated: node_modules
+37 http fetch GET 200 https://registry.npmjs.org/npm 559ms
+38 http fetch GET 200 https://registry.npmjs.org/uuid 3127ms (cache miss)
+39 silly fetch manifest crypto-js@*
+40 http fetch GET 200 https://registry.npmjs.org/crypto-js 45ms (cache miss)
+41 silly fetch manifest axios@*
+42 http fetch GET 200 https://registry.npmjs.org/axios 55ms (cache miss)
+43 silly fetch manifest react-hook-form@*
+44 http fetch GET 200 https://registry.npmjs.org/react-hook-form 163ms (cache miss)
+45 silly fetch manifest react@^19.0.0
+46 http fetch GET 200 https://registry.npmjs.org/react 224ms (cache miss)
+47 silly fetch manifest @hookform/resolvers@*
+48 http fetch GET 200 https://registry.npmjs.org/@hookform%2fresolvers 141ms (cache miss)
+49 silly fetch manifest zod@*
+50 http fetch GET 200 https://registry.npmjs.org/zod 147ms (cache miss)
+51 silly fetch manifest lucide-react@*
+52 http fetch GET 200 https://registry.npmjs.org/lucide-react 92ms (cache miss)
+53 silly placeDep ROOT @hookform/resolvers@5.2.1 OK for: next_js@0.1.0 want: *
+54 silly placeDep ROOT react-hook-form@7.62.0 OK for: @hookform/resolvers@5.2.1 want: ^7.55.0
+55 silly placeDep ROOT axios@1.11.0 OK for: next_js@0.1.0 want: *
+56 silly placeDep ROOT crypto-js@4.2.0 OK for: next_js@0.1.0 want: *
+57 silly placeDep ROOT lucide-react@0.540.0 OK for: next_js@0.1.0 want: *
+58 silly placeDep ROOT react-hook-form@7.62.0 REPLACE for: next_js@0.1.0 want: *
+59 silly placeDep ROOT uuid@11.1.0 OK for: next_js@0.1.0 want: *
+60 silly placeDep ROOT zod@4.0.17 OK for: next_js@0.1.0 want: *
+61 silly fetch manifest @standard-schema/utils@^0.3.0
+62 http fetch GET 200 https://registry.npmjs.org/@standard-schema%2futils 58ms (cache miss)
+63 silly fetch manifest form-data@^4.0.4
+64 http fetch GET 200 https://registry.npmjs.org/form-data 47ms (cache miss)
+65 silly fetch manifest proxy-from-env@^1.1.0
+66 http fetch GET 200 https://registry.npmjs.org/proxy-from-env 39ms (cache miss)
+67 silly fetch manifest follow-redirects@^1.15.6
+68 http fetch GET 200 https://registry.npmjs.org/follow-redirects 51ms (cache miss)
+69 timing idealTree:#root Completed in 4706ms
+70 silly placeDep ROOT @standard-schema/utils@0.3.0 OK for: @hookform/resolvers@5.2.1 want: ^0.3.0
+71 timing idealTree:node_modules/@hookform/resolvers Completed in 3ms
+72 timing idealTree:node_modules/@standard-schema/utils Completed in 0ms
+73 timing idealTree:node_modules/@tailwindcss/oxide-wasm32-wasi Completed in 0ms
+74 silly placeDep ROOT follow-redirects@1.15.11 OK for: axios@1.11.0 want: ^1.15.6
+75 silly placeDep ROOT form-data@4.0.4 OK for: axios@1.11.0 want: ^4.0.4
+76 silly placeDep ROOT proxy-from-env@1.1.0 OK for: axios@1.11.0 want: ^1.1.0
+77 silly fetch manifest asynckit@^0.4.0
+78 http fetch GET 200 https://registry.npmjs.org/asynckit 57ms (cache miss)
+79 silly fetch manifest mime-types@^2.1.12
+80 http fetch GET 200 https://registry.npmjs.org/mime-types 56ms (cache miss)
+81 silly fetch manifest combined-stream@^1.0.8
+82 http fetch GET 200 https://registry.npmjs.org/combined-stream 38ms (cache miss)
+83 timing idealTree:node_modules/axios Completed in 177ms
+84 timing idealTree:node_modules/crypto-js Completed in 0ms
+85 timing idealTree:node_modules/follow-redirects Completed in 1ms
+86 silly placeDep ROOT asynckit@0.4.0 OK for: form-data@4.0.4 want: ^0.4.0
+87 silly placeDep ROOT combined-stream@1.0.8 OK for: form-data@4.0.4 want: ^1.0.8
+88 silly placeDep ROOT mime-types@2.1.35 OK for: form-data@4.0.4 want: ^2.1.12
+89 silly fetch manifest delayed-stream@~1.0.0
+90 http fetch GET 200 https://registry.npmjs.org/delayed-stream 54ms (cache miss)
+91 silly fetch manifest mime-db@1.52.0
+92 http fetch GET 200 https://registry.npmjs.org/mime-db 54ms (cache miss)
+93 timing idealTree:node_modules/form-data Completed in 126ms
+94 timing idealTree:node_modules/asynckit Completed in 0ms
+95 silly placeDep ROOT delayed-stream@1.0.0 OK for: combined-stream@1.0.8 want: ~1.0.0
+96 timing idealTree:node_modules/combined-stream Completed in 2ms
+97 timing idealTree:node_modules/delayed-stream Completed in 0ms
+98 timing idealTree:node_modules/lucide-react Completed in 0ms
+99 silly placeDep ROOT mime-db@1.52.0 OK for: mime-types@2.1.35 want: 1.52.0
+100 timing idealTree:node_modules/mime-types Completed in 1ms
+101 timing idealTree:node_modules/mime-db Completed in 0ms
+102 timing idealTree:node_modules/proxy-from-env Completed in 0ms
+103 timing idealTree:node_modules/react-hook-form Completed in 0ms
+104 timing idealTree:node_modules/uuid Completed in 0ms
+105 timing idealTree:node_modules/zod Completed in 0ms
+106 timing idealTree:buildDeps Completed in 5019ms
+107 timing idealTree:fixDepFlags Completed in 42ms
+108 timing idealTree Completed in 5377ms
+109 timing reify:loadTrees Completed in 5377ms
+110 timing reify:diffTrees Completed in 16ms
+111 silly reify moves {}
+112 timing reify:retireShallow Completed in 2ms
+113 timing reify:createSparse Completed in 14ms
+114 verbose reify failed optional dependency /home/user/node_modules/@tailwindcss/oxide-wasm32-wasi
+115 silly reify mark deleted [ '/home/user/node_modules/@tailwindcss/oxide-wasm32-wasi' ]
+116 timing reifyNode:node_modules/@tailwindcss/oxide-wasm32-wasi Completed in 2ms
+117 timing arborist:ctor Completed in 0ms
+118 timing reify:diffTrees Completed in 25ms
+119 timing reify:loadBundles Completed in 31ms
+120 silly audit bulk request {
+120 silly audit   '@alloc/quick-lru': [ '5.2.0' ],
+120 silly audit   '@ampproject/remapping': [ '2.3.0' ],
+120 silly audit   '@emnapi/core': [ '1.4.4' ],
+120 silly audit   '@emnapi/runtime': [ '1.4.3' ],
+120 silly audit   '@emnapi/wasi-threads': [ '1.0.3' ],
+120 silly audit   '@eslint-community/eslint-utils': [ '4.7.0' ],
+120 silly audit   'eslint-visitor-keys': [ '3.4.3', '4.2.1' ],
+120 silly audit   '@eslint-community/regexpp': [ '4.12.1' ],
+120 silly audit   '@eslint/config-array': [ '0.21.0' ],
+120 silly audit   '@eslint/config-helpers': [ '0.3.0' ],
+120 silly audit   '@eslint/core': [ '0.15.1' ],
+120 silly audit   '@eslint/eslintrc': [ '3.3.1' ],
+120 silly audit   '@eslint/js': [ '9.31.0' ],
+120 silly audit   '@eslint/object-schema': [ '2.1.6' ],
+120 silly audit   '@eslint/plugin-kit': [ '0.3.3' ],
+120 silly audit   '@humanfs/core': [ '0.19.1' ],
+120 silly audit   '@humanfs/node': [ '0.16.6' ],
+120 silly audit   '@humanwhocodes/retry': [ '0.3.1', '0.4.3' ],
+120 silly audit   '@humanwhocodes/module-importer': [ '1.0.1' ],
+120 silly audit   '@img/sharp-darwin-arm64': [ '0.34.2' ],
+120 silly audit   '@img/sharp-darwin-x64': [ '0.34.2' ],
+120 silly audit   '@img/sharp-libvips-darwin-arm64': [ '1.1.0' ],
+120 silly audit   '@img/sharp-libvips-darwin-x64': [ '1.1.0' ],
+120 silly audit   '@img/sharp-libvips-linux-arm': [ '1.1.0' ],
+120 silly audit   '@img/sharp-libvips-linux-arm64': [ '1.1.0' ],
+120 silly audit   '@img/sharp-libvips-linux-ppc64': [ '1.1.0' ],
+120 silly audit   '@img/sharp-libvips-linux-s390x': [ '1.1.0' ],
+120 silly audit   '@img/sharp-libvips-linux-x64': [ '1.1.0' ],
+120 silly audit   '@img/sharp-libvips-linuxmusl-arm64': [ '1.1.0' ],
+120 silly audit   '@img/sharp-libvips-linuxmusl-x64': [ '1.1.0' ],
+120 silly audit   '@img/sharp-linux-arm': [ '0.34.2' ],
+120 silly audit   '@img/sharp-linux-arm64': [ '0.34.2' ],
+120 silly audit   '@img/sharp-linux-s390x': [ '0.34.2' ],
+120 silly audit   '@img/sharp-linux-x64': [ '0.34.2' ],
+120 silly audit   '@img/sharp-linuxmusl-arm64': [ '0.34.2' ],
+120 silly audit   '@img/sharp-linuxmusl-x64': [ '0.34.2' ],
+120 silly audit   '@img/sharp-wasm32': [ '0.34.2' ],
+120 silly audit   '@img/sharp-win32-arm64': [ '0.34.2' ],
+120 silly audit   '@img/sharp-win32-ia32': [ '0.34.2' ],
+120 silly audit   '@img/sharp-win32-x64': [ '0.34.2' ],
+120 silly audit   '@isaacs/fs-minipass': [ '4.0.1' ],
+120 silly audit   '@jridgewell/gen-mapping': [ '0.3.12' ],
+120 silly audit   '@jridgewell/resolve-uri': [ '3.1.2' ],
+120 silly audit   '@jridgewell/sourcemap-codec': [ '1.5.4' ],
+120 silly audit   '@jridgewell/trace-mapping': [ '0.3.29' ],
+120 silly audit   '@napi-rs/wasm-runtime': [ '0.2.12' ],
+120 silly audit   '@next/env': [ '15.3.5' ],
+120 silly audit   '@next/eslint-plugin-next': [ '15.4.1' ],
+120 silly audit   '@next/swc-darwin-arm64': [ '15.3.5' ],
+120 silly audit   '@next/swc-darwin-x64': [ '15.3.5' ],
+120 silly audit   '@next/swc-linux-arm64-gnu': [ '15.3.5' ],
+120 silly audit   '@next/swc-linux-arm64-musl': [ '15.3.5' ],
+120 silly audit   '@next/swc-linux-x64-gnu': [ '15.3.5' ],
+120 silly audit   '@next/swc-linux-x64-musl': [ '15.3.5' ],
+120 silly audit   '@next/swc-win32-arm64-msvc': [ '15.3.5' ],
+120 silly audit   '@next/swc-win32-x64-msvc': [ '15.3.5' ],
+120 silly audit   '@nodelib/fs.scandir': [ '2.1.5' ],
+120 silly audit   '@nodelib/fs.stat': [ '2.0.5' ],
+120 silly audit   '@nodelib/fs.walk': [ '1.2.8' ],
+120 silly audit   '@nolyfill/is-core-module': [ '1.0.39' ],
+120 silly audit   '@rtsao/scc': [ '1.1.0' ],
+120 silly audit   '@rushstack/eslint-patch': [ '1.12.0' ],
+120 silly audit   '@swc/counter': [ '0.1.3' ],
+120 silly audit   '@swc/helpers': [ '0.5.15' ],
+120 silly audit   '@tailwindcss/node': [ '4.1.11' ],
+120 silly audit   '@tailwindcss/oxide': [ '4.1.11' ],
+120 silly audit   '@tailwindcss/oxide-android-arm64': [ '4.1.11' ],
+120 silly audit   '@tailwindcss/oxide-darwin-arm64': [ '4.1.11' ],
+120 silly audit   '@tailwindcss/oxide-darwin-x64': [ '4.1.11' ],
+120 silly audit   '@tailwindcss/oxide-freebsd-x64': [ '4.1.11' ],
+120 silly audit   '@tailwindcss/oxide-linux-arm-gnueabihf': [ '4.1.11' ],
+120 silly audit   '@tailwindcss/oxide-linux-arm64-gnu': [ '4.1.11' ],
+120 silly audit   '@tailwindcss/oxide-linux-arm64-musl': [ '4.1.11' ],
+120 silly audit   '@tailwindcss/oxide-linux-x64-gnu': [ '4.1.11' ],
+120 silly audit   '@tailwindcss/oxide-linux-x64-musl': [ '4.1.11' ],
+120 silly audit   '@tailwindcss/oxide-win32-arm64-msvc': [ '4.1.11' ],
+120 silly audit   '@tailwindcss/oxide-win32-x64-msvc': [ '4.1.11' ],
+120 silly audit   '@tailwindcss/postcss': [ '4.1.11' ],
+120 silly audit   '@tybys/wasm-util': [ '0.10.0' ],
+120 silly audit   '@types/estree': [ '1.0.8' ],
+120 silly audit   '@types/json-schema': [ '7.0.15' ],
+120 silly audit   '@types/json5': [ '0.0.29' ],
+120 silly audit   '@types/node': [ '20.19.4' ],
+120 silly audit   '@types/react': [ '19.1.8' ],
+120 silly audit   '@types/react-dom': [ '19.1.6' ],
+120 silly audit   '@typescript-eslint/eslint-plugin': [ '8.37.0' ],
+120 silly audit   ignore: [ '7.0.5', '5.3.2' ],
+120 silly audit   '@typescript-eslint/parser': [ '8.37.0' ],
+120 silly audit   '@typescript-eslint/project-service': [ '8.37.0' ],
+120 silly audit   '@typescript-eslint/scope-manager': [ '8.37.0' ],
+120 silly audit   '@typescript-eslint/tsconfig-utils': [ '8.37.0' ],
+120 silly audit   '@typescript-eslint/type-utils': [ '8.37.0' ],
+120 silly audit   '@typescript-eslint/types': [ '8.37.0' ],
+120 silly audit   '@typescript-eslint/typescript-estree': [ '8.37.0' ],
+120 silly audit   'brace-expansion': [ '2.0.2', '1.1.12' ],
+120 silly audit   'fast-glob': [ '3.3.3', '3.3.1' ],
+120 silly audit   'glob-parent': [ '5.1.2', '6.0.2' ],
+120 silly audit   minimatch: [ '9.0.5', '3.1.2' ],
+120 silly audit   '@typescript-eslint/utils': [ '8.37.0' ],
+120 silly audit   '@typescript-eslint/visitor-keys': [ '8.37.0' ],
+120 silly audit   '@unrs/resolver-binding-android-arm-eabi': [ '1.11.1' ],
+120 silly audit   '@unrs/resolver-binding-android-arm64': [ '1.11.1' ],
+120 silly audit   '@unrs/resolver-binding-darwin-arm64': [ '1.11.1' ],
+120 silly audit   '@unrs/resolver-binding-darwin-x64': [ '1.11.1' ],
+120 silly audit   '@unrs/resolver-binding-freebsd-x64': [ '1.11.1' ],
+120 silly audit   '@unrs/resolver-binding-linux-arm-gnueabihf': [ '1.11.1' ],
+120 silly audit   '@unrs/resolver-binding-linux-arm-musleabihf': [ '1.11.1' ],
+120 silly audit   '@unrs/resolver-binding-linux-arm64-gnu': [ '1.11.1' ],
+120 silly audit   '@unrs/resolver-binding-linux-arm64-musl': [ '1.11.1' ],
+120 silly audit   '@unrs/resolver-binding-linux-ppc64-gnu': [ '1.11.1' ],
+120 silly audit   '@unrs/resolver-binding-linux-riscv64-gnu': [ '1.11.1' ],
+120 silly audit   '@unrs/resolver-binding-linux-riscv64-musl': [ '1.11.1' ],
+120 silly audit   '@unrs/resolver-binding-linux-s390x-gnu': [ '1.11.1' ],
+120 silly audit   '@unrs/resolver-binding-linux-x64-gnu': [ '1.11.1' ],
+120 silly audit   '@unrs/resolver-binding-linux-x64-musl': [ '1.11.1' ],
+120 silly audit   '@unrs/resolver-binding-wasm32-wasi': [ '1.11.1' ],
+120 silly audit   '@unrs/resolver-binding-win32-arm64-msvc': [ '1.11.1' ],
+120 silly audit   '@unrs/resolver-binding-win32-ia32-msvc': [ '1.11.1' ],
+120 silly audit   '@unrs/resolver-binding-win32-x64-msvc': [ '1.11.1' ],
+120 silly audit   acorn: [ '8.15.0' ],
+120 silly audit   'acorn-jsx': [ '5.3.2' ],
+120 silly audit   ajv: [ '6.12.6' ],
+120 silly audit   'ansi-styles': [ '4.3.0' ],
+120 silly audit   argparse: [ '2.0.1' ],
+120 silly audit   'aria-query': [ '5.3.2' ],
+120 silly audit   'array-buffer-byte-length': [ '1.0.2' ],
+120 silly audit   'array-includes': [ '3.1.9' ],
+120 silly audit   'array.prototype.findlast': [ '1.2.5' ],
+120 silly audit   'array.prototype.findlastindex': [ '1.2.6' ],
+120 silly audit   'array.prototype.flat': [ '1.3.3' ],
+120 silly audit   'array.prototype.flatmap': [ '1.3.3' ],
+120 silly audit   'array.prototype.tosorted': [ '1.1.4' ],
+120 silly audit   'arraybuffer.prototype.slice': [ '1.0.4' ],
+120 silly audit   'ast-types-flow': [ '0.0.8' ],
+120 silly audit   'async-function': [ '1.0.0' ],
+120 silly audit   'available-typed-arrays': [ '1.0.7' ],
+120 silly audit   'axe-core': [ '4.10.3' ],
+120 silly audit   'axobject-query': [ '4.1.0' ],
+120 silly audit   'balanced-match': [ '1.0.2' ],
+120 silly audit   braces: [ '3.0.3' ],
+120 silly audit   busboy: [ '1.6.0' ],
+120 silly audit   'call-bind': [ '1.0.8' ],
+120 silly audit   'call-bind-apply-helpers': [ '1.0.2' ],
+120 silly audit   'call-bound': [ '1.0.4' ],
+120 silly audit   callsites: [ '3.1.0' ],
+120 silly audit   'caniuse-lite': [ '1.0.30001726' ],
+120 silly audit   chalk: [ '4.1.2' ],
+120 silly audit   chownr: [ '3.0.0' ],
+120 silly audit   'client-only': [ '0.0.1' ],
+120 silly audit   color: [ '4.2.3' ],
+120 silly audit   'color-convert': [ '2.0.1' ],
+120 silly audit   'color-name': [ '1.1.4' ],
+120 silly audit   'color-string': [ '1.9.1' ],
+120 silly audit   'concat-map': [ '0.0.1' ],
+120 silly audit   'cross-spawn': [ '7.0.6' ],
+120 silly audit   csstype: [ '3.1.3' ],
+120 silly audit   'damerau-levenshtein': [ '1.0.8' ],
+120 silly audit   'data-view-buffer': [ '1.0.2' ],
+120 silly audit   'data-view-byte-length': [ '1.0.2' ],
+120 silly audit   'data-view-byte-offset': [ '1.0.1' ],
+120 silly audit   debug: [ '4.4.1', '3.2.7' ],
+120 silly audit   'deep-is': [ '0.1.4' ],
+120 silly audit   'define-data-property': [ '1.1.4' ],
+120 silly audit   'define-properties': [ '1.2.1' ],
+120 silly audit   'detect-libc': [ '2.0.4' ],
+120 silly audit   doctrine: [ '2.1.0' ],
+120 silly audit   'dunder-proto': [ '1.0.1' ],
+120 silly audit   'emoji-regex': [ '9.2.2' ],
+120 silly audit   'enhanced-resolve': [ '5.18.2' ],
+120 silly audit   'es-abstract': [ '1.24.0' ],
+120 silly audit   'es-define-property': [ '1.0.1' ],
+120 silly audit   'es-errors': [ '1.3.0' ],
+120 silly audit   'es-iterator-helpers': [ '1.2.1' ],
+120 silly audit   'es-object-atoms': [ '1.1.1' ],
+120 silly audit   'es-set-tostringtag': [ '2.1.0' ],
+120 silly audit   'es-shim-unscopables': [ '1.1.0' ],
+120 silly audit   'es-to-primitive': [ '1.3.0' ],
+120 silly audit   'escape-string-regexp': [ '4.0.0' ],
+120 silly audit   eslint: [ '9.31.0' ],
+120 silly audit   'eslint-config-next': [ '15.4.1' ],
+120 silly audit   'eslint-import-resolver-node': [ '0.3.9' ],
+120 silly audit   'eslint-import-resolver-typescript': [ '3.10.1' ],
+120 silly audit   'eslint-module-utils': [ '2.12.1' ],
+120 silly audit   'eslint-plugin-import': [ '2.32.0' ],
+120 silly audit   semver: [ '6.3.1', '7.7.2' ],
+120 silly audit   'eslint-plugin-jsx-a11y': [ '6.10.2' ],
+120 silly audit   'eslint-plugin-react': [ '7.37.5' ],
+120 silly audit   'eslint-plugin-react-hooks': [ '5.2.0' ],
+120 silly audit   resolve: [ '2.0.0-next.5', '1.22.10' ],
+120 silly audit   'eslint-scope': [ '8.4.0' ],
+120 silly audit   espree: [ '10.4.0' ],
+120 silly audit   esquery: [ '1.6.0' ],
+120 silly audit   esrecurse: [ '4.3.0' ],
+120 silly audit   estraverse: [ '5.3.0' ],
+120 silly audit   esutils: [ '2.0.3' ],
+120 silly audit   'fast-deep-equal': [ '3.1.3' ],
+120 silly audit   'fast-json-stable-stringify': [ '2.1.0' ],
+120 silly audit   'fast-levenshtein': [ '2.0.6' ],
+120 silly audit   fastq: [ '1.19.1' ],
+120 silly audit   'file-entry-cache': [ '8.0.0' ],
+120 silly audit   'fill-range': [ '7.1.1' ],
+120 silly audit   'find-up': [ '5.0.0' ],
+120 silly audit   'flat-cache': [ '4.0.1' ],
+120 silly audit   flatted: [ '3.3.3' ],
+120 silly audit   'for-each': [ '0.3.5' ],
+120 silly audit   'function-bind': [ '1.1.2' ],
+120 silly audit   'function.prototype.name': [ '1.1.8' ],
+120 silly audit   'functions-have-names': [ '1.2.3' ],
+120 silly audit   'get-intrinsic': [ '1.3.0' ],
+120 silly audit   'get-proto': [ '1.0.1' ],
+120 silly audit   'get-symbol-description': [ '1.1.0' ],
+120 silly audit   'get-tsconfig': [ '4.10.1' ],
+120 silly audit   globals: [ '14.0.0' ],
+120 silly audit   globalthis: [ '1.0.4' ],
+120 silly audit   gopd: [ '1.2.0' ],
+120 silly audit   'graceful-fs': [ '4.2.11' ],
+120 silly audit   graphemer: [ '1.4.0' ],
+120 silly audit   'has-bigints': [ '1.1.0' ],
+120 silly audit   'has-flag': [ '4.0.0' ],
+120 silly audit   'has-property-descriptors': [ '1.0.2' ],
+120 silly audit   'has-proto': [ '1.2.0' ],
+120 silly audit   'has-symbols': [ '1.1.0' ],
+120 silly audit   'has-tostringtag': [ '1.0.2' ],
+120 silly audit   hasown: [ '2.0.2' ],
+120 silly audit   'import-fresh': [ '3.3.1' ],
+120 silly audit   imurmurhash: [ '0.1.4' ],
+120 silly audit   'internal-slot': [ '1.1.0' ],
+120 silly audit   'is-array-buffer': [ '3.0.5' ],
+120 silly audit   'is-arrayish': [ '0.3.2' ],
+120 silly audit   'is-async-function': [ '2.1.1' ],
+120 silly audit   'is-bigint': [ '1.1.0' ],
+120 silly audit   'is-boolean-object': [ '1.2.2' ],
+120 silly audit   'is-bun-module': [ '2.0.0' ],
+120 silly audit   'is-callable': [ '1.2.7' ],
+120 silly audit   'is-core-module': [ '2.16.1' ],
+120 silly audit   'is-data-view': [ '1.0.2' ],
+120 silly audit   'is-date-object': [ '1.1.0' ],
+120 silly audit   'is-extglob': [ '2.1.1' ],
+120 silly audit   'is-finalizationregistry': [ '1.1.1' ],
+120 silly audit   'is-generator-function': [ '1.1.0' ],
+120 silly audit   'is-glob': [ '4.0.3' ],
+120 silly audit   'is-map': [ '2.0.3' ],
+120 silly audit   'is-negative-zero': [ '2.0.3' ],
+120 silly audit   'is-number': [ '7.0.0' ],
+120 silly audit   'is-number-object': [ '1.1.1' ],
+120 silly audit   'is-regex': [ '1.2.1' ],
+120 silly audit   'is-set': [ '2.0.3' ],
+120 silly audit   'is-shared-array-buffer': [ '1.0.4' ],
+120 silly audit   'is-string': [ '1.1.1' ],
+120 silly audit   'is-symbol': [ '1.1.1' ],
+120 silly audit   'is-typed-array': [ '1.1.15' ],
+120 silly audit   'is-weakmap': [ '2.0.2' ],
+120 silly audit   'is-weakref': [ '1.1.1' ],
+120 silly audit   'is-weakset': [ '2.0.4' ],
+120 silly audit   isarray: [ '2.0.5' ],
+120 silly audit   isexe: [ '2.0.0' ],
+120 silly audit   'iterator.prototype': [ '1.1.5' ],
+120 silly audit   jiti: [ '2.4.2' ],
+120 silly audit   'js-tokens': [ '4.0.0' ],
+120 silly audit   'js-yaml': [ '4.1.0' ],
+120 silly audit   'json-buffer': [ '3.0.1' ],
+120 silly audit   'json-schema-traverse': [ '0.4.1' ],
+120 silly audit   'json-stable-stringify-without-jsonify': [ '1.0.1' ],
+120 silly audit   json5: [ '1.0.2' ],
+120 silly audit   'jsx-ast-utils': [ '3.3.5' ],
+120 silly audit   keyv: [ '4.5.4' ],
+120 silly audit   'language-subtag-registry': [ '0.3.23' ],
+120 silly audit   'language-tags': [ '1.0.9' ],
+120 silly audit   levn: [ '0.4.1' ],
+120 silly audit   lightningcss: [ '1.30.1' ],
+120 silly audit   'lightningcss-darwin-arm64': [ '1.30.1' ],
+120 silly audit   'lightningcss-darwin-x64': [ '1.30.1' ],
+120 silly audit   'lightningcss-freebsd-x64': [ '1.30.1' ],
+120 silly audit   'lightningcss-linux-arm-gnueabihf': [ '1.30.1' ],
+120 silly audit   'lightningcss-linux-arm64-gnu': [ '1.30.1' ],
+120 silly audit   'lightningcss-linux-arm64-musl': [ '1.30.1' ],
+120 silly audit   'lightningcss-linux-x64-gnu': [ '1.30.1' ],
+120 silly audit   'lightningcss-linux-x64-musl': [ '1.30.1' ],
+120 silly audit   'lightningcss-win32-arm64-msvc': [ '1.30.1' ],
+120 silly audit   'lightningcss-win32-x64-msvc': [ '1.30.1' ],
+120 silly audit   'locate-path': [ '6.0.0' ],
+120 silly audit   'lodash.merge': [ '4.6.2' ],
+120 silly audit   'loose-envify': [ '1.4.0' ],
+120 silly audit   'magic-string': [ '0.30.17' ],
+120 silly audit   'math-intrinsics': [ '1.1.0' ],
+120 silly audit   merge2: [ '1.4.1' ],
+120 silly audit   micromatch: [ '4.0.8' ],
+120 silly audit   minimist: [ '1.2.8' ],
+120 silly audit   minipass: [ '7.1.2' ],
+120 silly audit   minizlib: [ '3.0.2' ],
+120 silly audit   mkdirp: [ '3.0.1' ],
+120 silly audit   ms: [ '2.1.3' ],
+120 silly audit   nanoid: [ '3.3.11' ],
+120 silly audit   'napi-postinstall': [ '0.3.0' ],
+120 silly audit   'natural-compare': [ '1.4.0' ],
+120 silly audit   next: [ '15.3.5' ],
+120 silly audit   postcss: [ '8.4.31', '8.5.6' ],
+120 silly audit   'object-assign': [ '4.1.1' ],
+120 silly audit   'object-inspect': [ '1.13.4' ],
+120 silly audit   'object-keys': [ '1.1.1' ],
+120 silly audit   'object.assign': [ '4.1.7' ],
+120 silly audit   'object.entries': [ '1.1.9' ],
+120 silly audit   'object.fromentries': [ '2.0.8' ],
+120 silly audit   'object.groupby': [ '1.0.3' ],
+120 silly audit   'object.values': [ '1.2.1' ],
+120 silly audit   optionator: [ '0.9.4' ],
+120 silly audit   'own-keys': [ '1.0.1' ],
+120 silly audit   'p-limit': [ '3.1.0' ],
+120 silly audit   'p-locate': [ '5.0.0' ],
+120 silly audit   'parent-module': [ '1.0.1' ],
+120 silly audit   'path-exists': [ '4.0.0' ],
+120 silly audit   'path-key': [ '3.1.1' ],
+120 silly audit   'path-parse': [ '1.0.7' ],
+120 silly audit   picocolors: [ '1.1.1' ],
+120 silly audit   picomatch: [ '2.3.1', '4.0.2' ],
+120 silly audit   'possible-typed-array-names': [ '1.1.0' ],
+120 silly audit   'prelude-ls': [ '1.2.1' ],
+120 silly audit   'prop-types': [ '15.8.1' ],
+120 silly audit   punycode: [ '2.3.1' ],
+120 silly audit   'queue-microtask': [ '1.2.3' ],
+120 silly audit   react: [ '19.1.0' ],
+120 silly audit   'react-dom': [ '19.1.0' ],
+120 silly audit   'react-is': [ '16.13.1' ],
+120 silly audit   'reflect.getprototypeof': [ '1.0.10' ],
+120 silly audit   'regexp.prototype.flags': [ '1.5.4' ],
+120 silly audit   'resolve-from': [ '4.0.0' ],
+120 silly audit   'resolve-pkg-maps': [ '1.0.0' ],
+120 silly audit   reusify: [ '1.1.0' ],
+120 silly audit   'run-parallel': [ '1.2.0' ],
+120 silly audit   'safe-array-concat': [ '1.1.3' ],
+120 silly audit   'safe-push-apply': [ '1.0.0' ],
+120 silly audit   'safe-regex-test': [ '1.1.0' ],
+120 silly audit   scheduler: [ '0.26.0' ],
+120 silly audit   'set-function-length': [ '1.2.2' ],
+120 silly audit   'set-function-name': [ '2.0.2' ],
+120 silly audit   'set-proto': [ '1.0.0' ],
+120 silly audit   sharp: [ '0.34.2' ],
+120 silly audit   'shebang-command': [ '2.0.0' ],
+120 silly audit   'shebang-regex': [ '3.0.0' ],
+120 silly audit   'side-channel': [ '1.1.0' ],
+120 silly audit   'side-channel-list': [ '1.0.0' ],
+120 silly audit   'side-channel-map': [ '1.0.1' ],
+120 silly audit   'side-channel-weakmap': [ '1.0.2' ],
+120 silly audit   'simple-swizzle': [ '0.2.2' ],
+120 silly audit   'source-map-js': [ '1.2.1' ],
+120 silly audit   'stable-hash': [ '0.0.5' ],
+120 silly audit   'stop-iteration-iterator': [ '1.1.0' ],
+120 silly audit   streamsearch: [ '1.1.0' ],
+120 silly audit   'string.prototype.includes': [ '2.0.1' ],
+120 silly audit   'string.prototype.matchall': [ '4.0.12' ],
+120 silly audit   'string.prototype.repeat': [ '1.0.0' ],
+120 silly audit   'string.prototype.trim': [ '1.2.10' ],
+120 silly audit   'string.prototype.trimend': [ '1.0.9' ],
+120 silly audit   'string.prototype.trimstart': [ '1.0.8' ],
+120 silly audit   'strip-bom': [ '3.0.0' ],
+120 silly audit   'strip-json-comments': [ '3.1.1' ],
+120 silly audit   'styled-jsx': [ '5.1.6' ],
+120 silly audit   'supports-color': [ '7.2.0' ],
+120 silly audit   'supports-preserve-symlinks-flag': [ '1.0.0' ],
+120 silly audit   tailwindcss: [ '4.1.11' ],
+120 silly audit   tapable: [ '2.2.2' ],
+120 silly audit   tar: [ '7.4.3' ],
+120 silly audit   tinyglobby: [ '0.2.14' ],
+120 silly audit   fdir: [ '6.4.6' ],
+120 silly audit   'to-regex-range': [ '5.0.1' ],
+120 silly audit   'ts-api-utils': [ '2.1.0' ],
+120 silly audit   'tsconfig-paths': [ '3.15.0' ],
+120 silly audit   tslib: [ '2.8.1' ],
+120 silly audit   'type-check': [ '0.4.0' ],
+120 silly audit   'typed-array-buffer': [ '1.0.3' ],
+120 silly audit   'typed-array-byte-length': [ '1.0.3' ],
+120 silly audit   'typed-array-byte-offset': [ '1.0.4' ],
+120 silly audit   'typed-array-length': [ '1.0.7' ],
+120 silly audit   typescript: [ '5.8.3' ],
+120 silly audit   'unbox-primitive': [ '1.1.0' ],
+120 silly audit   'undici-types': [ '6.21.0' ],
+120 silly audit   'unrs-resolver': [ '1.11.1' ],
+120 silly audit   'uri-js': [ '4.4.1' ],
+120 silly audit   which: [ '2.0.2' ],
+120 silly audit   'which-boxed-primitive': [ '1.1.1' ],
+120 silly audit   'which-builtin-type': [ '1.2.1' ],
+120 silly audit   'which-collection': [ '1.0.2' ],
+120 silly audit   'which-typed-array': [ '1.1.19' ],
+120 silly audit   'word-wrap': [ '1.2.5' ],
+120 silly audit   yallist: [ '5.0.0' ],
+120 silly audit   'yocto-queue': [ '0.1.0' ],
+120 silly audit   '@hookform/resolvers': [ '5.2.1' ],
+120 silly audit   axios: [ '1.11.0' ],
+120 silly audit   'crypto-js': [ '4.2.0' ],
+120 silly audit   'lucide-react': [ '0.540.0' ],
+120 silly audit   'react-hook-form': [ '7.62.0' ],
+120 silly audit   uuid: [ '11.1.0' ],
+120 silly audit   zod: [ '4.0.17' ],
+120 silly audit   '@standard-schema/utils': [ '0.3.0' ],
+120 silly audit   'follow-redirects': [ '1.15.11' ],
+120 silly audit   'form-data': [ '4.0.4' ],
+120 silly audit   'proxy-from-env': [ '1.1.0' ],
+120 silly audit   asynckit: [ '0.4.0' ],
+120 silly audit   'combined-stream': [ '1.0.8' ],
+120 silly audit   'mime-types': [ '2.1.35' ],
+120 silly audit   'delayed-stream': [ '1.0.0' ],
+120 silly audit   'mime-db': [ '1.52.0' ],
+120 silly audit   '@tailwindcss/oxide-wasm32-wasi': [ '4.1.11' ]
+120 silly audit }
+121 verbose reify failed optional dependency /home/user/node_modules/lightningcss-win32-x64-msvc
+122 silly reify mark deleted [ '/home/user/node_modules/lightningcss-win32-x64-msvc' ]
+123 verbose reify failed optional dependency /home/user/node_modules/lightningcss-win32-arm64-msvc
+124 silly reify mark deleted [ '/home/user/node_modules/lightningcss-win32-arm64-msvc' ]
+125 verbose reify failed optional dependency /home/user/node_modules/lightningcss-linux-arm64-musl
+126 silly reify mark deleted [ '/home/user/node_modules/lightningcss-linux-arm64-musl' ]
+127 verbose reify failed optional dependency /home/user/node_modules/lightningcss-linux-arm64-gnu
+128 silly reify mark deleted [ '/home/user/node_modules/lightningcss-linux-arm64-gnu' ]
+129 verbose reify failed optional dependency /home/user/node_modules/lightningcss-linux-arm-gnueabihf
+130 silly reify mark deleted [ '/home/user/node_modules/lightningcss-linux-arm-gnueabihf' ]
+131 verbose reify failed optional dependency /home/user/node_modules/lightningcss-freebsd-x64
+132 silly reify mark deleted [ '/home/user/node_modules/lightningcss-freebsd-x64' ]
+133 verbose reify failed optional dependency /home/user/node_modules/lightningcss-darwin-x64
+134 silly reify mark deleted [ '/home/user/node_modules/lightningcss-darwin-x64' ]
+135 verbose reify failed optional dependency /home/user/node_modules/lightningcss-darwin-arm64
+136 silly reify mark deleted [ '/home/user/node_modules/lightningcss-darwin-arm64' ]
+137 verbose reify failed optional dependency /home/user/node_modules/@unrs/resolver-binding-win32-x64-msvc
+138 silly reify mark deleted [ '/home/user/node_modules/@unrs/resolver-binding-win32-x64-msvc' ]
+139 verbose reify failed optional dependency /home/user/node_modules/@unrs/resolver-binding-win32-ia32-msvc
+140 silly reify mark deleted [ '/home/user/node_modules/@unrs/resolver-binding-win32-ia32-msvc' ]
+141 verbose reify failed optional dependency /home/user/node_modules/@unrs/resolver-binding-win32-arm64-msvc
+142 silly reify mark deleted [ '/home/user/node_modules/@unrs/resolver-binding-win32-arm64-msvc' ]
+143 verbose reify failed optional dependency /home/user/node_modules/@unrs/resolver-binding-wasm32-wasi
+144 silly reify mark deleted [ '/home/user/node_modules/@unrs/resolver-binding-wasm32-wasi' ]
+145 verbose reify failed optional dependency /home/user/node_modules/@unrs/resolver-binding-linux-s390x-gnu
+146 silly reify mark deleted [ '/home/user/node_modules/@unrs/resolver-binding-linux-s390x-gnu' ]
+147 verbose reify failed optional dependency /home/user/node_modules/@unrs/resolver-binding-linux-riscv64-musl
+148 silly reify mark deleted [ '/home/user/node_modules/@unrs/resolver-binding-linux-riscv64-musl' ]
+149 verbose reify failed optional dependency /home/user/node_modules/@unrs/resolver-binding-linux-riscv64-gnu
+150 silly reify mark deleted [ '/home/user/node_modules/@unrs/resolver-binding-linux-riscv64-gnu' ]
+151 verbose reify failed optional dependency /home/user/node_modules/@unrs/resolver-binding-linux-ppc64-gnu
+152 silly reify mark deleted [ '/home/user/node_modules/@unrs/resolver-binding-linux-ppc64-gnu' ]
+153 verbose reify failed optional dependency /home/user/node_modules/@unrs/resolver-binding-linux-arm64-musl
+154 silly reify mark deleted [ '/home/user/node_modules/@unrs/resolver-binding-linux-arm64-musl' ]
+155 verbose reify failed optional dependency /home/user/node_modules/@unrs/resolver-binding-linux-arm64-gnu
+156 silly reify mark deleted [ '/home/user/node_modules/@unrs/resolver-binding-linux-arm64-gnu' ]
+157 verbose reify failed optional dependency /home/user/node_modules/@unrs/resolver-binding-linux-arm-musleabihf
+158 silly reify mark deleted [
+158 silly reify   '/home/user/node_modules/@unrs/resolver-binding-linux-arm-musleabihf'
+158 silly reify ]
+159 verbose reify failed optional dependency /home/user/node_modules/@unrs/resolver-binding-linux-arm-gnueabihf
+160 silly reify mark deleted [
+160 silly reify   '/home/user/node_modules/@unrs/resolver-binding-linux-arm-gnueabihf'
+160 silly reify ]
+161 verbose reify failed optional dependency /home/user/node_modules/@unrs/resolver-binding-freebsd-x64
+162 silly reify mark deleted [ '/home/user/node_modules/@unrs/resolver-binding-freebsd-x64' ]
+163 verbose reify failed optional dependency /home/user/node_modules/@unrs/resolver-binding-darwin-x64
+164 silly reify mark deleted [ '/home/user/node_modules/@unrs/resolver-binding-darwin-x64' ]
+165 verbose reify failed optional dependency /home/user/node_modules/@unrs/resolver-binding-darwin-arm64
+166 silly reify mark deleted [ '/home/user/node_modules/@unrs/resolver-binding-darwin-arm64' ]
+167 verbose reify failed optional dependency /home/user/node_modules/@unrs/resolver-binding-android-arm64
+168 silly reify mark deleted [ '/home/user/node_modules/@unrs/resolver-binding-android-arm64' ]
+169 verbose reify failed optional dependency /home/user/node_modules/@unrs/resolver-binding-android-arm-eabi
+170 silly reify mark deleted [ '/home/user/node_modules/@unrs/resolver-binding-android-arm-eabi' ]
+171 verbose reify failed optional dependency /home/user/node_modules/@tailwindcss/oxide-win32-x64-msvc
+172 silly reify mark deleted [ '/home/user/node_modules/@tailwindcss/oxide-win32-x64-msvc' ]
+173 verbose reify failed optional dependency /home/user/node_modules/@tailwindcss/oxide-win32-arm64-msvc
+174 silly reify mark deleted [ '/home/user/node_modules/@tailwindcss/oxide-win32-arm64-msvc' ]
+175 verbose reify failed optional dependency /home/user/node_modules/@tailwindcss/oxide-linux-arm64-musl
+176 silly reify mark deleted [ '/home/user/node_modules/@tailwindcss/oxide-linux-arm64-musl' ]
+177 verbose reify failed optional dependency /home/user/node_modules/@tailwindcss/oxide-linux-arm64-gnu
+178 silly reify mark deleted [ '/home/user/node_modules/@tailwindcss/oxide-linux-arm64-gnu' ]
+179 verbose reify failed optional dependency /home/user/node_modules/@tailwindcss/oxide-linux-arm-gnueabihf
+180 silly reify mark deleted [ '/home/user/node_modules/@tailwindcss/oxide-linux-arm-gnueabihf' ]
+181 verbose reify failed optional dependency /home/user/node_modules/@tailwindcss/oxide-freebsd-x64
+182 silly reify mark deleted [ '/home/user/node_modules/@tailwindcss/oxide-freebsd-x64' ]
+183 verbose reify failed optional dependency /home/user/node_modules/@tailwindcss/oxide-darwin-x64
+184 silly reify mark deleted [ '/home/user/node_modules/@tailwindcss/oxide-darwin-x64' ]
+185 verbose reify failed optional dependency /home/user/node_modules/@tailwindcss/oxide-darwin-arm64
+186 silly reify mark deleted [ '/home/user/node_modules/@tailwindcss/oxide-darwin-arm64' ]
+187 verbose reify failed optional dependency /home/user/node_modules/@tailwindcss/oxide-android-arm64
+188 silly reify mark deleted [ '/home/user/node_modules/@tailwindcss/oxide-android-arm64' ]
+189 verbose reify failed optional dependency /home/user/node_modules/@next/swc-win32-x64-msvc
+190 silly reify mark deleted [ '/home/user/node_modules/@next/swc-win32-x64-msvc' ]
+191 verbose reify failed optional dependency /home/user/node_modules/@next/swc-win32-arm64-msvc
+192 silly reify mark deleted [ '/home/user/node_modules/@next/swc-win32-arm64-msvc' ]
+193 verbose reify failed optional dependency /home/user/node_modules/@next/swc-linux-arm64-musl
+194 silly reify mark deleted [ '/home/user/node_modules/@next/swc-linux-arm64-musl' ]
+195 verbose reify failed optional dependency /home/user/node_modules/@next/swc-linux-arm64-gnu
+196 silly reify mark deleted [ '/home/user/node_modules/@next/swc-linux-arm64-gnu' ]
+197 verbose reify failed optional dependency /home/user/node_modules/@next/swc-darwin-x64
+198 silly reify mark deleted [ '/home/user/node_modules/@next/swc-darwin-x64' ]
+199 verbose reify failed optional dependency /home/user/node_modules/@next/swc-darwin-arm64
+200 silly reify mark deleted [ '/home/user/node_modules/@next/swc-darwin-arm64' ]
+201 verbose reify failed optional dependency /home/user/node_modules/@img/sharp-win32-x64
+202 silly reify mark deleted [ '/home/user/node_modules/@img/sharp-win32-x64' ]
+203 verbose reify failed optional dependency /home/user/node_modules/@img/sharp-win32-ia32
+204 silly reify mark deleted [ '/home/user/node_modules/@img/sharp-win32-ia32' ]
+205 verbose reify failed optional dependency /home/user/node_modules/@img/sharp-win32-arm64
+206 silly reify mark deleted [ '/home/user/node_modules/@img/sharp-win32-arm64' ]
+207 verbose reify failed optional dependency /home/user/node_modules/@img/sharp-wasm32
+208 silly reify mark deleted [ '/home/user/node_modules/@img/sharp-wasm32' ]
+209 verbose reify failed optional dependency /home/user/node_modules/@img/sharp-linuxmusl-arm64
+210 silly reify mark deleted [ '/home/user/node_modules/@img/sharp-linuxmusl-arm64' ]
+211 verbose reify failed optional dependency /home/user/node_modules/@img/sharp-linux-s390x
+212 silly reify mark deleted [ '/home/user/node_modules/@img/sharp-linux-s390x' ]
+213 verbose reify failed optional dependency /home/user/node_modules/@img/sharp-linux-arm64
+214 silly reify mark deleted [ '/home/user/node_modules/@img/sharp-linux-arm64' ]
+215 verbose reify failed optional dependency /home/user/node_modules/@img/sharp-linux-arm
+216 silly reify mark deleted [ '/home/user/node_modules/@img/sharp-linux-arm' ]
+217 verbose reify failed optional dependency /home/user/node_modules/@img/sharp-libvips-linuxmusl-arm64
+218 silly reify mark deleted [ '/home/user/node_modules/@img/sharp-libvips-linuxmusl-arm64' ]
+219 verbose reify failed optional dependency /home/user/node_modules/@img/sharp-libvips-linux-s390x
+220 silly reify mark deleted [ '/home/user/node_modules/@img/sharp-libvips-linux-s390x' ]
+221 verbose reify failed optional dependency /home/user/node_modules/@img/sharp-libvips-linux-ppc64
+222 silly reify mark deleted [ '/home/user/node_modules/@img/sharp-libvips-linux-ppc64' ]
+223 verbose reify failed optional dependency /home/user/node_modules/@img/sharp-libvips-linux-arm64
+224 silly reify mark deleted [ '/home/user/node_modules/@img/sharp-libvips-linux-arm64' ]
+225 verbose reify failed optional dependency /home/user/node_modules/@img/sharp-libvips-linux-arm
+226 silly reify mark deleted [ '/home/user/node_modules/@img/sharp-libvips-linux-arm' ]
+227 verbose reify failed optional dependency /home/user/node_modules/@img/sharp-libvips-darwin-x64
+228 silly reify mark deleted [ '/home/user/node_modules/@img/sharp-libvips-darwin-x64' ]
+229 verbose reify failed optional dependency /home/user/node_modules/@img/sharp-libvips-darwin-arm64
+230 silly reify mark deleted [ '/home/user/node_modules/@img/sharp-libvips-darwin-arm64' ]
+231 verbose reify failed optional dependency /home/user/node_modules/@img/sharp-darwin-x64
+232 silly reify mark deleted [ '/home/user/node_modules/@img/sharp-darwin-x64' ]
+233 verbose reify failed optional dependency /home/user/node_modules/@img/sharp-darwin-arm64
+234 silly reify mark deleted [ '/home/user/node_modules/@img/sharp-darwin-arm64' ]
+235 timing reifyNode:node_modules/lightningcss-win32-x64-msvc Completed in 34ms
+236 timing reifyNode:node_modules/lightningcss-win32-arm64-msvc Completed in 34ms
+237 timing reifyNode:node_modules/lightningcss-linux-arm64-musl Completed in 34ms
+238 timing reifyNode:node_modules/lightningcss-linux-arm64-gnu Completed in 34ms
+239 timing reifyNode:node_modules/lightningcss-linux-arm-gnueabihf Completed in 34ms
+240 timing reifyNode:node_modules/lightningcss-freebsd-x64 Completed in 33ms
+241 timing reifyNode:node_modules/lightningcss-darwin-x64 Completed in 33ms
+242 timing reifyNode:node_modules/lightningcss-darwin-arm64 Completed in 33ms
+243 timing reifyNode:node_modules/@unrs/resolver-binding-win32-x64-msvc Completed in 33ms
+244 timing reifyNode:node_modules/@unrs/resolver-binding-win32-ia32-msvc Completed in 33ms
+245 timing reifyNode:node_modules/@unrs/resolver-binding-win32-arm64-msvc Completed in 33ms
+246 timing reifyNode:node_modules/@unrs/resolver-binding-wasm32-wasi Completed in 33ms
+247 timing reifyNode:node_modules/@unrs/resolver-binding-linux-s390x-gnu Completed in 33ms
+248 timing reifyNode:node_modules/@unrs/resolver-binding-linux-riscv64-musl Completed in 33ms
+249 timing reifyNode:node_modules/@unrs/resolver-binding-linux-riscv64-gnu Completed in 32ms
+250 timing reifyNode:node_modules/@unrs/resolver-binding-linux-ppc64-gnu Completed in 33ms
+251 timing reifyNode:node_modules/@unrs/resolver-binding-linux-arm64-musl Completed in 33ms
+252 timing reifyNode:node_modules/@unrs/resolver-binding-linux-arm64-gnu Completed in 33ms
+253 timing reifyNode:node_modules/@unrs/resolver-binding-linux-arm-musleabihf Completed in 33ms
+254 timing reifyNode:node_modules/@unrs/resolver-binding-linux-arm-gnueabihf Completed in 33ms
+255 timing reifyNode:node_modules/@unrs/resolver-binding-freebsd-x64 Completed in 33ms
+256 timing reifyNode:node_modules/@unrs/resolver-binding-darwin-x64 Completed in 33ms
+257 timing reifyNode:node_modules/@unrs/resolver-binding-darwin-arm64 Completed in 33ms
+258 timing reifyNode:node_modules/@unrs/resolver-binding-android-arm64 Completed in 33ms
+259 timing reifyNode:node_modules/@unrs/resolver-binding-android-arm-eabi Completed in 33ms
+260 timing reifyNode:node_modules/@tailwindcss/oxide-win32-x64-msvc Completed in 33ms
+261 timing reifyNode:node_modules/@tailwindcss/oxide-win32-arm64-msvc Completed in 33ms
+262 timing reifyNode:node_modules/@tailwindcss/oxide-linux-arm64-musl Completed in 33ms
+263 timing reifyNode:node_modules/@tailwindcss/oxide-linux-arm64-gnu Completed in 33ms
+264 timing reifyNode:node_modules/@tailwindcss/oxide-linux-arm-gnueabihf Completed in 33ms
+265 timing reifyNode:node_modules/@tailwindcss/oxide-freebsd-x64 Completed in 33ms
+266 timing reifyNode:node_modules/@tailwindcss/oxide-darwin-x64 Completed in 33ms
+267 timing reifyNode:node_modules/@tailwindcss/oxide-darwin-arm64 Completed in 33ms
+268 timing reifyNode:node_modules/@tailwindcss/oxide-android-arm64 Completed in 33ms
+269 timing reifyNode:node_modules/@next/swc-win32-x64-msvc Completed in 33ms
+270 timing reifyNode:node_modules/@next/swc-win32-arm64-msvc Completed in 34ms
+271 timing reifyNode:node_modules/@next/swc-linux-arm64-musl Completed in 34ms
+272 timing reifyNode:node_modules/@next/swc-linux-arm64-gnu Completed in 34ms
+273 timing reifyNode:node_modules/@next/swc-darwin-x64 Completed in 34ms
+274 timing reifyNode:node_modules/@next/swc-darwin-arm64 Completed in 34ms
+275 timing reifyNode:node_modules/@img/sharp-win32-x64 Completed in 34ms
+276 timing reifyNode:node_modules/@img/sharp-win32-ia32 Completed in 34ms
+277 timing reifyNode:node_modules/@img/sharp-win32-arm64 Completed in 34ms
+278 timing reifyNode:node_modules/@img/sharp-wasm32 Completed in 34ms
+279 timing reifyNode:node_modules/@img/sharp-linuxmusl-arm64 Completed in 33ms
+280 timing reifyNode:node_modules/@img/sharp-linux-s390x Completed in 33ms
+281 timing reifyNode:node_modules/@img/sharp-linux-arm64 Completed in 33ms
+282 timing reifyNode:node_modules/@img/sharp-linux-arm Completed in 33ms
+283 timing reifyNode:node_modules/@img/sharp-libvips-linuxmusl-arm64 Completed in 33ms
+284 timing reifyNode:node_modules/@img/sharp-libvips-linux-s390x Completed in 33ms
+285 timing reifyNode:node_modules/@img/sharp-libvips-linux-ppc64 Completed in 33ms
+286 timing reifyNode:node_modules/@img/sharp-libvips-linux-arm64 Completed in 33ms
+287 timing reifyNode:node_modules/@img/sharp-libvips-linux-arm Completed in 33ms
+288 timing reifyNode:node_modules/@img/sharp-libvips-darwin-x64 Completed in 36ms
+289 timing reifyNode:node_modules/@img/sharp-libvips-darwin-arm64 Completed in 36ms
+290 timing reifyNode:node_modules/@img/sharp-darwin-x64 Completed in 37ms
+291 timing reifyNode:node_modules/@img/sharp-darwin-arm64 Completed in 37ms
+292 silly tarball no local data for mime-db@https://registry.npmjs.org/mime-db/-/mime-db-1.52.0.tgz. Extracting by manifest.
+293 silly tarball no local data for delayed-stream@https://registry.npmjs.org/delayed-stream/-/delayed-stream-1.0.0.tgz. Extracting by manifest.
+294 silly tarball no local data for mime-types@https://registry.npmjs.org/mime-types/-/mime-types-2.1.35.tgz. Extracting by manifest.
+295 silly tarball no local data for combined-stream@https://registry.npmjs.org/combined-stream/-/combined-stream-1.0.8.tgz. Extracting by manifest.
+296 silly tarball no local data for asynckit@https://registry.npmjs.org/asynckit/-/asynckit-0.4.0.tgz. Extracting by manifest.
+297 silly tarball no local data for proxy-from-env@https://registry.npmjs.org/proxy-from-env/-/proxy-from-env-1.1.0.tgz. Extracting by manifest.
+298 silly tarball no local data for form-data@https://registry.npmjs.org/form-data/-/form-data-4.0.4.tgz. Extracting by manifest.
+299 silly tarball no local data for follow-redirects@https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.15.11.tgz. Extracting by manifest.
+300 silly tarball no local data for @standard-schema/utils@https://registry.npmjs.org/@standard-schema/utils/-/utils-0.3.0.tgz. Extracting by manifest.
+301 silly tarball no local data for zod@https://registry.npmjs.org/zod/-/zod-4.0.17.tgz. Extracting by manifest.
+302 silly tarball no local data for uuid@https://registry.npmjs.org/uuid/-/uuid-11.1.0.tgz. Extracting by manifest.
+303 silly tarball no local data for react-hook-form@https://registry.npmjs.org/react-hook-form/-/react-hook-form-7.62.0.tgz. Extracting by manifest.
+304 silly tarball no local data for lucide-react@https://registry.npmjs.org/lucide-react/-/lucide-react-0.540.0.tgz. Extracting by manifest.
+305 silly tarball no local data for crypto-js@https://registry.npmjs.org/crypto-js/-/crypto-js-4.2.0.tgz. Extracting by manifest.
+306 silly tarball no local data for axios@https://registry.npmjs.org/axios/-/axios-1.11.0.tgz. Extracting by manifest.
+307 silly tarball no local data for @hookform/resolvers@https://registry.npmjs.org/@hookform/resolvers/-/resolvers-5.2.1.tgz. Extracting by manifest.
+308 http fetch POST 200 https://registry.npmjs.org/-/npm/v1/security/advisories/bulk 628ms
+309 timing auditReport:getReport Completed in 637ms
+310 silly audit report {
+310 silly audit report   '@eslint/plugin-kit': [
+310 silly audit report     {
+310 silly audit report       id: 1106734,
+310 silly audit report       url: 'https://github.com/advisories/GHSA-xffm-g5w8-qvg7',
+310 silly audit report       title: '@eslint/plugin-kit is vulnerable to Regular Expression Denial of Service attacks through ConfigCommentParser',
+310 silly audit report       severity: 'low',
+310 silly audit report       vulnerable_versions: '<0.3.4',
+310 silly audit report       cwe: [Array],
+310 silly audit report       cvss: [Object]
+310 silly audit report     }
+310 silly audit report   ]
+310 silly audit report }
+311 timing metavuln:cache:get:security-advisory:@eslint/plugin-kit:Egj35pPDD9KaAsUjRiWQATc9qSVsei0WPmPqc9DjkQ6BkvUq5FwZRzXKmN1T+9jCN25OCyk3XfG0up3sW7Hyow== Completed in 73ms
+312 http fetch GET 200 https://registry.npmjs.org/delayed-stream/-/delayed-stream-1.0.0.tgz 979ms (cache miss)
+313 timing reifyNode:node_modules/delayed-stream Completed in 1033ms
+314 http fetch GET 200 https://registry.npmjs.org/mime-db/-/mime-db-1.52.0.tgz 985ms (cache miss)
+315 http fetch GET 200 https://registry.npmjs.org/@standard-schema/utils/-/utils-0.3.0.tgz 981ms (cache miss)
+316 timing reifyNode:node_modules/@standard-schema/utils Completed in 1037ms
+317 http fetch GET 200 https://registry.npmjs.org/@eslint%2fplugin-kit 404ms (cache miss)
+318 timing metavuln:packument:@eslint/plugin-kit Completed in 406ms
+319 timing metavuln:load:security-advisory:@eslint/plugin-kit:1106734 Completed in 1ms
+320 timing reifyNode:node_modules/mime-db Completed in 1046ms
+321 http fetch GET 200 https://registry.npmjs.org/mime-types/-/mime-types-2.1.35.tgz 1094ms (cache miss)
+322 timing reifyNode:node_modules/mime-types Completed in 1149ms
+323 http fetch GET 200 https://registry.npmjs.org/combined-stream/-/combined-stream-1.0.8.tgz 1096ms (cache miss)
+324 timing reifyNode:node_modules/combined-stream Completed in 1151ms
+325 http fetch GET 200 https://registry.npmjs.org/proxy-from-env/-/proxy-from-env-1.1.0.tgz 1105ms (cache miss)
+326 timing reifyNode:node_modules/proxy-from-env Completed in 1159ms
+327 http fetch GET 200 https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.15.11.tgz 1109ms (cache miss)
+328 timing reifyNode:node_modules/follow-redirects Completed in 1164ms
+329 http fetch GET 200 https://registry.npmjs.org/asynckit/-/asynckit-0.4.0.tgz 1127ms (cache miss)
+330 timing reifyNode:node_modules/asynckit Completed in 1182ms
+331 http fetch GET 200 https://registry.npmjs.org/form-data/-/form-data-4.0.4.tgz 1137ms (cache miss)
+332 timing reifyNode:node_modules/form-data Completed in 1193ms
+333 timing metavuln:cache:put:security-advisory:@eslint/plugin-kit:Egj35pPDD9KaAsUjRiWQATc9qSVsei0WPmPqc9DjkQ6BkvUq5FwZRzXKmN1T+9jCN25OCyk3XfG0up3sW7Hyow== Completed in 156ms
+334 timing metavuln:calculate:security-advisory:@eslint/plugin-kit:1106734 Completed in 565ms
+335 timing metavuln:cache:get:security-advisory:eslint:jNQVmHcncjiQ4MkS1eaCqmHRI8qu5XPco+LbcE9+5EAEn7byCi2N6alSpBXA+fBQss6pFbzG/9VKcw8Ep9A2Wg== Completed in 11ms
+336 http fetch GET 200 https://registry.npmjs.org/crypto-js/-/crypto-js-4.2.0.tgz 1496ms (cache miss)
+337 timing reifyNode:node_modules/crypto-js Completed in 1557ms
+338 http fetch GET 200 https://registry.npmjs.org/eslint 366ms (cache miss)
+339 timing metavuln:packument:eslint Completed in 385ms
+340 timing metavuln:load:security-advisory:eslint:Egj35pPDD9KaAsUjRiWQATc9qSVsei0WPmPqc9DjkQ6BkvUq5FwZRzXKmN1T+9jCN25OCyk3XfG0up3sW7Hyow== Completed in 33ms
+341 timing metavuln:cache:put:security-advisory:eslint:jNQVmHcncjiQ4MkS1eaCqmHRI8qu5XPco+LbcE9+5EAEn7byCi2N6alSpBXA+fBQss6pFbzG/9VKcw8Ep9A2Wg== Completed in 74ms
+342 timing metavuln:calculate:security-advisory:eslint:Egj35pPDD9KaAsUjRiWQATc9qSVsei0WPmPqc9DjkQ6BkvUq5FwZRzXKmN1T+9jCN25OCyk3XfG0up3sW7Hyow== Completed in 500ms
+343 timing auditReport:init Completed in 1066ms
+344 timing reify:audit Completed in 1712ms
+345 http fetch GET 200 https://registry.npmjs.org/uuid/-/uuid-11.1.0.tgz 1926ms (cache miss)
+346 timing reifyNode:node_modules/uuid Completed in 1995ms
+347 http fetch GET 200 https://registry.npmjs.org/axios/-/axios-1.11.0.tgz 2195ms (cache miss)
+348 timing reifyNode:node_modules/axios Completed in 2256ms
+349 http fetch GET 200 https://registry.npmjs.org/react-hook-form/-/react-hook-form-7.62.0.tgz 2226ms (cache miss)
+350 timing reifyNode:node_modules/react-hook-form Completed in 2303ms
+351 http fetch GET 200 https://registry.npmjs.org/@hookform/resolvers/-/resolvers-5.2.1.tgz 2817ms (cache miss)
+352 timing reifyNode:node_modules/@hookform/resolvers Completed in 2882ms
+353 http fetch GET 200 https://registry.npmjs.org/zod/-/zod-4.0.17.tgz 3001ms (cache miss)
+354 timing reifyNode:node_modules/zod Completed in 3060ms
+355 http fetch GET 200 https://registry.npmjs.org/lucide-react/-/lucide-react-0.540.0.tgz 5043ms (cache miss)
+356 timing reifyNode:node_modules/lucide-react Completed in 5103ms
+357 timing reify:unpack Completed in 5104ms
+358 timing reify:unretire Completed in 1ms
+359 timing build:queue Completed in 5ms
+360 timing build:link:node_modules/uuid Completed in 5ms
+361 timing build:link Completed in 5ms
+362 timing build:deps Completed in 12ms
+363 timing build Completed in 12ms
+364 timing reify:build Completed in 13ms
+365 timing reify:trash Completed in 6ms
+366 timing reify:save Completed in 426ms
+367 timing reify Completed in 11229ms
+368 silly ADD node_modules/mime-db
+369 silly ADD node_modules/delayed-stream
+370 silly ADD node_modules/mime-types
+371 silly ADD node_modules/combined-stream
+372 silly ADD node_modules/asynckit
+373 silly ADD node_modules/proxy-from-env
+374 silly ADD node_modules/form-data
+375 silly ADD node_modules/follow-redirects
+376 silly ADD node_modules/@standard-schema/utils
+377 silly ADD node_modules/zod
+378 silly ADD node_modules/uuid
+379 silly ADD node_modules/react-hook-form
+380 silly ADD node_modules/lucide-react
+381 silly ADD node_modules/crypto-js
+382 silly ADD node_modules/axios
+383 silly ADD node_modules/@hookform/resolvers
+384 silly ADD
+385 silly ADD
+386 silly ADD
+387 silly ADD
+388 silly ADD
+389 silly ADD
+390 silly ADD
+391 silly ADD
+392 silly ADD
+393 silly ADD
+394 silly ADD
+395 silly ADD
+396 silly ADD
+397 silly ADD
+398 silly ADD
+399 silly ADD
+400 silly ADD
+401 silly ADD
+402 silly ADD
+403 silly ADD
+404 silly ADD
+405 silly ADD
+406 silly ADD
+407 silly ADD
+408 silly ADD
+409 silly ADD
+410 silly ADD
+411 silly ADD
+412 silly ADD
+413 silly ADD
+414 silly ADD
+415 silly ADD
+416 silly ADD
+417 silly ADD
+418 silly ADD
+419 silly ADD
+420 silly ADD
+421 silly ADD
+422 silly ADD
+423 silly ADD
+424 silly ADD
+425 silly ADD
+426 silly ADD
+427 silly ADD
+428 silly ADD
+429 silly ADD
+430 silly ADD
+431 silly ADD
+432 silly ADD
+433 silly ADD
+434 silly ADD
+435 silly ADD
+436 silly ADD
+437 silly ADD
+438 silly ADD
+439 silly ADD
+440 silly ADD
+441 silly ADD
+442 timing command:install Completed in 11252ms
+443 notice
+443 notice New major version of npm available! 10.5.0 -> 11.5.2
+443 notice Changelog: <https://github.com/npm/cli/releases/tag/v11.5.2>
+443 notice Run `npm install -g npm@11.5.2` to update!
+443 notice
+444 verbose exit 0
+445 timing npm Completed in 12475ms
+446 info ok
