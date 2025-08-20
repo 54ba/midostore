@@ -123,7 +123,7 @@ export class AnalyticsService {
         });
 
         const categoryData = await Promise.all(
-            categories.map(async (cat) => {
+            categories.map(async (cat: { category: any; _count: { id: any; }; }) => {
                 const revenue = await this.getCategoryRevenue(cat.category || 'Unknown');
                 return {
                     category: cat.category || 'Unknown',
@@ -154,7 +154,7 @@ export class AnalyticsService {
             take: 20
         });
 
-        return products.map(product => ({
+        return products.map((product: { id: any; title: any; soldCount: any; price: any; rating: any; }) => ({
             id: product.id,
             title: product.title,
             sales: product.soldCount,
@@ -179,7 +179,7 @@ export class AnalyticsService {
 
         const monthlyData = new Map<string, { revenue: number; orders: number }>();
 
-        orders.forEach(order => {
+        orders.forEach((order: { createdAt: Date; total: number; }) => {
             const month = order.createdAt.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
             const current = monthlyData.get(month) || { revenue: 0, orders: 0 };
             current.revenue += order.total;
@@ -204,7 +204,7 @@ export class AnalyticsService {
         });
 
         return await Promise.all(
-            categories.map(async (cat) => {
+            categories.map(async (cat: { category: any; }) => {
                 const conversionRate = await this.getCategoryConversionRate(cat.category || 'Unknown');
                 const avgOrderValue = await this.getCategoryAverageOrderValue(cat.category || 'Unknown');
 
@@ -235,7 +235,7 @@ export class AnalyticsService {
             take: 10
         });
 
-        return products.map(product => ({
+        return products.map((product: { id: any; title: any; soldCount: any; price: any; rating: any; reviewCount: any; profitMargin: any; category: any; }) => ({
             id: product.id,
             title: product.title,
             metrics: {
@@ -259,8 +259,8 @@ export class AnalyticsService {
         });
 
         const opportunities = categories
-            .filter(cat => cat.category)
-            .map(cat => {
+            .filter((cat: { category: any; }) => cat.category)
+            .map((cat: { category: any; _avg: { rating: any; soldCount: any; }; _count: { id: any; }; }) => {
                 const avgRating = cat._avg.rating || 0;
                 const avgSales = cat._avg.soldCount || 0;
                 const count = cat._count.id;
@@ -288,7 +288,7 @@ export class AnalyticsService {
                     potential
                 };
             })
-            .sort((a, b) => b.potential - a.potential);
+            .sort((a: { potential: number; }, b: { potential: number; }) => b.potential - a.potential);
 
         return opportunities.slice(0, 5);
     }
@@ -334,7 +334,7 @@ export class AnalyticsService {
         let totalProfit = 0;
         const categoryProfits = new Map<string, { profit: number; revenue: number }>();
 
-        products.forEach(product => {
+        products.forEach((product: { price: any; soldCount: any; profitMargin: any; category: any; }) => {
             const revenue = Number(product.price) * product.soldCount;
             const profit = revenue * ((product.profitMargin || 20) / 100);
             totalProfit += profit;
@@ -346,7 +346,7 @@ export class AnalyticsService {
             categoryProfits.set(category, current);
         });
 
-        const totalRevenue = products.reduce((sum, p) => sum + (Number(p.price) * p.soldCount), 0);
+        const totalRevenue = products.reduce((sum: number, p: { price: any; soldCount: any; }) => sum + (Number(p.price) * p.soldCount), 0);
         const profitMargin = totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0;
 
         const topProfitCategories = Array.from(categoryProfits.entries())
@@ -395,7 +395,7 @@ export class AnalyticsService {
             _count: { id: true }
         });
 
-        const lowCategoryCount = categories.filter(cat => cat._count.id < 5);
+        const lowCategoryCount = categories.filter((cat: { _count: { id: any; }; }) => cat._count.id < 5);
         if (lowCategoryCount.length > 0) {
             recommendations.push({
                 type: 'category' as const,
@@ -446,7 +446,7 @@ export class AnalyticsService {
         const orders = await this.prisma.order.findMany({
             select: { total: true }
         });
-        return orders.reduce((sum, order) => sum + order.total, 0);
+        return orders.reduce((sum: number, order: { total: number; }) => sum + order.total, 0);
     }
 
     private async getAverageRating(): Promise<number> {
@@ -462,7 +462,7 @@ export class AnalyticsService {
             where: { category, isActive: true },
             select: { price: true, soldCount: true }
         });
-        return products.reduce((sum, p) => sum + (Number(p.price) * p.soldCount), 0);
+        return products.reduce((sum: number, p: { price: any; soldCount: any; }) => sum + (Number(p.price) * p.soldCount), 0);
     }
 
     private async getCategoryConversionRate(category: string): Promise<number> {
@@ -505,7 +505,7 @@ export class AnalyticsService {
         const keywords = seasonalKeywords[season as keyof typeof seasonalKeywords] || [];
         let seasonalScore = 0;
 
-        products.forEach(product => {
+        products.forEach((product: { tags: any; category: any; soldCount: any; }) => {
             const tags = product.tags || [];
             const category = product.category || '';
 

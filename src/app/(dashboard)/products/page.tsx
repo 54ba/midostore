@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { useLocationRecommendations } from '@/hooks/useLocationRecommendations';
 import { Globe, DollarSign, Star, ShoppingCart, Eye } from 'lucide-react';
 import { config } from '../../../../env.config';
-import SearchAndFilter from '@/components/SearchAndFilter';
+import AIEnhancedSearch from '@/components/AIEnhancedSearch';
 import ProductGrid from '@/components/ProductGrid';
 import LocalizationPanel from '@/components/LocalizationPanel';
 import { useLocalization } from '@/app/contexts/LocalizationContext';
@@ -53,6 +54,17 @@ export default function ProductsPage() {
 
     const categories = config.scrapingCategories;
 
+    // AI Location Recommendations
+    const {
+        location,
+        userContext,
+        recommendations,
+        loading: recommendationsLoading,
+        error: recommendationsError,
+        getRecommendations,
+        trackUserBehavior
+    } = useLocationRecommendations();
+
     const fetchProducts = useCallback(async () => {
         try {
             setLoading(true);
@@ -78,17 +90,28 @@ export default function ProductsPage() {
         } finally {
             setLoading(false);
         }
-    }, [searchQuery, selectedCategory, currentLocale, currentPage]);
+    }, [searchQuery, selectedCategory, currentLocale, currentPage, fetchProducts]);
 
     useEffect(() => {
         fetchProducts();
     }, [fetchProducts]);
 
-    const handleSearch = (query: string) => {
+    const handleSearch = useCallback(async (query: string, filters: any) => {
         setSearchQuery(query);
         setCurrentPage(1);
+
+        // Track search behavior for AI recommendations
+        trackUserBehavior({
+            previousSearches: [...(userContext?.behavior?.previousSearches || []), query].slice(-10)
+        });
+
+        // Get AI recommendations if location is available
+        if (location && filters.aiBoost) {
+            await getRecommendations(query, 20, true, true);
+        }
+
         fetchProducts();
-    };
+    }, [trackUserBehavior, userContext, location, getRecommendations, fetchProducts]);
 
     const handleSearchSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -101,15 +124,44 @@ export default function ProductsPage() {
         setCurrentPage(1);
     };
 
-    const handleFilterChange = (filters: any) => {
+    const handleFilterChange = useCallback((filters: any) => {
         // Handle filter changes
         console.log('Filters changed:', filters);
+
+        // Track filter preferences for AI recommendations
+        if (filters.category && filters.category !== 'all') {
+            trackUserBehavior({
+                preferences: {
+                    categories: [filters.category]
+                }
+            });
+        }
+
+        // Get AI recommendations with new filters
+        if (location && filters.aiBoost && searchQuery) {
+            getRecommendations(searchQuery, 20, true, true);
+        }
+
         // You can implement the actual filter logic here
-    };
+    }, [trackUserBehavior, location, getRecommendations, searchQuery]);
 
     const getCurrentCountry = () => {
         return config.gulfCountries.find(c => c.locale === currentLocale);
     };
+
+    const handleLocationChange = useCallback((newLocation: any) => {
+        console.log('Location changed:', newLocation);
+        // Get recommendations for new location
+        if (newLocation && searchQuery) {
+            getRecommendations(searchQuery, 20, true, true);
+        }
+    }, [getRecommendations, searchQuery]);
+
+    const handleRecommendationSelect = useCallback((productId: string) => {
+        console.log('Recommendation selected:', productId);
+        // Navigate to product page or add to cart
+        router.push(`/products/${productId}`);
+    }, [router]);
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -135,67 +187,170 @@ export default function ProductsPage() {
             </div>
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {/* Enhanced Search and Filters */}
-                <SearchAndFilter
+                {/* AI-Enhanced Search and Filters */}
+                <AIEnhancedSearch
                     onSearch={handleSearch}
-                    onFilterChange={handleFilterChange}
-                    categories={categories}
-                    priceRange={{ min: 0, max: 10000 }}
+                    onLocationChange={handleLocationChange}
+                    onRecommendationSelect={handleRecommendationSelect}
                     className="mb-8"
                 />
 
-                {/* AI Recommendations Section */}
-                <div className="mb-8">
-                    <div className="bg-white rounded-lg shadow-sm border p-6">
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                                <span className="text-blue-600 text-lg">🧠</span>
+                {/* AI Location-Based Recommendations */}
+                {location && (
+                    <div className="mb-8">
+                        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg shadow-sm border border-blue-200 p-6">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                    <span className="text-blue-600 text-lg">📍</span>
+                                </div>
+                                <h2 className="text-xl font-semibold text-gray-900">
+                                    AI Recommendations for {location.displayName}
+                                </h2>
                             </div>
-                            <h2 className="text-xl font-semibold text-gray-900">{t('aiPoweredRecommendations')}</h2>
-                        </div>
-                        <p className="text-gray-600 mb-4">
-                            {t('discoverProductsTailored')}
-                        </p>
 
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            {/* Personalized Recommendations */}
-                            <div>
-                                <h3 className="text-lg font-medium text-gray-900 mb-3">{t('recommendedForYou')}</h3>
-                                <div className="bg-gray-50 rounded-lg p-4 min-h-[200px] flex items-center justify-center">
-                                    <div className="text-center">
-                                        <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                                            <span className="text-blue-600 text-xl">✨</span>
+                            {recommendationsLoading ? (
+                                <div className="text-center py-8">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                                    <p className="text-gray-600 mt-2">Analyzing your location and preferences...</p>
+                                </div>
+                            ) : recommendationsError ? (
+                                <div className="text-center py-8">
+                                    <p className="text-red-600 mb-2">{recommendationsError}</p>
+                                    <button
+                                        onClick={() => getRecommendations(searchQuery, 20, true, true)}
+                                        className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
+                                    >
+                                        Retry
+                                    </button>
+                                </div>
+                            ) : recommendations ? (
+                                <div className="space-y-6">
+                                    {/* Trending Products */}
+                                    {recommendations.trendingProducts.length > 0 && (
+                                        <div>
+                                            <h3 className="text-lg font-medium text-gray-900 mb-3 flex items-center gap-2">
+                                                <span className="text-orange-500">🔥</span>
+                                                Trending in {location.city}
+                                            </h3>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                {recommendations.trendingProducts.slice(0, 3).map((product) => (
+                                                    <div
+                                                        key={product.id}
+                                                        className="bg-white rounded-lg p-4 border border-orange-200 hover:border-orange-300 cursor-pointer transition-all duration-200 hover:shadow-md"
+                                                        onClick={() => handleRecommendationSelect(product.id)}
+                                                    >
+                                                        <div className="flex items-start justify-between mb-2">
+                                                            <h4 className="font-medium text-gray-900 text-sm line-clamp-2">
+                                                                {product.title}
+                                                            </h4>
+                                                            <span className="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded-full">
+                                                                Trending
+                                                            </span>
+                                                        </div>
+                                                        <p className="text-xs text-gray-600 mb-2">{product.category}</p>
+                                                        <div className="flex items-center justify-between">
+                                                            <span className="text-sm font-medium text-green-600">
+                                                                ${product.price}
+                                                            </span>
+                                                            <div className="flex items-center gap-1">
+                                                                <span className="text-yellow-500 text-xs">★</span>
+                                                                <span className="text-xs text-gray-600">{product.rating}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
                                         </div>
-                                        <p className="text-sm text-gray-600 mb-3">
-                                            {t('signInForPersonalized')}
-                                        </p>
-                                        <button
-                                            onClick={() => window.location.href = '/sign-in'}
-                                            className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
-                                        >
-                                            {t('signIn')}
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                                    )}
 
-                            {/* Popular Products */}
-                            <div>
-                                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3 animate-float">
-                                    <span className="text-blue-600 text-xl">🔥</span>
+                                    {/* Seasonal Recommendations */}
+                                    {recommendations.seasonalProducts.length > 0 && (
+                                        <div>
+                                            <h3 className="text-lg font-medium text-gray-900 mb-3 flex items-center gap-2">
+                                                <span className="text-green-500">🌱</span>
+                                                Perfect for this Season
+                                            </h3>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                {recommendations.seasonalProducts.slice(0, 3).map((product) => (
+                                                    <div
+                                                        key={product.id}
+                                                        className="bg-white rounded-lg p-4 border border-green-200 hover:border-green-300 cursor-pointer transition-all duration-200 hover:shadow-md"
+                                                        onClick={() => handleRecommendationSelect(product.id)}
+                                                    >
+                                                        <div className="flex items-start justify-between mb-2">
+                                                            <h4 className="font-medium text-gray-900 text-sm line-clamp-2">
+                                                                {product.title}
+                                                            </h4>
+                                                            <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">
+                                                                Seasonal
+                                                            </span>
+                                                        </div>
+                                                        <p className="text-xs text-gray-600 mb-2">{product.category}</p>
+                                                        <div className="flex items-center justify-between">
+                                                            <span className="text-sm font-medium text-green-600">
+                                                                ${product.price}
+                                                            </span>
+                                                            <div className="flex items-center gap-1">
+                                                                <span className="text-yellow-500 text-xs">★</span>
+                                                                <span className="text-xs text-gray-600">{product.rating}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Market Insights */}
+                                    {recommendations.marketInsights && (
+                                        <div className="bg-white rounded-lg p-4 border border-blue-200">
+                                            <h3 className="text-lg font-medium text-gray-900 mb-3 flex items-center gap-2">
+                                                <span className="text-blue-500">📊</span>
+                                                Market Insights for {location.city}
+                                            </h3>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div>
+                                                    <h4 className="font-medium text-gray-900 mb-2">Trending Categories</h4>
+                                                    <div className="space-y-2">
+                                                        {recommendations.marketInsights.trendingCategories.slice(0, 3).map((cat, index) => (
+                                                            <div key={index} className="flex items-center justify-between text-sm">
+                                                                <span className="text-gray-700">{cat.category}</span>
+                                                                <span className="text-blue-600 font-medium">{cat.totalSales} sales</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <h4 className="font-medium text-gray-900 mb-2">Market Opportunities</h4>
+                                                    <div className="space-y-2">
+                                                        {recommendations.marketInsights.marketOpportunities.slice(0, 2).map((opp, index) => (
+                                                            <div key={index} className="flex items-center justify-between text-sm">
+                                                                <span className="text-gray-700">{opp.category}</span>
+                                                                <span className="text-green-600 font-medium">{opp.potential}</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
-                                <h3 className="text-lg font-semibold text-gray-900 mb-2">AI Recommendations</h3>
-                                <p className="text-gray-600 text-sm mb-4">Get personalized product suggestions based on your preferences</p>
-                                <button
-                                    className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-all duration-300 hover:scale-105 hover-lift"
-                                    onClick={() => router.push('/ai-recommendations')}
-                                >
-                                    View Recommendations
-                                </button>
-                            </div>
+                            ) : (
+                                <div className="text-center py-8">
+                                    <p className="text-gray-600 mb-4">
+                                        Enable AI Boost to get personalized recommendations based on your location and preferences
+                                    </p>
+                                    <button
+                                        onClick={() => getRecommendations('', 20, true, true)}
+                                        className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
+                                    >
+                                        Get AI Recommendations
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
-                </div>
+                )}
 
                 {/* Enhanced Products Grid */}
                 <ProductGrid

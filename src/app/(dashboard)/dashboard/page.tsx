@@ -140,6 +140,7 @@ export default function DashboardPage() {
               </div>
             </div>
           </div>
+        )}
 
         {/* Stats Section */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -169,7 +170,7 @@ export default function DashboardPage() {
             <p className="text-sm mt-2">Start by exploring products and creating your first listing!</p>
           </div>
         </div>
-        )}
+        {/* )} */}
       </div>
     </div>
   );
