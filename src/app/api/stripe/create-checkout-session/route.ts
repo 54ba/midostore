@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 
-// Required for static export compatibility
-export const dynamic = 'force-static'
-
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
 
 interface UserSession {

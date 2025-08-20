@@ -1,8 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-    // Static export for Netlify compatibility
-    output: "export",
+    // Standalone output for modern Netlify deployment
+    output: "standalone",
 
     // Do not fail production builds on ESLint issues
     eslint: {
