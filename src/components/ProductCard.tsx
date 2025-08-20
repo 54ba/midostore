@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Star, ShoppingCart, Heart, Eye, Truck, TrendingUp, DollarSign } from 'lucide-react';
 import Image from 'next/image';
+import ImageGallery from './ImageGallery';
 import { useLocalization } from '../app/contexts/LocalizationContext';
 
 interface ProductCardProps {
@@ -14,6 +15,7 @@ interface ProductCardProps {
     originalPrice?: number;
     currency?: string;
     image?: string;
+    images?: string[]; // Array of product images
     rating?: number;
     reviewCount?: number;
     category?: string;
@@ -185,16 +187,48 @@ export default function ProductCard({
     );
   };
 
+  const renderProductImage = () => {
+    // If we have multiple images, use ImageGallery
+    if (product.images && product.images.length > 1) {
+      return (
+        <ImageGallery
+          images={product.images}
+          alt={product.name}
+          height="h-full"
+          showThumbnails={false}
+          showCounter={true}
+          showNavigation={true}
+          className="w-full h-full"
+        />
+      );
+    }
+
+    // Fallback to single image
+    if (product.image) {
+      return (
+        <Image
+          src={product.image}
+          alt={product.name}
+          fill
+          className="w-full h-full object-cover"
+        />
+      );
+    }
+
+    // Default placeholder
+    return (
+      <div className="w-full h-full flex items-center justify-center bg-gray-200">
+        <span className="text-2xl">📦</span>
+      </div>
+    );
+  };
+
   if (variant === 'compact') {
     return (
       <div className={`group bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 overflow-hidden ${className}`}>
         <div className="relative">
           <div className={`w-full h-32 bg-gradient-to-br ${getCategoryColor()} flex items-center justify-center group-hover:scale-105 transition-transform duration-300`}>
-            {product.image ? (
-              <Image src={product.image} alt={product.name} className="w-full h-full object-cover" width={200} height={128} />
-            ) : (
-              <span className="text-2xl">📦</span>
-            )}
+            {renderProductImage()}
           </div>
           {getBadgeColor() && (
             <div className={`absolute top-2 right-2 ${getBadgeColor()} text-white px-2 py-1 rounded-full text-xs font-bold`}>
@@ -253,11 +287,7 @@ export default function ProductCard({
       <div className={`group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden ${className}`}>
         <div className="relative">
           <div className={`w-full h-48 bg-gradient-to-br ${getCategoryColor()} flex items-center justify-center group-hover:scale-105 transition-transform duration-300`}>
-            {product.image ? (
-              <Image src={product.image} alt={product.name} className="w-full h-full object-cover" width={300} height={192} />
-            ) : (
-              <span className="text-4xl">📦</span>
-            )}
+            {renderProductImage()}
           </div>
           {getBadgeColor() && (
             <div className={`absolute top-3 right-3 ${getBadgeColor()} text-white px-2 py-1 rounded-full text-xs font-bold`}>
@@ -346,11 +376,7 @@ export default function ProductCard({
     <div className={`group bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 overflow-hidden ${className}`}>
       <div className="relative">
         <div className={`w-full h-40 bg-gradient-to-br ${getCategoryColor()} flex items-center justify-center group-hover:scale-105 transition-transform duration-300`}>
-          {product.image ? (
-            <Image src={product.image} alt={product.name} className="w-full h-full object-cover" width={250} height={160} />
-          ) : (
-            <span className="text-3xl">📦</span>
-          )}
+          {renderProductImage()}
         </div>
         {getBadgeColor() && (
           <div className={`absolute top-2 right-2 ${getBadgeColor()} text-white px-2 py-1 rounded-full text-xs font-bold`}>
