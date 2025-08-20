@@ -1,41 +1,65 @@
 [build]
-  command = "npm run build"
+  command = "npm run netlify:build"
   publish = ".next"
-  base = "."
+  functions = "netlify/functions"
 
 [build.environment]
-  NEXT_USE_NETLIFY_EDGE = "true"
   NODE_VERSION = "18"
   NPM_VERSION = "9"
+  PYTHON_VERSION = "3.9"
+  PIP_VERSION = "21.3.1"
 
-# Handle Next.js static assets
-[[redirects]]
-  from = "/_next/static/*"
-  to = "/_next/static/:splat"
-  status = 200
+# Database and AI setup during build
+[build.processing]
+  skip_processing = false
 
-# Handle Next.js image optimization
-[[redirects]]
-  from = "/_next/image/*"
-  to = "/_next/image/:splat"
-  status = 200
+# Build hooks for database operations
+[[build.hooks]]
+  command = "npm run netlify:prebuild"
 
-# Handle API routes
+[[build.hooks]]
+  command = "npm run netlify:postbuild"
+
+# Redirects for API routes to Netlify functions
 [[redirects]]
   from = "/api/*"
-  to = "/api/:splat"
+  to = "/.netlify/functions/:splat"
   status = 200
 
-# Handle all other routes - SPA fallback
+# Redirects for AI recommendations
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
+  from = "/ai-recommendations"
+  to = "/ai-recommendations"
   status = 200
 
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Frame-Options = "DENY"
-    X-XSS-Protection = "1; mode=block"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = ["@prisma/client", "prisma"]
+
+# Prisma plugin configuration
+[[plugins]]
+  package = "@netlify/plugin-prisma"
+
+# Environment-specific configurations
+[context.production.environment]
+  NODE_ENV = "production"
+  DATABASE_URL = "production_database_url"
+  AI_MODEL_PATH = "ai/models/recommendation_model.pkl"
+  ENABLE_AI_TRAINING = "true"
+
+[context.deploy-preview.environment]
+  NODE_ENV = "preview"
+  DATABASE_URL = "preview_database_url"
+  AI_MODEL_PATH = "ai/models/recommendation_model.pkl"
+  ENABLE_AI_TRAINING = "false"
+
+[context.branch-deploy.environment]
+  NODE_ENV = "branch"
+  DATABASE_URL = "branch_database_url"
+  AI_MODEL_PATH = "ai/models/recommendation_model.pkl"
+  ENABLE_AI_TRAINING = "false"
+
+# Build optimization
+[build.optimization]
+  bundle = true
+  minify = true

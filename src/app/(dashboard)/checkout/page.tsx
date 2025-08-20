@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import CheckoutForm from '@/components/CheckoutForm'
+import EnhancedCheckoutForm from '@/components/EnhancedCheckoutForm'
 import OrderSummary from '@/components/OrderSummary'
 import LoadingSpinner from '@/components/LoadingSpinner'
 import { useAuth } from '@/app/contexts/AuthContext'
@@ -16,11 +16,18 @@ interface CartItem {
 
 interface CheckoutFormData {
   email: string
-  fullName: string
-  phone: string
+  firstName: string
+  lastName: string
   address: string
   city: string
+  state: string
+  zipCode: string
   country: string
+  phone: string
+  cardNumber: string
+  expiryDate: string
+  cvv: string
+  cardholderName: string
 }
 
 export default function CheckoutPage() {
@@ -99,6 +106,17 @@ export default function CheckoutPage() {
             product_name: item.product_name,
             quantity: item.quantity,
             total_amount: item.price * item.quantity,
+            customer_info: {
+              email: formData.email,
+              firstName: formData.firstName,
+              lastName: formData.lastName,
+              phone: formData.phone,
+              address: formData.address,
+              city: formData.city,
+              state: formData.state,
+              zipCode: formData.zipCode,
+              country: formData.country
+            }
           }),
         })
 
@@ -259,8 +277,7 @@ export default function CheckoutPage() {
 
         <div id="checkout-main-grid" className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div id="checkout-form-section" className="lg:col-span-2">
-            <CheckoutForm
-              id="main-checkout-form"
+            <EnhancedCheckoutForm
               onSubmit={handleCheckoutSubmit}
               loading={checkoutLoading}
             />

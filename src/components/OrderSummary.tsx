@@ -53,20 +53,20 @@ export default function OrderSummary({
               className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0"
             >
               <div className="flex-1 min-w-0">
-                <h3 
+                <h3
                   id={`order-summary-product-name-${item.product_id || index}`}
                   className="text-sm font-medium text-gray-900 truncate"
                 >
                   {item.product_name || 'Unknown Product'}
                 </h3>
                 <div className="flex items-center mt-1 space-x-4">
-                  <span 
+                  <span
                     id={`order-summary-quantity-${item.product_id || index}`}
                     className="text-sm text-gray-600"
                   >
                     Qty: {item.quantity || 0}
                   </span>
-                  <span 
+                  <span
                     id={`order-summary-unit-price-${item.product_id || index}`}
                     className="text-sm text-gray-600"
                   >
@@ -75,7 +75,7 @@ export default function OrderSummary({
                 </div>
               </div>
               <div className="ml-4">
-                <span 
+                <span
                   id={`order-summary-item-total-${item.product_id || index}`}
                   className="text-sm font-semibold text-gray-900"
                 >
@@ -168,7 +168,7 @@ export default function OrderSummary({
             </div>
             <div className="ml-3">
               <p id="order-summary-savings-message" className="text-sm font-medium text-emerald-800">
-                You're saving on shipping!
+                You&apos;re saving on shipping!
               </p>
               <p id="order-summary-savings-description" className="text-xs text-emerald-600">
                 Free shipping on all orders

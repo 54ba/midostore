@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/app/contexts/AuthContext'
-import HeroSection from '@/components/HeroSection'
+import EnhancedHeroSection from '@/components/EnhancedHeroSection'
+import CategoryShowcase from '@/components/CategoryShowcase'
 import FeatureGrid from '@/components/FeatureGrid'
 import TestimonialCard from '@/components/TestimonialCard'
 import Footer from '@/components/Footer'
@@ -104,13 +105,9 @@ export default function LandingPage() {
     <div id="landing-page" className="min-h-screen bg-[rgb(var(--background))] flex flex-col">
       <AuthNavigation />
 
-      <HeroSection
-        id="hero-section"
-        title="Transform Your Business with Premium Dropshipping"
-        subtitle="Connect directly to Alibaba's best toy and cosmetic suppliers. Start your Gulf region dropshipping empire today with MidoHub's intelligent platform."
-        ctaText={user ? 'Go to Dashboard' : 'Get Started Free'}
-        ctaLink={user ? '/dashboard' : '/sign-up'}
-      />
+      <EnhancedHeroSection />
+
+      <CategoryShowcase />
 
       <section id="features-section" className="py-16 px-4 bg-gray-50">
         <div id="features-container" className="max-w-7xl mx-auto">
@@ -119,7 +116,7 @@ export default function LandingPage() {
               Why Choose MidoHub?
             </h2>
             <p id="features-description" className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Our platform combines the power of Alibaba's marketplace with Gulf region expertise to create the ultimate dropshipping experience.
+              Our platform combines the power of Alibaba&apos;s marketplace with Gulf region expertise to create the ultimate dropshipping experience.
             </p>
           </div>
 
@@ -148,7 +145,7 @@ export default function LandingPage() {
               Success Stories from the Gulf
             </h2>
             <p id="testimonials-description" className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Join thousands of successful entrepreneurs who have built thriving businesses with MidoHub's dropshipping platform.
+              Join thousands of successful entrepreneurs who have built thriving businesses with MidoHub&apos;s dropshipping platform.
             </p>
           </div>
 

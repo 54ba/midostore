@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { config } from "../../../env.config";
 
 type ApiResponse<T> = { success: boolean; data?: T };
 
@@ -31,8 +32,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Check if Clerk is available
   const isClerkAvailable = typeof window !== 'undefined' &&
-    process.env.NEXT_PUBLIC_CLERK_FRONTEND_API &&
-    process.env.CLERK_SECRET_KEY;
+    config.clerk.publishableKey &&
+    config.clerk.secretKey;
 
   // Conditionally import Clerk hooks
   const [clerkUser, setClerkUser] = useState<any>(null);
@@ -147,12 +148,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = async () => {
     if (clerkUser && isClerkAvailable) {
       try {
-        // Use Clerk signOut
-        const { useAuth } = await import('@clerk/nextjs');
-        const { signOut } = useAuth();
-        await signOut();
+        // For now, just clear local state and redirect
+        // Clerk will handle the sign out through the UI components
+        setUser(null);
+        // Redirect to home page
+        window.location.href = '/';
       } catch (error) {
-        console.error('Error signing out with Clerk:', error);
+        console.error('Error during logout:', error);
         // Fallback to clearing local state
         setUser(null);
       }

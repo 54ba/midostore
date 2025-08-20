@@ -163,7 +163,7 @@ export default function OrderConfirmationPage() {
       <div id="no-order-found" className="min-h-screen bg-[rgb(var(--background))] flex items-center justify-center">
         <div id="no-order-container" className="text-center max-w-md mx-auto px-6">
           <h2 id="no-order-title" className="text-2xl font-bold text-[rgb(var(--foreground))] mb-2">No Order Found</h2>
-          <p id="no-order-message" className="text-gray-600 mb-6">We couldn't find the order you're looking for.</p>
+          <p id="no-order-message" className="text-gray-600 mb-6">We couldn&apos;t find the order you&apos;re looking for.</p>
           <button
             id="no-order-dashboard-btn"
             onClick={handleContinueShopping}
@@ -181,7 +181,7 @@ export default function OrderConfirmationPage() {
   return (
     <div id="order-confirmation-page" className="min-h-screen bg-[rgb(var(--background))]">
       <div id="confirmation-container" className="max-w-4xl mx-auto px-4 py-8">
-        
+
         {/* Success Header */}
         <div id="success-header" className="text-center mb-8">
           <div id="success-icon" className="w-20 h-20 bg-[rgb(var(--success))] rounded-full flex items-center justify-center mx-auto mb-4">
@@ -190,7 +190,7 @@ export default function OrderConfirmationPage() {
             </svg>
           </div>
           <h1 id="success-title" className="text-3xl font-bold text-[rgb(var(--foreground))] mb-2">Order Confirmed!</h1>
-          <p id="success-subtitle" className="text-lg text-gray-600">Thank you for your order. We'll process it shortly.</p>
+          <p id="success-subtitle" className="text-lg text-gray-600">Thank you for your order. We&apos;ll process it shortly.</p>
         </div>
 
         {/* Order Confirmation Card */}
@@ -251,13 +251,12 @@ export default function OrderConfirmationPage() {
                 <p id="payment-status-label" className="text-sm text-gray-600">Payment Status</p>
                 <span
                   id="payment-status-badge"
-                  className={`inline-flex px-3 py-1 rounded-full text-sm font-semibold ${
-                    paymentStatus === 'completed'
+                  className={`inline-flex px-3 py-1 rounded-full text-sm font-semibold ${paymentStatus === 'completed'
                       ? 'bg-[rgb(var(--success))]/10 text-[rgb(var(--success))]'
                       : paymentStatus === 'failed'
-                      ? 'bg-[rgb(var(--error))]/10 text-[rgb(var(--error))]'
-                      : 'bg-[rgb(var(--secondary))]/10 text-[rgb(var(--secondary))]'
-                  }`}
+                        ? 'bg-[rgb(var(--error))]/10 text-[rgb(var(--error))]'
+                        : 'bg-[rgb(var(--secondary))]/10 text-[rgb(var(--secondary))]'
+                    }`}
                 >
                   {paymentStatus.charAt(0).toUpperCase() + paymentStatus.slice(1)}
                 </span>
@@ -268,19 +267,19 @@ export default function OrderConfirmationPage() {
 
         {/* Next Steps */}
         <div id="next-steps-section" className="bg-[rgb(var(--primary))]/5 rounded-lg p-6 mb-8">
-          <h2 id="next-steps-title" className="text-xl font-bold text-[rgb(var(--foreground))] mb-4">What's Next?</h2>
+          <h2 id="next-steps-title" className="text-xl font-bold text-[rgb(var(--foreground))] mb-4">What&apos;s Next?</h2>
           <div id="next-steps-list" className="space-y-3">
             <div id="step-1" className="flex items-start">
               <div id="step-1-icon" className="w-6 h-6 bg-[rgb(var(--primary))] rounded-full flex items-center justify-center mr-3 mt-0.5">
                 <span id="step-1-number" className="text-white text-sm font-bold">1</span>
               </div>
-              <p id="step-1-text" className="text-[rgb(var(--foreground))]">We'll process your order and contact our Alibaba suppliers</p>
+              <p id="step-1-text" className="text-[rgb(var(--foreground))]">We&apos;ll process your order and contact our Alibaba suppliers</p>
             </div>
             <div id="step-2" className="flex items-start">
               <div id="step-2-icon" className="w-6 h-6 bg-[rgb(var(--primary))] rounded-full flex items-center justify-center mr-3 mt-0.5">
                 <span id="step-2-number" className="text-white text-sm font-bold">2</span>
               </div>
-              <p id="step-2-text" className="text-[rgb(var(--foreground))]">You'll receive tracking information once your order ships</p>
+              <p id="step-2-text" className="text-[rgb(var(--foreground))]">You&apos;ll receive tracking information once your order ships</p>
             </div>
             <div id="step-3" className="flex items-start">
               <div id="step-3-icon" className="w-6 h-6 bg-[rgb(var(--primary))] rounded-full flex items-center justify-center mr-3 mt-0.5">

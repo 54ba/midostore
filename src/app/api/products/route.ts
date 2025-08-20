@@ -1,92 +1,60 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
-
-const PROXY_URL = 'https://api.internal.tasker.ai'
-const CHAT_ROOM_UUID = "91d799d8-8f50-4e00-92b7-738e055f90c4"
-const USER_UUID = "b3f753f4-ee49-4263-a1ec-1b798c8d5948"
-const FUNCTION_UUID = "b9381f78-1b79-49de-ab9a-78caa41d7476"
-const SPREADSHEET_ID = '18EGqQ8F7mBO08nqDin9mwfLt_R-lB1xSDmlgI_BNyXw'
-
-interface Product {
-  product_id: string
-  alibaba_url: string
-  product_name: string
-  category: string
-  price: string
-  alibaba_price: string
-}
+import { NextRequest, NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
+import { ProductService } from '../../../../lib/product-service';
 
 interface UserSession {
-  user_id: string
-  email: string
-  full_name: string
+  user_id: string;
+  email: string;
+  [key: string]: any;
 }
+
+interface Product {
+  product_id: string;
+  alibaba_url: string;
+  product_name: string;
+  category: string;
+  price: number;
+  alibaba_price: number;
+  [key: string]: any;
+}
+
+const PROXY_URL = process.env.PROXY_URL || 'http://localhost:3000';
+const CHAT_ROOM_UUID = process.env.CHAT_ROOM_UUID || '';
+const USER_UUID = process.env.USER_UUID || '';
+const FUNCTION_UUID = process.env.FUNCTION_UUID || '';
+const SPREADSHEET_ID = process.env.SPREADSHEET_ID || '';
 
 export async function GET(request: NextRequest) {
   try {
-    const cookieStore = await cookies()
-    const authToken = cookieStore.get('auth_token')
+    const { searchParams } = new URL(request.url);
+    const category = searchParams.get('category');
+    const search = searchParams.get('search');
+    const locale = searchParams.get('locale') || 'en-AE';
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '20');
 
-    if (!authToken) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+    const productService = new ProductService();
+
+    let result;
+
+    if (search) {
+      result = await productService.searchProducts(search, locale, page, limit);
+    } else if (category) {
+      result = await productService.getProductsByCategory(category, locale, page, limit);
+    } else {
+      result = await productService.getFeaturedProducts(locale, limit);
     }
 
-    const userSession: UserSession = JSON.parse(authToken.value)
-    const { searchParams } = new URL(request.url)
-    const productId = searchParams.get('id')
-
-    // Read products from Google Sheets
-    const response = await fetch(`${PROXY_URL}/proxy/google-sheets`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        chatRoomUUID: CHAT_ROOM_UUID,
-        userUUID: USER_UUID,
-        functionUUID: FUNCTION_UUID,
-        operation: 'read',
-        spreadsheetId: SPREADSHEET_ID,
-        range: 'Product!A1:F1000'
-      })
-    })
-
-    if (!response.ok) {
-      return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 })
-    }
-
-    const sheetsData = await response.json()
-    const rows = sheetsData.result?.values || []
-
-    if (rows.length === 0) {
-      return NextResponse.json({ success: true, data: [] })
-    }
-
-    // Skip header row and map data to products
-    const products: Product[] = rows.slice(1).map((row: string[]) => ({
-      product_id: row[0] || '',
-      alibaba_url: row[1] || '',
-      product_name: row[2] || '',
-      category: row[3] || '',
-      price: row[4] || '0',
-      alibaba_price: row[5] || '0'
-    })).filter((product: Product) => product.product_id) // Filter out empty rows
-
-    // If specific product ID requested, return single product
-    if (productId) {
-      const product = products.find((p: Product) => p.product_id === productId)
-      if (!product) {
-        return NextResponse.json({ error: 'Product not found' }, { status: 404 })
-      }
-      return NextResponse.json({ success: true, data: product })
-    }
-
-    // Return all products
-    return NextResponse.json({ success: true, data: products })
-
+    return NextResponse.json({
+      success: true,
+      data: result,
+    });
   } catch (error) {
-    console.error('Error fetching products:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error('Error getting products:', error);
+    return NextResponse.json(
+      { error: 'Failed to get products' },
+      { status: 500 }
+    );
   }
 }
 

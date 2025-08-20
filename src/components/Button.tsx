@@ -11,6 +11,7 @@ interface ButtonProps {
   disabled?: boolean
   loading?: boolean
   type?: 'button' | 'submit' | 'reset'
+  className?: string
 }
 
 export default function Button({
@@ -21,7 +22,8 @@ export default function Button({
   onClick,
   disabled = false,
   loading = false,
-  type = 'button'
+  type = 'button',
+  className = ''
 }: ButtonProps) {
   const defaultId = useId()
   const buttonId = id || defaultId
@@ -68,11 +70,11 @@ export default function Button({
       type={type}
       onClick={onClick}
       disabled={disabled || loading}
-      className={`${baseClasses} ${variantClasses} ${sizeClasses} ${focusClasses} ${disabledClasses} ${!disabled && !loading ? hoverClasses : ''}`}
+      className={`${baseClasses} ${variantClasses} ${sizeClasses} ${focusClasses} ${disabledClasses} ${!disabled && !loading ? hoverClasses : ''} ${className}`}
     >
       {loading && (
         <div className="mr-2 flex items-center">
-          <div 
+          <div
             id="button-loading-spinner"
             className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
           />

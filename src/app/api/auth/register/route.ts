@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
     const cookieStore = await cookies()
     cookieStore.set('auth_token', JSON.stringify(userSession), {
       httpOnly: true,
-      sameSite: 'None',
+      sameSite: 'none',
       path: '/',
       maxAge: 7 * 24 * 60 * 60, // 7 days
       secure: true

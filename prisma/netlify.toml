@@ -1,0 +1,24 @@
+[prisma]
+  # Prisma schema file location
+  schema = "schema.prisma"
+
+[prisma.migrations]
+  # Migration files location
+  migrations = "migrations"
+
+[prisma.generate]
+  # Generate Prisma Client
+  client = "generated/client"
+
+[prisma.db]
+  # Database connection
+  url = "env(\"DATABASE_URL\")"
+
+[prisma.seed]
+  # Seed script
+  script = "scripts/db-seed.ts"
+
+[prisma.studio]
+  # Prisma Studio configuration
+  port = 5555
+  hostname = "localhost"

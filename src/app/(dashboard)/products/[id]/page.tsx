@@ -18,7 +18,7 @@ export default function ProductDetailPage() {
   const { id } = useParams()
   const router = useRouter()
   const { user, loading: authLoading } = useAuth()
-  
+
   const [product, setProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -56,7 +56,7 @@ export default function ProductDetailPage() {
       }
 
       const result = await response.json()
-      
+
       if (result.success && result.data) {
         setProduct(result.data)
       } else {
@@ -108,7 +108,7 @@ export default function ProductDetailPage() {
       }
 
       const result = await response.json()
-      
+
       if (result.success) {
         setAddToCartMessage('Product added to cart successfully!')
         setTimeout(() => setAddToCartMessage(null), 3000)
@@ -169,7 +169,7 @@ export default function ProductDetailPage() {
             Product Not Found
           </h2>
           <p id="product-not-found-message" className="text-gray-600 mb-6">
-            The product you're looking for doesn't exist or has been removed.
+            The product you&apos;re looking for doesn&apos;t exist or has been removed.
           </p>
           <button
             id="product-not-found-back-button"
@@ -188,7 +188,7 @@ export default function ProductDetailPage() {
   return (
     <div id="product-detail-page" className="min-h-screen bg-[rgb(var(--background))] py-8">
       <div id="product-detail-container" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Breadcrumb Navigation */}
         <nav id="product-breadcrumb" className="mb-8">
           <div id="product-breadcrumb-content" className="flex items-center space-x-2 text-sm">
@@ -218,7 +218,7 @@ export default function ProductDetailPage() {
 
         {/* Product Detail Layout */}
         <div id="product-detail-layout" className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          
+
           {/* Product Image Section */}
           <div id="product-image-section" className="space-y-4">
             <div id="product-main-image" className="aspect-square bg-white rounded-lg shadow-lg flex items-center justify-center border">
@@ -228,7 +228,7 @@ export default function ProductDetailPage() {
                 <p id="image-product-name" className="text-sm text-gray-500 mt-2">{product.product_name}</p>
               </div>
             </div>
-            
+
             {/* Category Badge */}
             <div id="product-category-badge" className="flex justify-center">
               <span id="category-label" className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-[rgb(var(--primary))]/10 text-[rgb(var(--primary))]">
@@ -239,7 +239,7 @@ export default function ProductDetailPage() {
 
           {/* Product Information Section */}
           <div id="product-info-section" className="space-y-6">
-            
+
             {/* Product Title */}
             <div id="product-title-section">
               <h1 id="product-title" className="text-3xl font-bold text-[rgb(var(--foreground))] mb-2">
@@ -259,7 +259,7 @@ export default function ProductDetailPage() {
                     ${product.price.toFixed(2)}
                   </p>
                 </div>
-                
+
                 <div id="alibaba-price-section" className="flex items-center justify-between py-3 border-t">
                   <div id="alibaba-price-info">
                     <p id="alibaba-price-label" className="text-sm text-gray-600">Alibaba Price</p>

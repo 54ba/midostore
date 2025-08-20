@@ -26,7 +26,7 @@ export default function ProductCard({ id, product, onAddToCart }: ProductCardPro
 
   const handleAddToCart = async () => {
     if (!product?.product_id) return
-    
+
     setIsLoading(true)
     try {
       await onAddToCart(product.product_id, quantity)
@@ -41,8 +41,8 @@ export default function ProductCard({ id, product, onAddToCart }: ProductCardPro
     setQuantity(prev => Math.max(1, prev + delta))
   }
 
-  const savings = product?.alibaba_price && product?.price 
-    ? ((product.price - product.alibaba_price) / product.price * 100).toFixed(0)
+  const savings = product?.alibaba_price && product?.price
+    ? Math.round((product.price - product.alibaba_price) / product.price * 100)
     : 0
 
   if (!product) {
@@ -69,7 +69,7 @@ export default function ProductCard({ id, product, onAddToCart }: ProductCardPro
             </div>
           </div>
         </div>
-        
+
         {/* Savings Badge */}
         {savings > 0 && (
           <div id="product-card-savings-badge" className="absolute top-2 right-2 bg-amber-500 text-white text-xs font-bold px-2 py-1 rounded-full">

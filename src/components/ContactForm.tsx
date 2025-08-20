@@ -50,7 +50,7 @@ export default function ContactForm({ id, onSubmit, loading = false }: ContactFo
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!validateForm()) {
       return
     }
@@ -62,7 +62,7 @@ export default function ContactForm({ id, onSubmit, loading = false }: ContactFo
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
-    
+
     // Clear error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }))
@@ -77,7 +77,7 @@ export default function ContactForm({ id, onSubmit, loading = false }: ContactFo
           Get in Touch
         </h2>
         <p id="contact-form-subtitle" className="text-gray-600">
-          Have questions about our dropshipping services? We'd love to hear from you.
+          Have questions about our dropshipping services? We&apos;d love to hear from you.
         </p>
       </div>
 
@@ -85,8 +85,8 @@ export default function ContactForm({ id, onSubmit, loading = false }: ContactFo
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Name Field */}
         <div>
-          <label 
-            htmlFor="contact-form-name" 
+          <label
+            htmlFor="contact-form-name"
             id="contact-form-name-label"
             className="block text-sm font-medium text-[rgb(var(--foreground))] mb-2"
           >
@@ -112,8 +112,8 @@ export default function ContactForm({ id, onSubmit, loading = false }: ContactFo
 
         {/* Email Field */}
         <div>
-          <label 
-            htmlFor="contact-form-email" 
+          <label
+            htmlFor="contact-form-email"
             id="contact-form-email-label"
             className="block text-sm font-medium text-[rgb(var(--foreground))] mb-2"
           >
@@ -139,8 +139,8 @@ export default function ContactForm({ id, onSubmit, loading = false }: ContactFo
 
         {/* Subject Field */}
         <div>
-          <label 
-            htmlFor="contact-form-subject" 
+          <label
+            htmlFor="contact-form-subject"
             id="contact-form-subject-label"
             className="block text-sm font-medium text-[rgb(var(--foreground))] mb-2"
           >
@@ -174,8 +174,8 @@ export default function ContactForm({ id, onSubmit, loading = false }: ContactFo
 
         {/* Message Field */}
         <div>
-          <label 
-            htmlFor="contact-form-message" 
+          <label
+            htmlFor="contact-form-message"
             id="contact-form-message-label"
             className="block text-sm font-medium text-[rgb(var(--foreground))] mb-2"
           >

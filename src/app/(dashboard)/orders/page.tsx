@@ -86,7 +86,7 @@ export default function OrderHistoryPage() {
       }
 
       const fetchedOrders = Array.isArray(ordersData.data) ? ordersData.data : [ordersData.data]
-      
+
       // Transform orders data
       const transformedOrders: OrderWithPayment[] = fetchedOrders.map((order: Order) => ({
         order_id: order.order_id,
@@ -118,7 +118,7 @@ export default function OrderHistoryPage() {
               }))
             }
           }
-          
+
           // Return default status if no payment found
           return [{
             order_id: order.order_id,
@@ -204,7 +204,7 @@ export default function OrderHistoryPage() {
               No Orders Yet
             </h3>
             <p id="no-orders-description" className="text-gray-600 mb-6">
-              You haven't placed any orders yet. Start shopping to see your order history here.
+                              You haven&apos;t placed any orders yet. Start shopping to see your order history here.
             </p>
             <button
               id="browse-products-button"
