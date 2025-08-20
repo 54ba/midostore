@@ -5,6 +5,7 @@ import Script from 'next/script'
 import { Suspense } from 'react'
 import NavigationLogger from '@/components/NavigationLogger'
 import { AuthProvider } from '@/app/contexts/AuthContext'
+import ClerkProviderWrapper from '@/components/ClerkProviderWrapper'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -24,23 +25,40 @@ export const metadata: Metadata = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+  // Check if Clerk environment variables are available
+  const isClerkAvailable = process.env.NEXT_PUBLIC_CLERK_FRONTEND_API && process.env.CLERK_SECRET_KEY
+
+  const content = (
+    <>
+      <Suspense fallback={null}>
+        <NavigationLogger />
+      </Suspense>
+      <AuthProvider>
+        {children}
+      </AuthProvider>
+      <Script id="edit-config" strategy="beforeInteractive" dangerouslySetInnerHTML={{
+        __html: `
+        window.APP_ID = "f0d77951-6589-4855-889a-e574b12631d5";
+        window.EDIT_CALLBACK_URL = "/api/edit-webhook";
+        window.EDIT_TOKEN = "4bd1e072-750b-43b6-a116-3f94dc658e65:1755685474917";
+        window.TASK_UUID = "f0d77951-6589-4855-889a-e574b12631d5";
+        window.EDIT_BASE_URL = "https://api.internal.tasker.ai";
+      `,
+      }} />
+      <Script src="https://cdn.tasker.ai/EditModeLoader.js" strategy="afterInteractive" />
+    </>
+  )
+
   return (
     <html lang="en" className="h-full">
       <body className={`${inter.className} h-full`}>
-        <Suspense fallback={null}>
-          <NavigationLogger />
-        </Suspense>
-        <AuthProvider>
-          {children}
-        </AuthProvider>
-        <Script id="edit-config" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: `
-          window.APP_ID = "f0d77951-6589-4855-889a-e574b12631d5";
-          window.EDIT_CALLBACK_URL = "/api/edit-webhook";
-          window.EDIT_TOKEN = "4bd1e072-750b-43b6-a116-3f94dc658e65:1755685474917";
-          window.TASK_UUID = "f0d77951-6589-4855-889a-e574b12631d5";
-          window.EDIT_BASE_URL = "https://api.internal.tasker.ai";
-        `, }} />
-        <Script src="https://cdn.tasker.ai/EditModeLoader.js" strategy="afterInteractive" />
+        {isClerkAvailable ? (
+          <ClerkProviderWrapper>
+            {content}
+          </ClerkProviderWrapper>
+        ) : (
+          content
+        )}
       </body>
     </html>
   )

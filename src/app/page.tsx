@@ -8,6 +8,7 @@ import FeatureGrid from '@/components/FeatureGrid'
 import TestimonialCard from '@/components/TestimonialCard'
 import Footer from '@/components/Footer'
 import Button from '@/components/Button'
+import AuthNavigation from '@/components/AuthNavigation'
 
 export default function LandingPage() {
   const router = useRouter()
@@ -21,7 +22,7 @@ export default function LandingPage() {
     },
     {
       name: 'Ahmed Hassan',
-      avatar: '/api/placeholder/40/40', 
+      avatar: '/api/placeholder/40/40',
       rating: 5,
       comment: 'The cosmetics selection is incredible. My customers love the premium quality at affordable prices. MidoHub makes dropshipping so easy!'
     },
@@ -82,12 +83,14 @@ export default function LandingPage() {
     if (user) {
       router.push('/dashboard')
     } else {
-      router.push('/register')
+      // Redirect to Clerk sign-up
+      router.push('/sign-up')
     }
   }
 
   const handleSignIn = () => {
-    router.push('/login')
+    // Redirect to Clerk sign-in
+    router.push('/sign-in')
   }
 
   const handleLearnMore = () => {
@@ -99,12 +102,14 @@ export default function LandingPage() {
 
   return (
     <div id="landing-page" className="min-h-screen bg-[rgb(var(--background))] flex flex-col">
-      <HeroSection 
+      <AuthNavigation />
+
+      <HeroSection
         id="hero-section"
         title="Transform Your Business with Premium Dropshipping"
         subtitle="Connect directly to Alibaba's best toy and cosmetic suppliers. Start your Gulf region dropshipping empire today with MidoHub's intelligent platform."
         ctaText={user ? 'Go to Dashboard' : 'Get Started Free'}
-        ctaLink={user ? '/dashboard' : '/register'}
+        ctaLink={user ? '/dashboard' : '/sign-up'}
       />
 
       <section id="features-section" className="py-16 px-4 bg-gray-50">
@@ -117,8 +122,8 @@ export default function LandingPage() {
               Our platform combines the power of Alibaba's marketplace with Gulf region expertise to create the ultimate dropshipping experience.
             </p>
           </div>
-          
-          <FeatureGrid 
+
+          <FeatureGrid
             id="features-grid"
             features={features}
           />
@@ -167,7 +172,7 @@ export default function LandingPage() {
           <p id="cta-description" className="text-xl mb-8 text-white/90">
             Join MidoHub today and get instant access to premium Alibaba suppliers, automated order processing, and 24/7 support.
           </p>
-          
+
           <div id="cta-buttons" className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             {!user ? (
               <>
@@ -213,7 +218,7 @@ export default function LandingPage() {
                 Verified Alibaba Suppliers
               </p>
             </div>
-            
+
             <div id="stat-products" className="bg-white rounded-lg p-6 shadow-sm">
               <div id="stat-products-number" className="text-3xl font-bold text-[rgb(var(--primary))] mb-2">
                 50,000+
@@ -222,7 +227,7 @@ export default function LandingPage() {
                 Premium Products Available
               </p>
             </div>
-            
+
             <div id="stat-customers" className="bg-white rounded-lg p-6 shadow-sm">
               <div id="stat-customers-number" className="text-3xl font-bold text-[rgb(var(--primary))] mb-2">
                 5,000+
