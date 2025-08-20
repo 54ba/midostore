@@ -1,177 +1,390 @@
-'use client'
+'use client';
 
-import { useState, useId } from 'react'
-import Image from 'next/image'
-
-interface Product {
-  product_id: string
-  product_name: string
-  category: string
-  price: number
-  alibaba_price: number
-  alibaba_url: string
-}
+import React, { useState, useEffect } from 'react';
+import { Star, ShoppingCart, Heart, Eye, Truck, TrendingUp, DollarSign } from 'lucide-react';
+import { useLocalization } from '../app/contexts/LocalizationContext';
 
 interface ProductCardProps {
-  id?: string
-  product: Product
-  onAddToCart: (productId: string, quantity: number) => void
+  product: {
+    id: string;
+    name: string;
+    description: string;
+    price: number;
+    originalPrice?: number;
+    currency?: string;
+    image?: string;
+    rating?: number;
+    reviewCount?: number;
+    category?: string;
+    tags?: string[];
+    discount?: number;
+    isNew?: boolean;
+    isHot?: boolean;
+    isBestSeller?: boolean;
+    // New fields for win margins and shipping
+    alibabaPrice?: number;
+    alibabaCurrency?: string;
+    shippingWeight?: number;
+    shippingDimensions?: string;
+    profitMargin?: number;
+    shippingCost?: number;
+    totalPrice?: number;
+    savings?: number;
+    savingsPercentage?: number;
+  };
+  variant?: 'default' | 'compact' | 'featured';
+  onAddToCart?: (productId: string) => void;
+  onViewDetails?: (productId: string) => void;
+  onAddToWishlist?: (productId: string) => void;
+  className?: string;
+  showPricingBreakdown?: boolean;
 }
 
-export default function ProductCard({ id, product, onAddToCart }: ProductCardProps) {
-  const defaultId = useId()
-  const componentId = id || defaultId
-  const [quantity, setQuantity] = useState(1)
-  const [isLoading, setIsLoading] = useState(false)
+export default function ProductCard({
+  product,
+  variant = 'default',
+  onAddToCart,
+  onViewDetails,
+  onAddToWishlist,
+  className = '',
+  showPricingBreakdown = false
+}: ProductCardProps) {
+  const { formatPrice, currentCurrency } = useLocalization();
+  const [showBreakdown, setShowBreakdown] = useState(false);
 
-  const handleAddToCart = async () => {
-    if (!product?.product_id) return
+  const getBadgeColor = () => {
+    if (product.isNew) return 'bg-green-500';
+    if (product.isHot) return 'bg-red-500';
+    if (product.isBestSeller) return 'bg-purple-500';
+    if (product.discount) return 'bg-orange-500';
+    return '';
+  };
 
-    setIsLoading(true)
-    try {
-      await onAddToCart(product.product_id, quantity)
-    } catch (error) {
-      console.error('Failed to add to cart:', error)
-    } finally {
-      setIsLoading(false)
+  const getBadgeText = () => {
+    if (product.isNew) return 'New';
+    if (product.isHot) return 'Hot';
+    if (product.isBestSeller) return 'Best';
+    if (product.discount) return `-${product.discount}%`;
+    return '';
+  };
+
+  const getCategoryColor = () => {
+    switch (product.category?.toLowerCase()) {
+      case 'electronics':
+        return 'from-blue-500 to-purple-600';
+      case 'toys':
+      case 'games':
+        return 'from-green-500 to-blue-600';
+      case 'beauty':
+      case 'cosmetics':
+        return 'from-pink-500 to-purple-600';
+      case 'home':
+      case 'kitchen':
+        return 'from-yellow-500 to-orange-600';
+      default:
+        return 'from-gray-500 to-gray-600';
     }
-  }
+  };
 
-  const handleQuantityChange = (delta: number) => {
-    setQuantity(prev => Math.max(1, prev + delta))
-  }
+  const getWinMarginColor = (margin: number) => {
+    if (margin >= 30) return 'text-green-600';
+    if (margin >= 20) return 'text-blue-600';
+    if (margin >= 15) return 'text-yellow-600';
+    return 'text-gray-600';
+  };
 
-  const savings = product?.alibaba_price && product?.price
-    ? Math.round((product.price - product.alibaba_price) / product.price * 100)
-    : 0
+  const getWinMarginBadge = (margin: number) => {
+    if (margin >= 30) return 'bg-green-100 text-green-800';
+    if (margin >= 20) return 'bg-blue-100 text-blue-800';
+    if (margin >= 15) return 'bg-yellow-100 text-yellow-800';
+    return 'bg-gray-100 text-gray-800';
+  };
 
-  if (!product) {
+  const renderPricingBreakdown = () => {
+    if (!showPricingBreakdown || !product.alibabaPrice) return null;
+
     return (
-      <div id="product-card-empty" className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 animate-pulse">
-        <div id="product-card-empty-image" className="w-full h-48 bg-gray-200 rounded-lg mb-4"></div>
-        <div id="product-card-empty-title" className="h-4 bg-gray-200 rounded mb-2"></div>
-        <div id="product-card-empty-price" className="h-6 bg-gray-200 rounded w-20"></div>
-      </div>
-    )
-  }
-
-  return (
-    <div id="product-card-container" className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-all duration-300 group overflow-hidden">
-      {/* Product Image */}
-      <div id="product-card-image-container" className="relative w-full h-48 bg-gray-100 overflow-hidden">
-        <div id="product-card-image-placeholder" className="w-full h-full bg-gradient-to-br from-teal-50 to-teal-100 flex items-center justify-center">
-          <div id="product-card-image-text" className="text-center p-4">
-            <div id="product-card-category-badge" className="inline-block px-2 py-1 bg-teal-600 text-white text-xs rounded-full mb-2 capitalize">
-              {product.category || 'Product'}
-            </div>
-            <div id="product-card-image-title" className="text-teal-700 font-medium text-sm line-clamp-2">
-              {product.product_name || 'Product Image'}
-            </div>
-          </div>
+      <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm font-medium text-gray-700">Pricing Breakdown</span>
+          <button
+            onClick={() => setShowBreakdown(!showBreakdown)}
+            className="text-xs text-blue-600 hover:text-blue-800"
+          >
+            {showBreakdown ? 'Hide' : 'Show'} Details
+          </button>
         </div>
 
-        {/* Savings Badge */}
-        {savings > 0 && (
-          <div id="product-card-savings-badge" className="absolute top-2 right-2 bg-amber-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-            {savings}% OFF
+        {showBreakdown && (
+          <div className="space-y-2 text-xs">
+            <div className="flex justify-between">
+              <span className="text-gray-600">Alibaba Price:</span>
+              <span className="font-medium">
+                {formatPrice(product.alibabaPrice, product.alibabaCurrency || 'USD')}
+              </span>
+            </div>
+
+            {product.profitMargin && (
+              <div className="flex justify-between">
+                <span className="text-gray-600">Win Margin:</span>
+                <span className={`font-medium ${getWinMarginColor(product.profitMargin)}`}>
+                  +{product.profitMargin}%
+                </span>
+              </div>
+            )}
+
+            {product.shippingCost && (
+              <div className="flex justify-between">
+                <span className="text-gray-600">Shipping:</span>
+                <span className="font-medium">
+                  {formatPrice(product.shippingCost, product.currency)}
+                </span>
+              </div>
+            )}
+
+            {product.savings && product.savings > 0 && (
+              <div className="flex justify-between">
+                <span className="text-gray-600">You Save:</span>
+                <span className="font-medium text-green-600">
+                  {formatPrice(product.savings, product.currency)} ({product.savingsPercentage}%)
+                </span>
+              </div>
+            )}
           </div>
         )}
       </div>
+    );
+  };
 
-      {/* Product Info */}
-      <div id="product-card-content" className="p-4">
-        <h3 id="product-card-title" className="font-semibold text-gray-900 text-sm mb-2 line-clamp-2 group-hover:text-teal-700 transition-colors">
-          {product.product_name}
-        </h3>
+  const renderWinMarginBadge = () => {
+    if (!product.profitMargin) return null;
 
-        <div id="product-card-category" className="text-xs text-gray-500 mb-3 capitalize">
-          {product.category}
-        </div>
+    return (
+      <div className={`absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-bold ${getWinMarginBadge(product.profitMargin)}`}>
+        <TrendingUp className="w-3 h-3 inline mr-1" />
+        +{product.profitMargin}%
+      </div>
+    );
+  };
 
-        {/* Pricing */}
-        <div id="product-card-pricing" className="mb-4">
-          <div id="product-card-price" className="text-lg font-bold text-teal-600 mb-1">
-            ${product.price?.toFixed(2) || '0.00'}
+  const renderShippingInfo = () => {
+    if (!product.shippingCost) return null;
+
+    return (
+      <div className="flex items-center gap-1 text-xs text-gray-600 mb-2">
+        <Truck className="w-3 h-3" />
+        <span>Shipping: {formatPrice(product.shippingCost, product.currency)}</span>
+      </div>
+    );
+  };
+
+  if (variant === 'compact') {
+    return (
+      <div className={`group bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 overflow-hidden ${className}`}>
+        <div className="relative">
+          <div className={`w-full h-32 bg-gradient-to-br ${getCategoryColor()} flex items-center justify-center group-hover:scale-105 transition-transform duration-300`}>
+            {product.image ? (
+              <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+            ) : (
+              <span className="text-2xl">📦</span>
+            )}
           </div>
-          {product.alibaba_price && (
-            <div id="product-card-original-price" className="flex items-center gap-2 text-xs text-gray-500">
-              <span id="product-card-alibaba-label">Alibaba:</span>
-              <span id="product-card-alibaba-price" className="line-through">
-                ${product.alibaba_price.toFixed(2)}
-              </span>
-              <span id="product-card-savings-text" className="text-emerald-600 font-medium">
-                Save ${(product.price - product.alibaba_price).toFixed(2)}
-              </span>
+          {getBadgeColor() && (
+            <div className={`absolute top-2 right-2 ${getBadgeColor()} text-white px-2 py-1 rounded-full text-xs font-bold`}>
+              {getBadgeText()}
             </div>
           )}
+          {renderWinMarginBadge()}
         </div>
-
-        {/* Quantity Selector */}
-        <div id="product-card-quantity-section" className="mb-4">
-          <label id="product-card-quantity-label" className="block text-xs font-medium text-gray-700 mb-2">
-            Quantity
-          </label>
-          <div id="product-card-quantity-controls" className="flex items-center gap-2">
-            <button
-              id="product-card-quantity-decrease"
-              onClick={() => handleQuantityChange(-1)}
-              disabled={quantity <= 1}
-              className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              −
-            </button>
-            <span id="product-card-quantity-display" className="w-8 text-center text-sm font-medium">
-              {quantity}
+        <div className="p-4">
+          <h4 className="font-medium text-gray-900 mb-2 text-sm line-clamp-1 group-hover:text-blue-600 transition-colors">
+            {product.name}
+          </h4>
+          {renderShippingInfo()}
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-lg font-bold text-blue-600">
+              {formatPrice(product.totalPrice || product.price, product.currency)}
             </span>
-            <button
-              id="product-card-quantity-increase"
-              onClick={() => handleQuantityChange(1)}
-              className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors"
-            >
-              +
-            </button>
-          </div>
-        </div>
-
-        {/* Action Buttons */}
-        <div id="product-card-actions" className="space-y-2">
-          <button
-            id="product-card-add-to-cart-button"
-            onClick={handleAddToCart}
-            disabled={isLoading}
-            className="w-full bg-teal-600 text-white py-2 px-4 rounded-lg font-medium text-sm hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
-          >
-            {isLoading ? (
-              <>
-                <div id="product-card-loading-spinner" className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                <span id="product-card-loading-text">Adding...</span>
-              </>
-            ) : (
-              <>
-                <svg id="product-card-cart-icon" className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l-1.5 6m0 0h9M17 21a2 2 0 100-4 2 2 0 000 4zM9 21a2 2 0 100-4 2 2 0 000 4z" />
-                </svg>
-                <span id="product-card-add-text">Add to Cart</span>
-              </>
+            {product.originalPrice && (
+              <span className="text-sm text-gray-500 line-through">
+                {formatPrice(product.originalPrice, product.currency)}
+              </span>
             )}
+          </div>
+          <button
+            onClick={() => onAddToCart?.(product.id)}
+            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2 px-3 rounded-lg text-sm font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105"
+          >
+            Add to Cart
           </button>
-
-          {product.alibaba_url && (
-            <a
-              id="product-card-alibaba-link"
-              href={product.alibaba_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full border border-amber-500 text-amber-600 py-2 px-4 rounded-lg font-medium text-sm hover:bg-amber-50 transition-colors flex items-center justify-center gap-2"
-            >
-              <svg id="product-card-external-icon" className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-              </svg>
-              <span id="product-card-alibaba-text">View on Alibaba</span>
-            </a>
-          )}
+          {renderPricingBreakdown()}
         </div>
       </div>
+    );
+  }
+
+  if (variant === 'featured') {
+    return (
+      <div className={`group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden ${className}`}>
+        <div className="relative">
+          <div className={`w-full h-48 bg-gradient-to-br ${getCategoryColor()} flex items-center justify-center group-hover:scale-105 transition-transform duration-300`}>
+            {product.image ? (
+              <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+            ) : (
+              <span className="text-4xl">📦</span>
+            )}
+          </div>
+          {getBadgeColor() && (
+            <div className={`absolute top-3 right-3 ${getBadgeColor()} text-white px-2 py-1 rounded-full text-xs font-bold`}>
+              {getBadgeText()}
+            </div>
+          )}
+          {renderWinMarginBadge()}
+          <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full text-xs font-medium text-gray-700">
+            {product.category}
+          </div>
+        </div>
+        <div className="p-6">
+          <h4 className="font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors line-clamp-1">
+            {product.name}
+          </h4>
+          <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+            {product.description}
+          </p>
+
+          {renderShippingInfo()}
+
+          {product.rating && (
+            <div className="flex items-center gap-2 mb-4">
+              <div className="flex text-amber-400">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star key={i} className={`w-4 h-4 ${i < Math.floor(product.rating!) ? 'fill-current' : ''}`} />
+                ))}
+              </div>
+              <span className="text-xs text-gray-500">({product.reviewCount || 0})</span>
+            </div>
+          )}
+
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-xl font-bold text-blue-600">
+              {formatPrice(product.totalPrice || product.price, product.currency)}
+            </span>
+            {product.originalPrice && (
+              <span className="text-sm text-gray-500 line-through">
+                {formatPrice(product.originalPrice, product.currency)}
+              </span>
+            )}
+          </div>
+
+          {product.savings && product.savings > 0 && (
+            <div className="mb-4 p-2 bg-green-50 rounded-lg">
+              <div className="flex items-center gap-2 text-green-700">
+                <DollarSign className="w-4 h-4" />
+                <span className="text-sm font-medium">
+                  Save {formatPrice(product.savings, product.currency)} ({product.savingsPercentage}%)
+                </span>
+              </div>
+            </div>
+          )}
+
+          <div className="flex gap-2">
+            <button
+              onClick={() => onAddToCart?.(product.id)}
+              className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105"
+            >
+              Add to Cart
+            </button>
+            <button
+              onClick={() => onViewDetails?.(product.id)}
+              className="p-2 text-gray-600 hover:text-blue-600 transition-colors"
+              title="View Details"
+            >
+              <Eye className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => onAddToWishlist?.(product.id)}
+              className="p-2 text-gray-600 hover:text-red-600 transition-colors"
+              title="Add to Wishlist"
+            >
+              <Heart className="w-4 h-4" />
+            </button>
+          </div>
+
+          {renderPricingBreakdown()}
+        </div>
+      </div>
+    );
+  }
+
+  // Default variant
+  return (
+    <div className={`group bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 overflow-hidden ${className}`}>
+      <div className="relative">
+        <div className={`w-full h-40 bg-gradient-to-br ${getCategoryColor()} flex items-center justify-center group-hover:scale-105 transition-transform duration-300`}>
+          {product.image ? (
+            <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+          ) : (
+            <span className="text-3xl">📦</span>
+          )}
+        </div>
+        {getBadgeColor() && (
+          <div className={`absolute top-2 right-2 ${getBadgeColor()} text-white px-2 py-1 rounded-full text-xs font-bold`}>
+            {getBadgeText()}
+          </div>
+        )}
+        {renderWinMarginBadge()}
+      </div>
+      <div className="p-4">
+        <h4 className="font-medium text-gray-900 mb-2 group-hover:text-blue-600 transition-colors line-clamp-1">
+          {product.name}
+        </h4>
+        <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+          {product.description}
+        </p>
+
+        {renderShippingInfo()}
+
+        {product.rating && (
+          <div className="flex items-center gap-2 mb-3">
+            <div className="flex text-amber-400">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Star key={i} className={`w-3 h-3 ${i < Math.floor(product.rating!) ? 'fill-current' : ''}`} />
+              ))}
+            </div>
+            <span className="text-xs text-gray-500">({product.reviewCount || 0})</span>
+          </div>
+        )}
+
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-lg font-bold text-blue-600">
+            {formatPrice(product.totalPrice || product.price, product.currency)}
+          </span>
+          {product.originalPrice && (
+            <span className="text-sm text-gray-500 line-through">
+              {formatPrice(product.originalPrice, product.currency)}
+            </span>
+          )}
+        </div>
+
+        <div className="flex gap-2">
+          <button
+            onClick={() => onAddToCart?.(product.id)}
+            className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2 px-3 rounded-lg text-sm font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105"
+          >
+            <ShoppingCart className="w-4 h-4 inline mr-1" />
+            Add to Cart
+          </button>
+          <button
+            onClick={() => onViewDetails?.(product.id)}
+            className="p-2 text-gray-600 hover:text-blue-600 transition-colors"
+            title="View Details"
+          >
+            <Eye className="w-4 h-4" />
+          </button>
+        </div>
+
+        {renderPricingBreakdown()}
+      </div>
     </div>
-  )
+  );
 }

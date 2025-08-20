@@ -5,6 +5,7 @@ import { UserButton, SignInButton, SignUpButton } from '@clerk/nextjs'
 import Link from 'next/link'
 import { useState } from 'react'
 import { useId } from 'react'
+import LocalizationPanel from './LocalizationPanel'
 
 interface HeaderProps {
   id?: string
@@ -52,6 +53,13 @@ export default function Header({ id }: HeaderProps) {
               AI Recommendations
             </Link>
             <Link
+              href="/localization-demo"
+              id="header-nav-localization-demo"
+              className="text-gray-700 hover:text-teal-600 font-medium transition-colors"
+            >
+              Localization Demo
+            </Link>
+            <Link
               href="/orders"
               id="header-nav-orders"
               className="text-gray-700 hover:text-teal-600 font-medium transition-colors"
@@ -74,8 +82,11 @@ export default function Header({ id }: HeaderProps) {
             </Link>
           </nav>
 
-          {/* User Menu */}
+          {/* User Menu and Localization */}
           <div className="flex items-center space-x-4">
+            {/* Localization Panel */}
+            <LocalizationPanel variant="header" />
+
             {!authLoading && user ? (
               <div className="flex items-center space-x-4">
                 <Link
@@ -155,6 +166,14 @@ export default function Header({ id }: HeaderProps) {
                 AI Recommendations
               </Link>
               <Link
+                href="/localization-demo"
+                id="header-mobile-localization-demo"
+                className="text-gray-700 hover:text-teal-600 font-medium transition-colors px-2 py-1"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Localization Demo
+              </Link>
+              <Link
                 href="/orders"
                 id="header-mobile-orders"
                 className="text-gray-700 hover:text-teal-600 font-medium transition-colors px-2 py-1"
@@ -191,6 +210,11 @@ export default function Header({ id }: HeaderProps) {
                   <hr className="border-gray-200" />
                 </>
               )}
+
+              {/* Mobile Localization Panel */}
+              <div className="px-2 py-1">
+                <LocalizationPanel variant="dropdown" />
+              </div>
             </div>
           </div>
         )}

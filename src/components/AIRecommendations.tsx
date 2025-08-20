@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../app/contexts/AuthContext';
+import { useLocalization } from '../app/contexts/LocalizationContext';
 import { Heart, ShoppingCart, Eye, Star, TrendingUp } from 'lucide-react';
 
 interface RecommendationResult {
@@ -45,6 +46,7 @@ export default function AIRecommendations({
     className = ''
 }: AIRecommendationsProps) {
     const { user } = useAuth();
+    const { formatPrice, t } = useLocalization();
     const [recommendations, setRecommendations] = useState<RecommendationResult[]>([]);
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
@@ -141,9 +143,9 @@ export default function AIRecommendations({
 
                 // Show a subtle notification for guest interactions
                 if (interactionType === 'like') {
-                    alert('Product added to your favorites! Sign in to sync across devices.');
+                    alert(t('productAddedToFavorites'));
                 } else if (interactionType === 'cart') {
-                    alert('Product added to cart! Sign in to complete your purchase.');
+                    alert(t('productAddedToCart'));
                 }
             } catch (error) {
                 console.error('Error storing guest interaction:', error);
@@ -179,13 +181,13 @@ export default function AIRecommendations({
     const getTitle = () => {
         switch (type) {
             case 'personalized':
-                return user?.user_id ? 'Recommended for You' : 'Popular Products for You';
+                return user?.user_id ? t('recommendedForYou') : t('popularProductsForYou');
             case 'popular':
-                return 'Popular Products';
+                return t('popularProducts');
             case 'similar':
-                return 'Similar Products';
+                return t('similarProducts');
             default:
-                return 'Product Recommendations';
+                return t('productRecommendations');
         }
     };
 
@@ -269,10 +271,10 @@ export default function AIRecommendations({
                         </div>
                         <div className="flex-1">
                             <h3 className="text-sm font-medium text-blue-900 mb-1">
-                                Sign in for personalized recommendations
+                                {t('signInForPersonalizedRecommendations')}
                             </h3>
                             <p className="text-sm text-blue-700">
-                                Currently showing popular products. Sign in to get personalized recommendations based on your preferences and browsing history.
+                                {t('currentlyShowingPopular')}
                             </p>
                         </div>
                     </div>
@@ -334,7 +336,7 @@ export default function AIRecommendations({
 
                                 <div className="flex items-center justify-between mb-3">
                                     <span className="text-lg font-bold text-gray-900">
-                                        ${product.price.toFixed(2)}
+                                        {formatPrice(product.price)}
                                     </span>
                                     <span className="text-sm text-gray-500">
                                         {product.currency}
@@ -376,13 +378,13 @@ export default function AIRecommendations({
                                         <div className="flex gap-1">
                                             <button
                                                 className="p-2 text-gray-400 cursor-not-allowed"
-                                                title="Sign in to like products"
+                                                title={t('signInToLikeProducts')}
                                             >
                                                 <Heart className="w-4 h-4" />
                                             </button>
                                             <button
                                                 className="p-2 text-gray-400 cursor-not-allowed"
-                                                title="Sign in to add to cart"
+                                                title={t('signInToAddToCart')}
                                             >
                                                 <ShoppingCart className="w-4 h-4" />
                                             </button>

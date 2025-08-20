@@ -5,6 +5,7 @@ import Script from 'next/script'
 import { Suspense } from 'react'
 import NavigationLogger from '@/components/NavigationLogger'
 import { AuthProvider } from '@/app/contexts/AuthContext'
+import { LocalizationProvider } from '@/app/contexts/LocalizationContext'
 import ClerkProviderWrapper from '@/components/ClerkProviderWrapper'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -30,9 +31,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <Suspense fallback={null}>
         <NavigationLogger />
       </Suspense>
-      <AuthProvider>
-        {children}
-      </AuthProvider>
+      <LocalizationProvider>
+        <AuthProvider>
+          {children}
+        </AuthProvider>
+      </LocalizationProvider>
       <Script id="edit-config" strategy="beforeInteractive" dangerouslySetInnerHTML={{
         __html: `
         window.APP_ID = "f0d77951-6589-4855-889a-e574b12631d5";

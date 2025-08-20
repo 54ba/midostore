@@ -5,6 +5,8 @@ import { Globe, DollarSign, Star, ShoppingCart, Eye } from 'lucide-react';
 import { config } from '../../../../env.config';
 import SearchAndFilter from '@/components/SearchAndFilter';
 import ProductGrid from '@/components/ProductGrid';
+import LocalizationPanel from '@/components/LocalizationPanel';
+import { useLocalization } from '@/app/contexts/LocalizationContext';
 
 interface Product {
     id: string;
@@ -38,21 +40,20 @@ interface ProductResponse {
 }
 
 export default function ProductsPage() {
+    const { currentLocale, currentCurrency, formatPrice, t } = useLocalization();
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
-    const [selectedLocale, setSelectedLocale] = useState('en-AE');
     const [currentPage, setCurrentPage] = useState(1);
     const [pagination, setPagination] = useState<any>(null);
     const [showFilters, setShowFilters] = useState(false);
 
     const categories = config.scrapingCategories;
-    const locales = config.localization.supportedLocales;
 
     useEffect(() => {
         fetchProducts();
-    }, [selectedCategory, selectedLocale, currentPage]);
+    }, [selectedCategory, currentLocale, currentPage]);
 
     const fetchProducts = async () => {
         try {
@@ -65,7 +66,7 @@ export default function ProductsPage() {
                 url += `category=${encodeURIComponent(selectedCategory)}&`;
             }
 
-            url += `locale=${selectedLocale}&page=${currentPage}&limit=20`;
+            url += `locale=${currentLocale}&page=${currentPage}&limit=20`;
 
             const response = await fetch(url);
             const data: ProductResponse = await response.json();
@@ -98,32 +99,14 @@ export default function ProductsPage() {
         setCurrentPage(1);
     };
 
-    const handleLocaleChange = (locale: string) => {
-        setSelectedLocale(locale);
-        setCurrentPage(1);
-    };
-
     const handleFilterChange = (filters: any) => {
         // Handle filter changes
         console.log('Filters changed:', filters);
         // You can implement the actual filter logic here
     };
 
-    const getLocaleDisplayName = (locale: string) => {
-        const country = config.gulfCountries.find(c => c.locale === locale);
-        return country ? `${country.name} (${country.currency})` : locale;
-    };
-
-    const formatPrice = (price: number, currency: string) => {
-        const formatter = new Intl.NumberFormat(selectedLocale, {
-            style: 'currency',
-            currency: currency,
-        });
-        return formatter.format(price);
-    };
-
     const getCurrentCountry = () => {
-        return config.gulfCountries.find(c => c.locale === selectedLocale);
+        return config.gulfCountries.find(c => c.locale === currentLocale);
     };
 
     return (
@@ -134,29 +117,16 @@ export default function ProductsPage() {
                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                         <div>
                             <h1 className="text-3xl font-bold text-gray-900">
-                                {getCurrentCountry()?.nameAr || 'Products'}
+                                {getCurrentCountry()?.nameAr || t('products')}
                             </h1>
                             <p className="mt-2 text-gray-600">
-                                Discover amazing products from Alibaba and AliExpress
+                                {t('discoverAmazingProducts')}
                             </p>
                         </div>
 
-                        {/* Locale Selector */}
+                        {/* Localization Panel */}
                         <div className="mt-4 lg:mt-0">
-                            <div className="flex items-center space-x-2">
-                                <Globe className="h-5 w-5 text-gray-400" />
-                                <select
-                                    value={selectedLocale}
-                                    onChange={(e) => handleLocaleChange(e.target.value)}
-                                    className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                >
-                                    {locales.map((locale: string) => (
-                                        <option key={locale} value={locale}>
-                                            {getLocaleDisplayName(locale)}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
+                            <LocalizationPanel variant="dropdown" />
                         </div>
                     </div>
                 </div>
@@ -179,29 +149,29 @@ export default function ProductsPage() {
                             <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
                                 <span className="text-blue-600 text-lg">🧠</span>
                             </div>
-                            <h2 className="text-xl font-semibold text-gray-900">AI-Powered Recommendations</h2>
+                            <h2 className="text-xl font-semibold text-gray-900">{t('aiPoweredRecommendations')}</h2>
                         </div>
                         <p className="text-gray-600 mb-4">
-                            Discover products tailored to your interests and trending items loved by our community.
+                            {t('discoverProductsTailored')}
                         </p>
 
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             {/* Personalized Recommendations */}
                             <div>
-                                <h3 className="text-lg font-medium text-gray-900 mb-3">Recommended for You</h3>
+                                <h3 className="text-lg font-medium text-gray-900 mb-3">{t('recommendedForYou')}</h3>
                                 <div className="bg-gray-50 rounded-lg p-4 min-h-[200px] flex items-center justify-center">
                                     <div className="text-center">
                                         <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
                                             <span className="text-blue-600 text-xl">✨</span>
                                         </div>
                                         <p className="text-sm text-gray-600 mb-3">
-                                            Sign in to get personalized recommendations
+                                            {t('signInForPersonalized')}
                                         </p>
                                         <button
                                             onClick={() => window.location.href = '/sign-in'}
                                             className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
                                         >
-                                            Sign In
+                                            {t('signIn')}
                                         </button>
                                     </div>
                                 </div>
@@ -209,20 +179,20 @@ export default function ProductsPage() {
 
                             {/* Popular Products */}
                             <div>
-                                <h3 className="text-lg font-medium text-gray-900 mb-3">Popular Products</h3>
+                                <h3 className="text-lg font-medium text-gray-900 mb-3">{t('popularProducts')}</h3>
                                 <div className="bg-gray-50 rounded-lg p-4 min-h-[200px] flex items-center justify-center">
                                     <div className="text-center">
                                         <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
                                             <span className="text-green-600 text-xl">🔥</span>
                                         </div>
                                         <p className="text-sm text-gray-600 mb-3">
-                                            Trending products in your region
+                                            {t('trendingProductsInRegion')}
                                         </p>
                                         <button
                                             onClick={() => window.location.href = '/ai-recommendations'}
                                             className="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
                                         >
-                                            View Popular
+                                            {t('viewPopular')}
                                         </button>
                                     </div>
                                 </div>
@@ -259,7 +229,7 @@ export default function ProductsPage() {
                                 disabled={currentPage === 1}
                                 className="px-3 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                             >
-                                Previous
+                                {t('previous')}
                             </button>
 
                             {[...Array(pagination.pages)].map((_, i) => {
@@ -295,7 +265,7 @@ export default function ProductsPage() {
                                 disabled={currentPage === pagination.pages}
                                 className="px-3 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                             >
-                                Next
+                                {t('next')}
                             </button>
                         </nav>
                     </div>
