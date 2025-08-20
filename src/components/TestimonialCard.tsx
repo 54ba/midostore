@@ -1,6 +1,7 @@
 'use client'
 
 import { useId } from 'react'
+import Image from 'next/image'
 
 interface TestimonialCardProps {
   id?: string
@@ -21,9 +22,8 @@ export default function TestimonialCard({ id, testimonial }: TestimonialCardProp
       <svg
         key={index}
         id={`testimonial-card-star-${index}`}
-        className={`w-4 h-4 ${
-          index < rating ? 'text-amber-400' : 'text-gray-300'
-        }`}
+        className={`w-4 h-4 ${index < rating ? 'text-amber-400' : 'text-gray-300'
+          }`}
         fill="currentColor"
         viewBox="0 0 20 20"
       >
@@ -33,18 +33,20 @@ export default function TestimonialCard({ id, testimonial }: TestimonialCardProp
   }
 
   return (
-    <div 
+    <div
       id={componentId}
       className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-300"
     >
       {/* Header with avatar and name */}
       <div className="flex items-center space-x-4 mb-4">
         <div className="relative">
-          <img
+          <Image
             id="testimonial-card-avatar"
             src={testimonial.avatar}
             alt={`${testimonial.name} avatar`}
             className="w-12 h-12 rounded-full object-cover border-2 border-gray-100"
+            width={48}
+            height={48}
           />
           <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white"></div>
         </div>

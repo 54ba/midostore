@@ -51,6 +51,17 @@
   to = "/user-profile"
   status = 200
 
+# SSO callback routes for Clerk
+[[redirects]]
+  from = "/sign-in/sso-callback"
+  to = "/sign-in/sso-callback"
+  status = 200
+
+[[redirects]]
+  from = "/sign-up/sso-callback"
+  to = "/sign-up/sso-callback"
+  status = 200
+
 [functions]
   node_bundler = "esbuild"
   external_node_modules = ["@prisma/client", "prisma"]
@@ -63,13 +74,13 @@
   ENABLE_AI_TRAINING = "true"
 
 [context.deploy-preview.environment]
-  NODE_ENV = "preview"
+  NODE_ENV = "development"
   DATABASE_URL = "preview_database_url"
   AI_MODEL_PATH = "ai/models/recommendation_model.pkl"
   ENABLE_AI_TRAINING = "false"
 
 [context.branch-deploy.environment]
-  NODE_ENV = "branch"
+  NODE_ENV = "development"
   DATABASE_URL = "branch_database_url"
   AI_MODEL_PATH = "ai/models/recommendation_model.pkl"
   ENABLE_AI_TRAINING = "false"

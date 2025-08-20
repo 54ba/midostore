@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/app/contexts/AuthContext'
 import OrderHistoryTable from '@/components/OrderHistoryTable'
@@ -46,18 +46,7 @@ export default function OrderHistoryPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push('/login')
-      return
-    }
-
-    if (user) {
-      fetchOrderHistory()
-    }
-  }, [user, authLoading, router])
-
-  const fetchOrderHistory = async () => {
+  const fetchOrderHistory = useCallback(async () => {
     if (!user) return
 
     try {
@@ -144,7 +133,18 @@ export default function OrderHistoryPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [user, router])
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push('/login')
+      return
+    }
+
+    if (user) {
+      fetchOrderHistory()
+    }
+  }, [user, authLoading, router, fetchOrderHistory])
 
   if (authLoading) {
     return (
@@ -204,7 +204,7 @@ export default function OrderHistoryPage() {
               No Orders Yet
             </h3>
             <p id="no-orders-description" className="text-gray-600 mb-6">
-                              You haven&apos;t placed any orders yet. Start shopping to see your order history here.
+              You haven&apos;t placed any orders yet. Start shopping to see your order history here.
             </p>
             <button
               id="browse-products-button"

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import EnhancedCheckoutForm from '@/components/EnhancedCheckoutForm'
 import OrderSummary from '@/components/OrderSummary'
@@ -54,20 +54,7 @@ export default function CheckoutPage() {
     }
   }, []);
 
-  useEffect(() => {
-    if (!authLoading) {
-      if (!user) {
-        // Show auth prompt instead of redirecting
-        setShowAuthPrompt(true)
-        loadCartItems() // Still load cart items for display
-      } else {
-        setShowAuthPrompt(false)
-        loadCartItems()
-      }
-    }
-  }, [user, authLoading])
-
-  const loadCartItems = () => {
+  const loadCartItems = useCallback(() => {
     try {
       const savedCart = localStorage.getItem('midohub_cart')
       if (savedCart) {
@@ -86,7 +73,20 @@ export default function CheckoutPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [router])
+
+  useEffect(() => {
+    if (!authLoading) {
+      if (!user) {
+        // Show auth prompt instead of redirecting
+        setShowAuthPrompt(true)
+        loadCartItems() // Still load cart items for display
+      } else {
+        setShowAuthPrompt(false)
+        loadCartItems()
+      }
+    }
+  }, [user, authLoading, loadCartItems])
 
   const calculateSubtotal = () => {
     return cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
@@ -206,8 +206,8 @@ export default function CheckoutPage() {
                 <button
                   onClick={() => setActiveTab('signin')}
                   className={`px-6 py-2 rounded-md font-medium transition-colors ${activeTab === 'signin'
-                      ? 'bg-white text-blue-600 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
+                    ? 'bg-white text-blue-600 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
                     }`}
                 >
                   Sign In
@@ -215,8 +215,8 @@ export default function CheckoutPage() {
                 <button
                   onClick={() => setActiveTab('signup')}
                   className={`px-6 py-2 rounded-md font-medium transition-colors ${activeTab === 'signup'
-                      ? 'bg-white text-blue-600 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
+                    ? 'bg-white text-blue-600 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
                     }`}
                 >
                   Sign Up

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/app/contexts/AuthContext'
 import ProfileForm from '@/components/ProfileForm'
@@ -30,18 +30,7 @@ export default function ProfilePage() {
   const [error, setError] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (!authLoading && !authUser) {
-      router.push('/login')
-      return
-    }
-
-    if (authUser) {
-      fetchUserProfile()
-    }
-  }, [authUser, authLoading, router])
-
-  const fetchUserProfile = async () => {
+  const fetchUserProfile = useCallback(async () => {
     if (!authUser?.user_id) return
 
     try {
@@ -79,7 +68,18 @@ export default function ProfilePage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [authUser?.user_id, router])
+
+  useEffect(() => {
+    if (!authLoading && !authUser) {
+      router.push('/login')
+      return
+    }
+
+    if (authUser) {
+      fetchUserProfile()
+    }
+  }, [authUser, authLoading, router, fetchUserProfile])
 
   const handleProfileUpdate = async (userData: UpdateUserData) => {
     if (!authUser?.user_id) return
@@ -114,7 +114,7 @@ export default function ProfilePage() {
       if (result.success && result.data) {
         setUser(result.data)
         setSuccessMessage('Profile updated successfully!')
-        
+
         // Clear success message after 3 seconds
         setTimeout(() => {
           setSuccessMessage(null)
@@ -226,7 +226,7 @@ export default function ProfilePage() {
             <h3 id="profile-actions-title" className="text-lg font-semibold text-[rgb(var(--foreground))] mb-4">
               Account Actions
             </h3>
-            
+
             <div id="profile-actions-grid" className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Button
                 id="profile-orders-button"
@@ -235,7 +235,7 @@ export default function ProfilePage() {
               >
                 View Order History
               </Button>
-              
+
               <Button
                 id="profile-dashboard-link-button"
                 variant="outline"
@@ -243,7 +243,7 @@ export default function ProfilePage() {
               >
                 Go to Dashboard
               </Button>
-              
+
               <Button
                 id="profile-cart-button"
                 variant="outline"
@@ -251,7 +251,7 @@ export default function ProfilePage() {
               >
                 View Cart
               </Button>
-              
+
               <Button
                 id="profile-contact-button"
                 variant="outline"
@@ -280,7 +280,7 @@ export default function ProfilePage() {
             <h3 id="profile-info-title" className="text-lg font-semibold text-[rgb(var(--foreground))] mb-4">
               Account Information
             </h3>
-            
+
             <div id="profile-info-grid" className="space-y-3">
               <div id="profile-info-user-id" className="flex justify-between items-center py-2 border-b border-gray-100">
                 <span id="profile-info-user-id-label" className="text-sm font-medium text-gray-500">
@@ -290,7 +290,7 @@ export default function ProfilePage() {
                   {user.user_id}
                 </span>
               </div>
-              
+
               {user.created_at && (
                 <div id="profile-info-created-at" className="flex justify-between items-center py-2">
                   <span id="profile-info-created-at-label" className="text-sm font-medium text-gray-500">

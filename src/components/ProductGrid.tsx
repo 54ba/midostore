@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
-import { Heart, ShoppingCart, Eye, Star } from 'lucide-react'
+import React, { useState } from 'react'
+import { Star, ShoppingCart, Heart, Eye } from 'lucide-react'
+import Image from 'next/image'
 import ProductCard from './ProductCard'
 
 interface Product {
@@ -82,10 +83,12 @@ export default function ProductGrid({
                     {/* Product Image */}
                     <div className="relative aspect-square overflow-hidden bg-gray-100">
                         {product.image_url ? (
-                            <img
+                            <Image
                                 src={product.image_url}
                                 alt={product.product_name}
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                width={300}
+                                height={300}
                             />
                         ) : (
                             <div className="w-full h-full flex items-center justify-center text-gray-400">
@@ -106,8 +109,8 @@ export default function ProductGrid({
                                 <button
                                     onClick={() => toggleFavorite(product.product_id)}
                                     className={`p-2 rounded-full shadow-lg transition-colors ${favorites.has(product.product_id)
-                                            ? 'bg-red-500 text-white hover:bg-red-600'
-                                            : 'bg-white text-gray-700 hover:bg-gray-50'
+                                        ? 'bg-red-500 text-white hover:bg-red-600'
+                                        : 'bg-white text-gray-700 hover:bg-gray-50'
                                         }`}
                                     title="Add to Favorites"
                                 >

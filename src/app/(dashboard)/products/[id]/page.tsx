@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/app/contexts/AuthContext'
 import LoadingSpinner from '@/components/LoadingSpinner'
@@ -26,18 +26,7 @@ export default function ProductDetailPage() {
   const [addingToCart, setAddingToCart] = useState(false)
   const [addToCartMessage, setAddToCartMessage] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push('/login')
-      return
-    }
-
-    if (user && id) {
-      fetchProduct()
-    }
-  }, [id, user, authLoading, router])
-
-  const fetchProduct = async () => {
+  const fetchProduct = useCallback(async () => {
     try {
       setLoading(true)
       // GET single product by ID - requires auth_token cookie, query param: id
@@ -68,7 +57,18 @@ export default function ProductDetailPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [id, router])
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push('/login')
+      return
+    }
+
+    if (user && id) {
+      fetchProduct()
+    }
+  }, [id, user, authLoading, router, fetchProduct])
 
   const handleQuantityChange = (change: number) => {
     setQuantity(prev => Math.max(1, prev + change))

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Star, ShoppingCart, Heart, Eye, Truck, TrendingUp, DollarSign } from 'lucide-react';
+import Image from 'next/image';
 import { useLocalization } from '../app/contexts/LocalizationContext';
 
 interface ProductCardProps {
@@ -184,7 +185,7 @@ export default function ProductCard({
         <div className="relative">
           <div className={`w-full h-32 bg-gradient-to-br ${getCategoryColor()} flex items-center justify-center group-hover:scale-105 transition-transform duration-300`}>
             {product.image ? (
-              <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+              <Image src={product.image} alt={product.name} className="w-full h-full object-cover" width={200} height={128} />
             ) : (
               <span className="text-2xl">📦</span>
             )}
@@ -229,7 +230,7 @@ export default function ProductCard({
         <div className="relative">
           <div className={`w-full h-48 bg-gradient-to-br ${getCategoryColor()} flex items-center justify-center group-hover:scale-105 transition-transform duration-300`}>
             {product.image ? (
-              <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+              <Image src={product.image} alt={product.name} className="w-full h-full object-cover" width={300} height={192} />
             ) : (
               <span className="text-4xl">📦</span>
             )}
@@ -322,7 +323,7 @@ export default function ProductCard({
       <div className="relative">
         <div className={`w-full h-40 bg-gradient-to-br ${getCategoryColor()} flex items-center justify-center group-hover:scale-105 transition-transform duration-300`}>
           {product.image ? (
-            <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+            <Image src={product.image} alt={product.name} className="w-full h-full object-cover" width={250} height={160} />
           ) : (
             <span className="text-3xl">📦</span>
           )}

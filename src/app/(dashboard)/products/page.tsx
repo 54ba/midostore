@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Globe, DollarSign, Star, ShoppingCart, Eye } from 'lucide-react';
 import { config } from '../../../../env.config';
 import SearchAndFilter from '@/components/SearchAndFilter';
@@ -51,11 +51,7 @@ export default function ProductsPage() {
 
     const categories = config.scrapingCategories;
 
-    useEffect(() => {
-        fetchProducts();
-    }, [selectedCategory, currentLocale, currentPage]);
-
-    const fetchProducts = async () => {
+    const fetchProducts = useCallback(async () => {
         try {
             setLoading(true);
             let url = '/api/products?';
@@ -80,7 +76,11 @@ export default function ProductsPage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [searchQuery, selectedCategory, currentLocale, currentPage]);
+
+    useEffect(() => {
+        fetchProducts();
+    }, [fetchProducts]);
 
     const handleSearch = (query: string) => {
         setSearchQuery(query);

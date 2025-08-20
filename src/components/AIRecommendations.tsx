@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../app/contexts/AuthContext';
 import { useLocalization } from '../app/contexts/LocalizationContext';
 import { Heart, ShoppingCart, Eye, Star, TrendingUp } from 'lucide-react';
+import Image from 'next/image';
 
 interface RecommendationResult {
     item_id: string;
@@ -53,18 +54,21 @@ export default function AIRecommendations({
     const [error, setError] = useState<string | null>(null);
     const [interactionLoading, setInteractionLoading] = useState<string | null>(null);
 
-    useEffect(() => {
-        fetchRecommendations();
-    }, [type, category, nItems, sourceProductId, user?.user_id]);
+    const fetchProductDetails = useCallback(async () => {
+        try {
+            const productIds = recommendations.map(r => r.item_id);
+            const response = await fetch(`/api/products?ids=${productIds.join(',')}`);
 
-    // Initialize guest session for tracking
-    useEffect(() => {
-        if (!user?.user_id && !localStorage.getItem('guestSessionId')) {
-            localStorage.setItem('guestSessionId', `guest_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
+            if (!response.ok) throw new Error('Failed to fetch product details');
+
+            const data = await response.json();
+            setProducts(data.data || []);
+        } catch (err) {
+            console.error('Error fetching product details:', err);
         }
-    }, [user?.user_id]);
+    }, [recommendations]);
 
-    const fetchRecommendations = async () => {
+    const fetchRecommendations = useCallback(async () => {
         try {
             setLoading(true);
             setError(null);
@@ -109,21 +113,18 @@ export default function AIRecommendations({
         } finally {
             setLoading(false);
         }
-    };
+    }, [type, category, nItems, sourceProductId, user?.user_id, recommendations.length, fetchProductDetails]);
 
-    const fetchProductDetails = async () => {
-        try {
-            const productIds = recommendations.map(r => r.item_id);
-            const response = await fetch(`/api/products?ids=${productIds.join(',')}`);
+    useEffect(() => {
+        fetchRecommendations();
+    }, [fetchRecommendations]);
 
-            if (!response.ok) throw new Error('Failed to fetch product details');
-
-            const data = await response.json();
-            setProducts(data.data || []);
-        } catch (err) {
-            console.error('Error fetching product details:', err);
+    // Initialize guest session for tracking
+    useEffect(() => {
+        if (!user?.user_id && !localStorage.getItem('guestSessionId')) {
+            localStorage.setItem('guestSessionId', `guest_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
         }
-    };
+    }, [user?.user_id]);
 
     const recordInteraction = async (productId: string, interactionType: 'view' | 'like' | 'cart') => {
         // For guest users, we can't record interactions, but we can still show the UI
@@ -295,10 +296,12 @@ export default function AIRecommendations({
                             {/* Product Image */}
                             <div className="relative h-48 bg-gray-100">
                                 {product.images && product.images[0] ? (
-                                    <img
+                                    <Image
                                         src={product.images[0]}
                                         alt={product.title}
                                         className="w-full h-full object-cover"
+                                        width={300}
+                                        height={192}
                                         onError={(e) => {
                                             const target = e.target as HTMLImageElement;
                                             target.src = '/placeholder-product.jpg';

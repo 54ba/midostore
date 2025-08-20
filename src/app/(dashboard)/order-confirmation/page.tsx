@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/app/contexts/AuthContext'
 import OrderConfirmationCard from '@/components/OrderConfirmationCard'
@@ -32,28 +32,7 @@ export default function OrderConfirmationPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (authLoading) return
-
-    if (!user) {
-      router.push('/login')
-      return
-    }
-
-    const urlParams = new URLSearchParams(window.location.search)
-    const orderId = urlParams.get('order_id')
-    const sessionId = urlParams.get('session_id')
-
-    if (!orderId) {
-      setError('Order ID not found in URL parameters')
-      setLoading(false)
-      return
-    }
-
-    fetchOrderAndPaymentData(orderId)
-  }, [user, authLoading, router])
-
-  const fetchOrderAndPaymentData = async (orderId: string) => {
+  const fetchOrderAndPaymentData = useCallback(async (orderId: string) => {
     try {
       setLoading(true)
 
@@ -105,7 +84,28 @@ export default function OrderConfirmationPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [router])
+
+  useEffect(() => {
+    if (authLoading) return
+
+    if (!user) {
+      router.push('/login')
+      return
+    }
+
+    const urlParams = new URLSearchParams(window.location.search)
+    const orderId = urlParams.get('order_id')
+    const sessionId = urlParams.get('session_id')
+
+    if (!orderId) {
+      setError('Order ID not found in URL parameters')
+      setLoading(false)
+      return
+    }
+
+    fetchOrderAndPaymentData(orderId)
+  }, [user, authLoading, router, fetchOrderAndPaymentData])
 
   const handleContinueShopping = () => {
     router.push('/dashboard')
@@ -252,10 +252,10 @@ export default function OrderConfirmationPage() {
                 <span
                   id="payment-status-badge"
                   className={`inline-flex px-3 py-1 rounded-full text-sm font-semibold ${paymentStatus === 'completed'
-                      ? 'bg-[rgb(var(--success))]/10 text-[rgb(var(--success))]'
-                      : paymentStatus === 'failed'
-                        ? 'bg-[rgb(var(--error))]/10 text-[rgb(var(--error))]'
-                        : 'bg-[rgb(var(--secondary))]/10 text-[rgb(var(--secondary))]'
+                    ? 'bg-[rgb(var(--success))]/10 text-[rgb(var(--success))]'
+                    : paymentStatus === 'failed'
+                      ? 'bg-[rgb(var(--error))]/10 text-[rgb(var(--error))]'
+                      : 'bg-[rgb(var(--secondary))]/10 text-[rgb(var(--secondary))]'
                     }`}
                 >
                   {paymentStatus.charAt(0).toUpperCase() + paymentStatus.slice(1)}

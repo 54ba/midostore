@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import Script from 'next/script'
@@ -10,12 +10,16 @@ import ClerkProviderWrapper from '@/components/ClerkProviderWrapper'
 
 const inter = Inter({ subsets: ['latin'] })
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+}
+
 export const metadata: Metadata = {
   title: 'MidoHub - Premium Dropshipping Platform',
   description: 'Connect to affordable toys and cosmetics from Alibaba with MidoHub. Your trusted dropshipping partner in the Gulf region.',
   keywords: 'dropshipping, toys, cosmetics, alibaba, gulf, middleeast, affordable products',
   authors: [{ name: 'MidoHub' }],
-  viewport: 'width=device-width, initial-scale=1',
   robots: 'index, follow',
   openGraph: {
     title: 'MidoHub - Premium Dropshipping Platform',
