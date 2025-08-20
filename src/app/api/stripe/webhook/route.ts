@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 
+// Required for static export compatibility
+export const dynamic = 'force-static'
+
 const PROXY_URL = 'https://api.internal.tasker.ai'
 const CHAT_ROOM_UUID = "91d799d8-8f50-4e00-92b7-738e055f90c4"
 const USER_UUID = "b3f753f4-ee49-4263-a1ec-1b798c8d5948"
@@ -50,10 +53,10 @@ export async function POST(request: NextRequest) {
     switch (event.type) {
       case 'checkout.session.completed':
         const session = event.data.object as Stripe.Checkout.Session
-        
+
         // Extract order_id from metadata
         const orderId = session.metadata?.order_id
-        
+
         if (!orderId) {
           console.error('No order_id found in session metadata')
           return NextResponse.json(
@@ -86,7 +89,7 @@ export async function POST(request: NextRequest) {
 
           const readData = await readResponse.json()
           const payments = readData.result?.values || []
-          
+
           if (payments.length === 0) {
             throw new Error('No payments found')
           }
@@ -94,11 +97,11 @@ export async function POST(request: NextRequest) {
           // Find the payment record for this order
           const headers = payments[0]
           const paymentRows = payments.slice(1)
-          
+
           const orderIdIndex = headers.indexOf('order_id')
           const statusIndex = headers.indexOf('status')
           const stripePaymentIdIndex = headers.indexOf('stripe_payment_id')
-          
+
           let paymentRowIndex = -1
           for (let i = 0; i < paymentRows.length; i++) {
             if (paymentRows[i][orderIdIndex] === orderId) {
@@ -114,7 +117,7 @@ export async function POST(request: NextRequest) {
           // Update the payment status and stripe payment ID
           const updateRange = `Payment!A${paymentRowIndex}:F${paymentRowIndex}`
           const currentRow = paymentRows[paymentRowIndex - 2]
-          
+
           // Update status and stripe_payment_id
           currentRow[statusIndex] = 'completed'
           currentRow[stripePaymentIdIndex] = session.payment_intent as string
@@ -141,7 +144,7 @@ export async function POST(request: NextRequest) {
           }
 
           console.log(`Payment updated successfully for order: ${orderId}`)
-          
+
         } catch (error: any) {
           console.error('Error updating payment status:', error.message)
           return NextResponse.json(
@@ -153,10 +156,10 @@ export async function POST(request: NextRequest) {
 
       case 'payment_intent.payment_failed':
         const failedPayment = event.data.object as Stripe.PaymentIntent
-        
+
         // Extract order_id from metadata
         const failedOrderId = failedPayment.metadata?.order_id
-        
+
         if (!failedOrderId) {
           console.error('No order_id found in failed payment metadata')
           break
@@ -186,7 +189,7 @@ export async function POST(request: NextRequest) {
 
           const readData = await readResponse.json()
           const payments = readData.result?.values || []
-          
+
           if (payments.length === 0) {
             throw new Error('No payments found')
           }
@@ -194,10 +197,10 @@ export async function POST(request: NextRequest) {
           // Find the payment record for this order
           const headers = payments[0]
           const paymentRows = payments.slice(1)
-          
+
           const orderIdIndex = headers.indexOf('order_id')
           const statusIndex = headers.indexOf('status')
-          
+
           let paymentRowIndex = -1
           for (let i = 0; i < paymentRows.length; i++) {
             if (paymentRows[i][orderIdIndex] === failedOrderId) {
@@ -213,7 +216,7 @@ export async function POST(request: NextRequest) {
           // Update the payment status to failed
           const updateRange = `Payment!A${paymentRowIndex}:F${paymentRowIndex}`
           const currentRow = paymentRows[paymentRowIndex - 2]
-          
+
           // Update status to failed
           currentRow[statusIndex] = 'failed'
 
@@ -239,7 +242,7 @@ export async function POST(request: NextRequest) {
           }
 
           console.log(`Payment marked as failed for order: ${failedOrderId}`)
-          
+
         } catch (error: any) {
           console.error('Error updating failed payment status:', error.message)
         }

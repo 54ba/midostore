@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 
+// Required for static export compatibility
+export const dynamic = 'force-static'
+
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
 
 interface UserSession {
@@ -22,7 +25,7 @@ export async function POST(request: NextRequest) {
     // Check authentication
     const cookieStore = await cookies()
     const authToken = cookieStore.get('auth_token')
-    
+
     if (!authToken) {
       return NextResponse.json(
         { success: false, error: 'Authentication required' },

@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 
+// Required for static export compatibility
+export const dynamic = 'force-static'
+
 const PROXY_URL = 'https://api.internal.tasker.ai'
 const CHAT_ROOM_UUID = "91d799d8-8f50-4e00-92b7-738e055f90c4"
 const USER_UUID = "b3f753f4-ee49-4263-a1ec-1b798c8d5948"
@@ -28,7 +31,7 @@ export async function GET(request: NextRequest) {
     // Check authentication
     const cookieStore = await cookies()
     const authToken = cookieStore.get('auth_token')
-    
+
     if (!authToken) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
@@ -68,17 +71,17 @@ export async function GET(request: NextRequest) {
     }
 
     const sheetsData = await response.json()
-    
+
     if (!sheetsData.result || !sheetsData.result.values || sheetsData.result.values.length === 0) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
     const rows = sheetsData.result.values
     const headers = rows[0]
-    
+
     // Find user by ID
     const userRow = rows.slice(1).find((row: string[]) => row[0] === userId)
-    
+
     if (!userRow) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
@@ -105,7 +108,7 @@ export async function PUT(request: NextRequest) {
     // Check authentication
     const cookieStore = await cookies()
     const authToken = cookieStore.get('auth_token')
-    
+
     if (!authToken) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
@@ -152,14 +155,14 @@ export async function PUT(request: NextRequest) {
     }
 
     const sheetsData = await readResponse.json()
-    
+
     if (!sheetsData.result || !sheetsData.result.values || sheetsData.result.values.length === 0) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
     const rows = sheetsData.result.values
     const userRowIndex = rows.slice(1).findIndex((row: string[]) => row[0] === userId)
-    
+
     if (userRowIndex === -1) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
@@ -216,7 +219,7 @@ export async function PUT(request: NextRequest) {
         full_name: full_name || userSession.full_name,
         phone: phone || userSession.phone
       }
-      
+
       cookieStore.set('auth_token', JSON.stringify(newUserSession), {
         httpOnly: true,
         sameSite: 'none',

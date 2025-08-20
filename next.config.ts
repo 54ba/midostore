@@ -17,11 +17,6 @@ const nextConfig: NextConfig = {
     // Optimize for Netlify deployment
     trailingSlash: false,
 
-    // Ensure proper static generation
-    generateStaticParams: async () => {
-        return [];
-    },
-
     images: {
         remotePatterns: [
             {
@@ -31,12 +26,6 @@ const nextConfig: NextConfig = {
         ],
         // Disable image optimization for Netlify compatibility
         unoptimized: true,
-    },
-
-    // Ensure proper export for Netlify
-    experimental: {
-        // Enable app directory features
-        appDir: true,
     },
 };
 

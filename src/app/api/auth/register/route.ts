@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { v4 as uuidv4 } from 'uuid'
 
+// Required for static export compatibility
+export const dynamic = 'force-static'
+
 const PROXY_URL = 'https://api.internal.tasker.ai'
 const CHAT_ROOM_UUID = "91d799d8-8f50-4e00-92b7-738e055f90c4"
 const USER_UUID = "b3f753f4-ee49-4263-a1ec-1b798c8d5948"
@@ -72,7 +75,7 @@ export async function POST(request: NextRequest) {
 
     // Check if email already exists (skip header row)
     const emailExists = existingUsers.slice(1).some((row: string[]) => row[1] === email)
-    
+
     if (emailExists) {
       return NextResponse.json(
         { success: false, error: 'Email already registered' },

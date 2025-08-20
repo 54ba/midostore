@@ -1,4 +1,4 @@
-# Copy these environment variables to your .env file
+# Copy these environment variables to your .env file and Netlify dashboard
 
 # Netlify Deployment Environment Variables
 NEXT_USE_NETLIFY_EDGE=true
@@ -6,12 +6,21 @@ NODE_VERSION=18
 NPM_VERSION=9
 
 # Next.js Configuration
-NEXT_PUBLIC_APP_URL=https://your-site-name.netlify.app
-
-# Build Configuration
+NEXT_PUBLIC_APP_URL=https://midostore.netlify.app
 NEXT_TELEMETRY_DISABLED=1
 
-# Optional: Add your actual environment variables below
-# DATABASE_URL=your_database_url_here
-# STRIPE_SECRET_KEY=your_stripe_secret_key_here
-# STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key_here
+# Netlify Analytics and Debug
+BASELINE_ANALYTICS=true
+BASELINE_ANALYTICS_DEBUG_EDGE_FUNCTION=true
+
+# Database Configuration
+NETLIFY_DATABASE_URL=your_database_url_here
+NETLIFY_DATABASE_URL_UNPOOLED=your_database_url_unpooled_here
+
+# Stripe Configuration (if using payments)
+STRIPE_SECRET_KEY=your_stripe_secret_key_here
+STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key_here
+STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret_here
+
+# Base URL for the application
+NEXT_PUBLIC_BASE_URL=https://midostore.netlify.app

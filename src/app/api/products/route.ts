@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 
+// Required for static export compatibility
+export const dynamic = 'force-static'
+
 const PROXY_URL = 'https://api.internal.tasker.ai'
 const CHAT_ROOM_UUID = "91d799d8-8f50-4e00-92b7-738e055f90c4"
 const USER_UUID = "b3f753f4-ee49-4263-a1ec-1b798c8d5948"
@@ -26,7 +29,7 @@ export async function GET(request: NextRequest) {
   try {
     const cookieStore = await cookies()
     const authToken = cookieStore.get('auth_token')
-    
+
     if (!authToken) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
@@ -94,7 +97,7 @@ export async function POST(request: NextRequest) {
   try {
     const cookieStore = await cookies()
     const authToken = cookieStore.get('auth_token')
-    
+
     if (!authToken) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
@@ -105,8 +108,8 @@ export async function POST(request: NextRequest) {
     const { alibaba_url, product_name, category, price, alibaba_price } = body
 
     if (!alibaba_url || !product_name || !category || !price || !alibaba_price) {
-      return NextResponse.json({ 
-        error: 'Missing required fields: alibaba_url, product_name, category, price, alibaba_price' 
+      return NextResponse.json({
+        error: 'Missing required fields: alibaba_url, product_name, category, price, alibaba_price'
       }, { status: 400 })
     }
 
@@ -163,7 +166,7 @@ export async function PUT(request: NextRequest) {
   try {
     const cookieStore = await cookies()
     const authToken = cookieStore.get('auth_token')
-    
+
     if (!authToken) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
@@ -272,7 +275,7 @@ export async function DELETE(request: NextRequest) {
   try {
     const cookieStore = await cookies()
     const authToken = cookieStore.get('auth_token')
-    
+
     if (!authToken) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
