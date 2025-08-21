@@ -169,7 +169,7 @@ export default function ProductsPage() {
                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                         <div>
                             <h1 className="text-3xl font-bold text-gray-900">
-                                {getCurrentCountry()?.nameAr || t('products')}
+                                {getCurrentCountry()?.name || t('products')}
                             </h1>
                             <p className="mt-2 text-gray-600">
                                 {t('discoverAmazingProducts')}
@@ -353,14 +353,20 @@ export default function ProductsPage() {
                 {/* Enhanced Products Grid */}
                 <ProductGrid
                     products={products.map(product => ({
-                        product_id: product.id,
-                        product_name: product.title,
+                        id: product.id,
+                        title: product.title,
+                        description: product.description,
                         price: product.price,
-                        alibaba_price: product.price * 0.7, // Mock alibaba price
-                        category: product.category || 'General',
-                        image_url: product.images[0],
+                        originalPrice: product.price * 1.3, // Mock original price
+                        currency: product.currency,
+                        images: product.images,
                         rating: product.rating,
-                        review_count: product.reviewCount
+                        reviewCount: product.reviewCount,
+                        soldCount: product.soldCount,
+                        category: product.category,
+                        supplier: product.supplier,
+                        isFeatured: false,
+                        isHot: false
                     }))}
                     loading={loading}
                 />

@@ -22,6 +22,15 @@ import {
   Crown,
   Gem,
   Flame,
+  Brain,
+  Cpu,
+  Eye,
+  BarChart,
+  Network,
+  Rocket,
+  Lightbulb,
+  Target as TargetIcon,
+  Globe as GlobeIcon,
 } from 'lucide-react';
 import Button from '@/components/Button';
 import Header from '@/components/Header';
@@ -34,6 +43,7 @@ import ProductAnalyticsDashboard from '@/components/ProductAnalyticsDashboard';
 import DynamicPricingDeals from '@/components/DynamicPricingDeals';
 import OrderBatchingSystem from '@/components/OrderBatchingSystem';
 import AuthNavigation from '@/components/AuthNavigation';
+import LiveUpdates from '@/components/LiveUpdates';
 
 export default function LandingPage() {
   const router = useRouter();
@@ -119,7 +129,7 @@ export default function LandingPage() {
       productDiscount: 50,
       isHotDeal: false,
       isLimitedTime: false,
-      timeRemaining: null
+      timeRemaining: undefined
     },
     {
       id: 'review-4',
@@ -146,7 +156,7 @@ export default function LandingPage() {
       productDiscount: 38,
       isHotDeal: true,
       isLimitedTime: false,
-      timeRemaining: null
+      timeRemaining: undefined
     }
   ]);
 
@@ -163,21 +173,174 @@ export default function LandingPage() {
       {/* Header */}
       <Header />
 
-      {/* Hero Section */}
-      <section className="py-16 bg-gradient-to-br from-blue-50 to-indigo-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Welcome to MidoHub
-          </h1>
-          <p className="text-lg text-gray-600 mb-8">
-            Your trusted dropshipping partner in the Gulf region
-          </p>
-          <Button
-            onClick={handleGetStarted}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg font-bold rounded-xl"
-          >
-            Get Started
-          </Button>
+      {/* AI Recommendations Section */}
+      <section className="py-20 bg-gradient-to-br from-purple-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-purple-100 to-indigo-100 dark:from-purple-900/20 dark:to-indigo-900/20 text-purple-800 dark:text-purple-400 mb-4">
+              <Brain className="w-4 h-4 mr-2" />
+              <span className="font-semibold">AI-Powered</span>
+            </div>
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              Intelligent Product Recommendations
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              Our advanced AI analyzes customer behavior, market trends, and product performance
+              to deliver personalized recommendations that boost your sales and customer satisfaction.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-100 dark:border-gray-700">
+              <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center mb-4">
+                <TargetIcon className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Smart Targeting</h3>
+              <p className="text-gray-600 dark:text-gray-300">AI-driven customer segmentation and personalized product suggestions based on browsing patterns and purchase history.</p>
+            </div>
+
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-100 dark:border-gray-700">
+              <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center mb-4">
+                <TrendingUp className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Trend Analysis</h3>
+              <p className="text-gray-600 dark:text-gray-300">Real-time market trend detection and predictive analytics to stay ahead of customer demands and market shifts.</p>
+            </div>
+
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-100 dark:border-gray-700">
+              <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mb-4">
+                <Lightbulb className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Insight Generation</h3>
+              <p className="text-gray-600 dark:text-gray-300">Deep insights into product performance, customer preferences, and optimization opportunities for your business.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Live Updates Section */}
+      <LiveUpdates />
+
+      {/* Analytics & Insights Section */}
+      <section className="py-20 bg-gradient-to-br from-blue-50 to-cyan-100 dark:from-gray-900 dark:to-gray-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-100 to-cyan-100 dark:from-blue-900/20 dark:to-cyan-900/20 text-blue-800 dark:text-blue-400 mb-4">
+              <BarChart className="w-4 h-4 mr-2" />
+              <span className="font-semibold">Analytics & Insights</span>
+            </div>
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              Comprehensive Business Intelligence
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              Get deep insights into your business performance with real-time analytics,
+              customizable dashboards, and actionable intelligence to drive growth.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <div className="flex items-start space-x-4">
+                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Eye className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Real-Time Monitoring</h3>
+                  <p className="text-gray-600 dark:text-gray-300">Track sales, inventory, and customer behavior in real-time with live dashboards and instant notifications.</p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-4">
+                <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <BarChart3 className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Advanced Reporting</h3>
+                  <p className="text-gray-600 dark:text-gray-300">Generate comprehensive reports with customizable metrics, visualizations, and export capabilities.</p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-4">
+                <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Target className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Performance Tracking</h3>
+                  <p className="text-gray-600 dark:text-gray-300">Monitor KPIs, set goals, and track progress with automated alerts and performance insights.</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl border border-gray-100 dark:border-gray-700">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-lg">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Conversion Rate</span>
+                  <span className="text-lg font-bold text-blue-600 dark:text-blue-400">3.2%</span>
+                </div>
+                <div className="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Avg. Order Value</span>
+                  <span className="text-lg font-bold text-green-600 dark:text-green-400">$89.45</span>
+                </div>
+                <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-lg">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Customer Lifetime</span>
+                  <span className="text-lg font-bold text-purple-600 dark:text-purple-400">$1,247</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* AI Orchestrator Dashboard Section */}
+      <section className="py-20 bg-gradient-to-br from-orange-50 to-red-100 dark:from-gray-900 dark:to-gray-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-orange-100 to-red-100 dark:from-orange-900/20 dark:to-red-900/20 text-orange-800 dark:text-orange-400 mb-4">
+              <Cpu className="w-4 h-4 mr-2" />
+              <span className="font-semibold">AI Orchestrator</span>
+            </div>
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              Centralized AI Command Center
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              Manage all your AI-powered tools from one unified dashboard. Coordinate scraping,
+              recommendations, analytics, and automation workflows seamlessly.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-100 dark:border-gray-700 text-center">
+              <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Network className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Workflow Management</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Create and manage complex AI workflows with drag-and-drop interface</p>
+            </div>
+
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-100 dark:border-gray-700 text-center">
+              <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Rocket className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Automation Engine</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Set up automated tasks and triggers for seamless operation</p>
+            </div>
+
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-100 dark:border-gray-700 text-center">
+              <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Shield className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Security & Compliance</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Enterprise-grade security with role-based access control</p>
+            </div>
+
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-100 dark:border-gray-700 text-center">
+              <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <GlobeIcon className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Global Integration</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Connect with 100+ platforms and services worldwide</p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -192,17 +355,17 @@ export default function LandingPage() {
       </section>
 
       {/* Product Analytics Dashboard */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 mb-4">
+            <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20 text-blue-800 dark:text-blue-400 mb-4">
               <BarChart3 className="w-4 h-4 mr-2" />
               <span className="font-semibold">Real-Time Analytics</span>
             </div>
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
               Comprehensive Product Analytics
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               Track product performance, sales trends, and customer behavior in real-time.
               Make data-driven decisions to maximize your profits.
             </p>
@@ -213,17 +376,17 @@ export default function LandingPage() {
       </section>
 
       {/* Real Product Reviews Section */}
-      <section className="py-20 bg-gradient-to-br from-blue-50 to-indigo-50">
+      <section className="py-20 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-green-100 to-blue-100 text-green-800 mb-4">
+            <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-green-100 to-blue-100 dark:from-green-900/20 dark:to-blue-900/20 text-green-800 dark:text-green-400 mb-4">
               <Star className="w-4 h-4 mr-2" />
               <span className="font-semibold">Real Customer Reviews</span>
             </div>
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
               What Our Customers Say About Products
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               Read authentic reviews from verified customers who have purchased and used our products.
               Real feedback, real experiences, real insights.
             </p>
@@ -238,7 +401,7 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section id="features-section" className="py-20 bg-white">
+      <section id="features-section" className="py-20 bg-white dark:bg-gray-900">
         <FeatureGrid />
       </section>
 

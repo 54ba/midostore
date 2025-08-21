@@ -7,6 +7,7 @@ import { AuthProvider } from '@/app/contexts/AuthContext'
 import { CartProvider } from '@/app/contexts/CartContext'
 import LiveSalesTicker from '@/components/LiveSalesTicker'
 import { LocalizationProvider } from '@/app/contexts/LocalizationContext'
+import { ThemeProvider } from '@/app/contexts/ThemeContext'
 import ClerkProviderWrapper from '@/components/ClerkProviderWrapper'
 import ClerkAuthWrapper from '@/components/ClerkAuthWrapper'
 import SimpleAnalyticsTracker from '@/components/SimpleAnalyticsTracker'
@@ -48,20 +49,22 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <LiveSalesTicker />
       </Suspense>
 
-      <LocalizationProvider>
-        <AuthProvider>
-          <CartProvider>
-            {isClerkConfigured ? (
-              <ClerkAuthWrapper>
-                {children}
-              </ClerkAuthWrapper>
-            ) : (
-              // Keyless mode - render children directly
-              children
-            )}
-          </CartProvider>
-        </AuthProvider>
-      </LocalizationProvider>
+      <ThemeProvider>
+        <LocalizationProvider>
+          <AuthProvider>
+            <CartProvider>
+              {isClerkConfigured ? (
+                <ClerkAuthWrapper>
+                  {children}
+                </ClerkAuthWrapper>
+              ) : (
+                // Keyless mode - render children directly
+                children
+              )}
+            </CartProvider>
+          </AuthProvider>
+        </LocalizationProvider>
+      </ThemeProvider>
 
       {/* SimpleAnalytics Tracker */}
       <Suspense fallback={null}>
