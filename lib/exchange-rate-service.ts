@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { prisma } from './db';
-import { config } from '../env.config';
+import envConfig from '../env.config';
 
 export interface ExchangeRateData {
     fromCurrency: string;
@@ -11,7 +11,7 @@ export interface ExchangeRateData {
 
 export class ExchangeRateService {
     private cache: Map<string, { rate: number; timestamp: number }> = new Map();
-    private readonly CACHE_DURATION = config.exchangeRate.cacheDuration * 60 * 1000; // Convert minutes to milliseconds
+    private readonly CACHE_DURATION = envConfig.exchangeRate.cacheDuration * 60 * 1000; // Convert minutes to milliseconds
 
     async getExchangeRate(fromCurrency: string, toCurrency: string): Promise<number> {
         const cacheKey = `${fromCurrency}-${toCurrency}`;
@@ -79,7 +79,7 @@ export class ExchangeRateService {
     }
 
     async getGulfCountryRates(): Promise<Record<string, number>> {
-        const gulfCurrencies = config.gulfCountries.map(country => country.currency);
+        const gulfCurrencies = envConfig.gulfCountries.map(country => country.currency);
         const rates: Record<string, number> = {};
 
         // Fetch all rates concurrently for better performance
@@ -107,7 +107,7 @@ export class ExchangeRateService {
     async updateAllRates(): Promise<void> {
         console.log('🔄 Starting exchange rate update...');
 
-        const currencies = ['USD', 'EUR', 'GBP', 'CNY', ...config.gulfCountries.map(c => c.currency)];
+        const currencies = ['USD', 'EUR', 'GBP', 'CNY', ...envConfig.gulfCountries.map(c => c.currency)];
         const updatePromises: Promise<void>[] = [];
 
         for (const fromCurrency of currencies) {
@@ -228,7 +228,7 @@ export class ExchangeRateService {
     }
 
     private async fetchFromExchangeRateAPI(fromCurrency: string, toCurrency: string): Promise<number> {
-        const response = await axios.get(`${config.exchangeRate.primary.baseUrl}/${fromCurrency}`, {
+        const response = await axios.get(`${envConfig.exchangeRate.primary.baseUrl}/${fromCurrency}`, {
             timeout: 10000,
         });
         const data = response.data;
@@ -241,15 +241,15 @@ export class ExchangeRateService {
     }
 
     private async fetchFromFixerAPI(fromCurrency: string, toCurrency: string): Promise<number> {
-        if (!config.exchangeRate.fixer.apiKey) {
+        if (!envConfig.exchangeRate.fixer.apiKey) {
             throw new Error('Fixer API key not configured');
         }
 
-        const response = await axios.get(`${config.exchangeRate.fixer.baseUrl}/latest`, {
+        const response = await axios.get(`${envConfig.exchangeRate.fixer.baseUrl}/latest`, {
             params: {
                 base: fromCurrency,
                 symbols: toCurrency,
-                access_key: config.exchangeRate.fixer.apiKey,
+                access_key: envConfig.exchangeRate.fixer.apiKey,
             },
             timeout: 10000,
         });
@@ -263,15 +263,15 @@ export class ExchangeRateService {
     }
 
     private async fetchFromCurrencyAPI(fromCurrency: string, toCurrency: string): Promise<number> {
-        if (!config.exchangeRate.currency.apiKey) {
+        if (!envConfig.exchangeRate.currency.apiKey) {
             throw new Error('Currency API key not configured');
         }
 
-        const response = await axios.get(`${config.exchangeRate.currency.baseUrl}/latest`, {
+        const response = await axios.get(`${envConfig.exchangeRate.currency.baseUrl}/latest`, {
             params: {
                 base_currency: fromCurrency,
                 currencies: toCurrency,
-                apikey: config.exchangeRate.currency.apiKey,
+                apikey: envConfig.exchangeRate.currency.apiKey,
             },
             timeout: 10000,
         });
@@ -285,11 +285,11 @@ export class ExchangeRateService {
     }
 
     private async fetchFromOpenExchangeRatesAPI(fromCurrency: string, toCurrency: string): Promise<number> {
-        if (!config.exchangeRate.openExchangeRates.apiKey) {
+        if (!envConfig.exchangeRate.openExchangeRates.apiKey) {
             throw new Error('Open Exchange Rates API key not configured');
         }
 
-        const response = await axios.get(`${config.exchangeRate.openExchangeRates.baseUrl}/latest/${fromCurrency}`, {
+        const response = await axios.get(`${envConfig.exchangeRate.openExchangeRates.baseUrl}/latest/${fromCurrency}`, {
             timeout: 10000,
         });
         const data = response.data;
@@ -302,13 +302,13 @@ export class ExchangeRateService {
     }
 
     private async fetchFromCurrencyLayerAPI(fromCurrency: string, toCurrency: string): Promise<number> {
-        if (!config.exchangeRate.currencyLayer.apiKey) {
+        if (!envConfig.exchangeRate.currencyLayer.apiKey) {
             throw new Error('Currency Layer API key not configured');
         }
 
-        const response = await axios.get(`${config.exchangeRate.currencyLayer.baseUrl}/live`, {
+        const response = await axios.get(`${envConfig.exchangeRate.currencyLayer.baseUrl}/live`, {
             params: {
-                access_key: config.exchangeRate.currencyLayer.apiKey,
+                access_key: envConfig.exchangeRate.currencyLayer.apiKey,
                 source: fromCurrency,
                 currencies: toCurrency,
                 format: 1,
@@ -349,8 +349,8 @@ export class ExchangeRateService {
             valid: validEntries,
             expired: expiredEntries,
             cacheDuration: this.CACHE_DURATION,
-            cacheDurationMinutes: config.exchangeRate.cacheDuration,
-            updateFrequencyMinutes: config.exchangeRate.updateFrequency,
+            cacheDurationMinutes: envConfig.exchangeRate.cacheDuration,
+            updateFrequencyMinutes: envConfig.exchangeRate.updateFrequency,
         };
     }
 
@@ -368,24 +368,24 @@ export class ExchangeRateService {
     getAPIStatus(): Record<string, { configured: boolean; name: string }> {
         return {
             primary: {
-                configured: !!config.exchangeRate.primary.apiKey,
-                name: config.exchangeRate.primary.name,
+                configured: !!envConfig.exchangeRate.primary.apiKey,
+                name: envConfig.exchangeRate.primary.name,
             },
             fixer: {
-                configured: !!config.exchangeRate.fixer.apiKey,
-                name: config.exchangeRate.fixer.name,
+                configured: !!envConfig.exchangeRate.fixer.apiKey,
+                name: envConfig.exchangeRate.fixer.name,
             },
             currency: {
-                configured: !!config.exchangeRate.currency.apiKey,
-                name: config.exchangeRate.currency.name,
+                configured: !!envConfig.exchangeRate.currency.apiKey,
+                name: envConfig.exchangeRate.currency.name,
             },
             openExchangeRates: {
-                configured: !!config.exchangeRate.openExchangeRates.apiKey,
-                name: config.exchangeRate.openExchangeRates.name,
+                configured: !!envConfig.exchangeRate.openExchangeRates.apiKey,
+                name: envConfig.exchangeRate.openExchangeRates.name,
             },
             currencyLayer: {
-                configured: !!config.exchangeRate.currencyLayer.apiKey,
-                name: config.exchangeRate.currencyLayer.name,
+                configured: !!envConfig.exchangeRate.currencyLayer.apiKey,
+                name: envConfig.exchangeRate.currencyLayer.name,
             },
         };
     }

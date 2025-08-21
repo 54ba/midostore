@@ -3,7 +3,7 @@
 import React from 'react';
 import { useAuth } from '@/app/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/Button';
+import Button from '@/components/Button';
 import { ShoppingCart, Package, TrendingUp, User, Settings } from 'lucide-react';
 
 export default function DashboardPage() {

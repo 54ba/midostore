@@ -3,12 +3,27 @@
 import { useState } from 'react'
 import { Search, ShoppingBag, Star, Truck, Shield, Clock } from 'lucide-react'
 import Link from 'next/link'
+import Button from './Button'
 
 interface EnhancedHeroSectionProps {
   className?: string
+  title?: string
+  subtitle?: string
+  onGetStarted?: () => void
+  onSignIn?: () => void
+  onLearnMore?: () => void
+  isClerkConfigured?: boolean
 }
 
-export default function EnhancedHeroSection({ className = '' }: EnhancedHeroSectionProps) {
+export default function EnhancedHeroSection({
+  className = '',
+  title = "Discover Amazing Products at Great Prices",
+  subtitle = "Shop the latest trends with confidence. We offer quality products, competitive prices, and exceptional customer service.",
+  onGetStarted,
+  onSignIn,
+  onLearnMore,
+  isClerkConfigured = false
+}: EnhancedHeroSectionProps) {
   const [searchQuery, setSearchQuery] = useState('')
 
   const handleSearch = (e: React.FormEvent) => {
@@ -61,13 +76,11 @@ export default function EnhancedHeroSection({ className = '' }: EnhancedHeroSect
             </div>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
-              Discover Amazing
-              <span className="block text-secondary">Products</span>
-              at Great Prices
+              {title}
             </h1>
 
             <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto lg:mx-0">
-              Shop the latest trends with confidence. We offer quality products, competitive prices, and exceptional customer service.
+              {subtitle}
             </p>
 
             {/* Search Bar */}
@@ -92,72 +105,58 @@ export default function EnhancedHeroSection({ className = '' }: EnhancedHeroSect
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Link
-                href="/products"
-                className="inline-flex items-center justify-center px-8 py-4 bg-purple-500 text-white font-semibold rounded-xl hover:bg-purple-500/90 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-              >
-                <ShoppingBag className="w-5 h-5 mr-2" />
-                Shop Now
-              </Link>
-              <Link
-                href="/about"
-                className="inline-flex items-center justify-center px-8 py-4 bg-white/20 backdrop-blur-sm text-white font-semibold rounded-xl hover:bg-white/30 transition-all duration-200 border border-white/30"
-              >
-                Learn More
-              </Link>
+              {onGetStarted ? (
+                <Button
+                  onClick={onGetStarted}
+                  className="inline-flex items-center justify-center px-8 py-4 bg-purple-500 text-white font-semibold rounded-xl hover:bg-purple-500/90 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                >
+                  <ShoppingBag className="w-5 h-5 mr-2" />
+                  {isClerkConfigured ? 'Get Started' : 'Explore Products'}
+                </Button>
+              ) : (
+                <Link
+                  href="/products"
+                  className="inline-flex items-center justify-center px-8 py-4 bg-purple-500 text-white font-semibold rounded-xl hover:bg-purple-500/90 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                >
+                  <ShoppingBag className="w-5 h-5 mr-2" />
+                  Shop Now
+                </Link>
+              )}
+
+              {onSignIn && isClerkConfigured && (
+                <Button
+                  onClick={onSignIn}
+                  variant="outline"
+                  className="inline-flex items-center justify-center px-8 py-4 border-2 border-white text-white font-semibold rounded-xl hover:bg-white hover:text-blue-600 transition-all duration-200"
+                >
+                  Sign In
+                </Button>
+              )}
+
+              {onLearnMore && (
+                <Button
+                  onClick={onLearnMore}
+                  variant="outline"
+                  className="inline-flex items-center justify-center px-8 py-4 border-2 border-white text-white font-semibold rounded-xl hover:bg-white hover:text-blue-600 transition-all duration-200"
+                >
+                  Learn More
+                </Button>
+              )}
             </div>
           </div>
 
-          {/* Right Content - Product Showcase */}
-          <div className="relative">
-            <div className="relative z-10">
-              {/* Main Product Card */}
-              <div className="bg-white rounded-2xl shadow-2xl p-6 transform rotate-3 hover:rotate-0 transition-transform duration-300">
-                <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl h-64 mb-4 flex items-center justify-center">
-                  <ShoppingBag className="w-20 h-20 text-gray-400" />
-                </div>
-                <h3 className="font-semibold text-gray-900 mb-2">Premium Product</h3>
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="flex text-amber-400">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-current" />
-                    ))}
-                  </div>
-                  <span className="text-sm text-gray-600">(128 reviews)</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl font-bold text-primary">$99.99</span>
-                  <span className="text-sm text-gray-500 line-through">$149.99</span>
-                </div>
-              </div>
-
-              {/* Floating Elements */}
-              <div className="absolute -top-4 -right-4 bg-purple-500 text-white px-4 py-2 rounded-full text-sm font-medium shadow-lg">
-                Save 33%
-              </div>
-              <div className="absolute -bottom-4 -left-4 bg-white px-4 py-2 rounded-full text-sm font-medium shadow-lg text-gray-900">
-                Free Shipping
-              </div>
-            </div>
-
-            {/* Background Decorative Elements */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
-            <div className="absolute top-1/4 right-1/4 w-32 h-32 bg-purple-500/30 rounded-full blur-2xl" />
-          </div>
-        </div>
-      </div>
-
-      {/* Features Section */}
-      <div className="relative bg-white/95 backdrop-blur-sm mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          {/* Right Content - Features Grid */}
+          <div className="grid grid-cols-2 gap-4">
             {features.map((feature, index) => (
-              <div key={index} className="text-center group">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-500/10 rounded-full mb-4 group-hover:bg-blue-500/20 transition-colors">
-                  <feature.icon className="w-8 h-8 text-primary" />
+              <div
+                key={index}
+                className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center text-white hover:bg-white/20 transition-all duration-300 transform hover:scale-105"
+              >
+                <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mx-auto mb-3">
+                  <feature.icon className="w-6 h-6" />
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-2">{feature.title}</h3>
-                <p className="text-sm text-gray-600">{feature.description}</p>
+                <h3 className="font-semibold mb-1">{feature.title}</h3>
+                <p className="text-sm text-white/80">{feature.description}</p>
               </div>
             ))}
           </div>

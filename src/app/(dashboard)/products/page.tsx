@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useLocationRecommendations } from '@/hooks/useLocationRecommendations';
 import { Globe, DollarSign, Star, ShoppingCart, Eye } from 'lucide-react';
-import { config } from '../../../../env.config';
+import envConfig from '../../../../env.config';
 import AIEnhancedSearch from '@/components/AIEnhancedSearch';
 import ProductGrid from '@/components/ProductGrid';
 import LocalizationPanel from '@/components/LocalizationPanel';
@@ -52,7 +52,7 @@ export default function ProductsPage() {
     const [pagination, setPagination] = useState<any>(null);
     const [showFilters, setShowFilters] = useState(false);
 
-    const categories = config.scrapingCategories;
+    const categories = envConfig.scrapingCategories;
 
     // AI Location Recommendations
     const {
@@ -143,7 +143,7 @@ export default function ProductsPage() {
     }, [location, getRecommendations, searchQuery]);
 
     const getCurrentCountry = () => {
-        return config.gulfCountries.find(c => c.locale === currentLocale);
+        return envConfig.gulfCountries.find(c => c.locale === currentLocale);
     };
 
     const handleLocationChange = useCallback((newLocation: any) => {
@@ -361,10 +361,6 @@ export default function ProductsPage() {
                         rating: product.rating,
                         review_count: product.reviewCount
                     }))}
-                    onAddToCart={async (productId: string, quantity: number) => {
-                        // Handle add to cart
-                        console.log('Adding to cart:', productId, quantity);
-                    }}
                     loading={loading}
                 />
 

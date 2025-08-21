@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/app/contexts/AuthContext'
 import LoadingSpinner from '@/components/LoadingSpinner'
+import { useCart } from '@/app/contexts/CartContext'
 
 interface Product {
   product_id: string
@@ -12,12 +13,14 @@ interface Product {
   category: string
   price: number
   alibaba_price: number
+  image_url?: string // Added for cart context
 }
 
 export default function ProductDetailPage() {
   const { id } = useParams()
   const router = useRouter()
   const { user, loading: authLoading } = useAuth()
+  const { addToCart } = useCart()
 
   const [product, setProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
@@ -75,46 +78,24 @@ export default function ProductDetailPage() {
   }
 
   const handleAddToCart = async () => {
-    if (!product || !user) return
+    if (!product) return
 
     try {
       setAddingToCart(true)
       setAddToCartMessage(null)
 
-      const totalAmount = product.price * quantity
+      // Use the cart context instead of API
+      addToCart({
+        product_id: product.product_id,
+        product_name: product.product_name,
+        price: product.price,
+        image_url: product.image_url,
+        category: product.category,
+        currency: 'USD'
+      }, quantity);
 
-      // POST create new order - requires auth_token cookie, body: product_id, product_name, quantity, total_amount
-      const response = await fetch('/api/orders', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          product_id: product.product_id,
-          product_name: product.product_name,
-          quantity: quantity,
-          total_amount: totalAmount
-        })
-      })
-
-      if (response.status === 401) {
-        router.push('/login')
-        return
-      }
-
-      if (!response.ok) {
-        throw new Error('Failed to add to cart')
-      }
-
-      const result = await response.json()
-
-      if (result.success) {
-        setAddToCartMessage('Product added to cart successfully!')
-        setTimeout(() => setAddToCartMessage(null), 3000)
-      } else {
-        setError('Failed to add product to cart')
-      }
+      setAddToCartMessage('Product added to cart successfully!')
+      setTimeout(() => setAddToCartMessage(null), 3000)
     } catch (err) {
       setError('Failed to add product to cart')
       console.error('Error adding to cart:', err)

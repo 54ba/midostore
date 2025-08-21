@@ -1,5 +1,3 @@
-// Temporarily commented out to fix build issues
-/*
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 
@@ -43,9 +41,4 @@ export async function GET(request: NextRequest) {
             { status: 500 }
         );
     }
-}
-*/
-
-export async function GET() {
-    return new Response('Scraping temporarily disabled', { status: 503 });
 }

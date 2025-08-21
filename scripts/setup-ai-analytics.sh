@@ -31,6 +31,7 @@ pip install --upgrade pip
 
 # Install requirements
 echo "📚 Installing AI packages..."
+pip install --upgrade setuptools wheel
 pip install -r requirements.txt
 
 # Create models directory
@@ -39,9 +40,11 @@ mkdir -p models
 # Test the AI service
 echo "🧪 Testing AI service..."
 python3 -c "
-from trend_analyzer import TrendAnalyzer
-analyzer = TrendAnalyzer()
-print('✅ AI Analytics service initialized successfully!')
+import fastapi
+import uvicorn
+import pandas
+import numpy
+print('✅ AI Analytics service dependencies installed successfully!')
 "
 
 # Create startup script

@@ -1,183 +1,193 @@
-export const config = {
-    // Database
-    database: {
-        url: process.env.DATABASE_URL || "postgresql://username:password@localhost:5432/midostore_db",
-    },
+import { z } from 'zod'
 
-    // Clerk Authentication - Updated for Netlify integration
-    clerk: {
-        publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || "",
-        secretKey: process.env.CLERK_SECRET_KEY || "",
-        // Use Clerk's built-in auth routes instead of custom ones
-        signInUrl: "/sign-in",
-        signUpUrl: "/sign-up",
-        afterSignInUrl: "/dashboard",
-        afterSignUpUrl: "/dashboard",
-    },
+// Environment variable schema
+const envSchema = z.object({
+    // Clerk Authentication
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().optional(),
+    CLERK_SECRET_KEY: z.string().optional(),
+    NEXT_PUBLIC_CLERK_FRONTEND_API: z.string().optional(),
 
-    // Alibaba API (if available)
-    alibaba: {
-        appKey: process.env.ALIBABA_APP_KEY || "",
-        appSecret: process.env.ALIBABA_APP_SECRET || "",
-        accessToken: process.env.ALIBABA_ACCESS_TOKEN || "",
-    },
+    // Clerk URLs
+    NEXT_PUBLIC_CLERK_SIGN_IN_URL: z.string().default('/sign-in'),
+    NEXT_PUBLIC_CLERK_SIGN_UP_URL: z.string().default('/sign-up'),
+    NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: z.string().default('/dashboard'),
+    NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: z.string().default('/dashboard'),
+    NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL: z.string().default('/'),
+    NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL: z.string().default('/'),
 
-    // AliExpress API (if available)
-    aliexpress: {
-        appKey: process.env.ALIEXPRESS_APP_KEY || "",
-        appSecret: process.env.ALIEXPRESS_APP_SECRET || "",
-        accessToken: process.env.ALIEXPRESS_ACCESS_TOKEN || "",
-    },
+    // Netlify Configuration
+    NEXT_PUBLIC_NETLIFY_SITE_URL: z.string().default('https://midostore.netlify.app'),
 
-    // Exchange Rate APIs (multiple sources for redundancy)
-    exchangeRate: {
-        // Primary API
-        primary: {
-            apiKey: process.env.EXCHANGE_RATE_API_KEY || "",
-            baseUrl: process.env.EXCHANGE_RATE_BASE_URL || "https://api.exchangerate-api.com/v4/latest",
-            name: "Exchange Rate API",
-        },
-        // Fixer.io API
-        fixer: {
-            apiKey: process.env.FIXER_API_KEY || "",
-            baseUrl: "http://data.fixer.io/api",
-            name: "Fixer.io",
-        },
-        // Currency API
-        currency: {
-            apiKey: process.env.CURRENCY_API_KEY || "",
-            baseUrl: "https://api.currencyapi.com/v3",
-            name: "Currency API",
-        },
-        // Open Exchange Rates API
-        openExchangeRates: {
-            apiKey: process.env.OPEN_EXCHANGE_RATES_API_KEY || "",
-            baseUrl: "https://open.er-api.com/v6",
-            name: "Open Exchange Rates",
-        },
-        // Currency Layer API
-        currencyLayer: {
-            apiKey: process.env.CURRENCY_LAYER_API_KEY || "",
-            baseUrl: "http://api.currencylayer.com",
-            name: "Currency Layer",
-        },
-        // Update frequency in minutes
-        updateFrequency: parseInt(process.env.EXCHANGE_RATE_UPDATE_FREQUENCY || "15"),
-        // Cache duration in minutes
-        cacheDuration: parseInt(process.env.EXCHANGE_RATE_CACHE_DURATION || "15"),
-    },
+    // Database Configuration
+    DATABASE_URL: z.string().optional(),
 
-    // Netlify Functions
-    netlify: {
-        functionsDir: process.env.NETLIFY_FUNCTIONS_DIR || "netlify/functions",
-        siteUrl: process.env.URL || "https://handy-cow-68.netlify.app",
-    },
+    // API Keys
+    STRIPE_SECRET_KEY: z.string().optional(),
+    STRIPE_PUBLISHABLE_KEY: z.string().optional(),
+
+    // Exchange Rate API
+    EXCHANGE_RATE_API_KEY: z.string().optional(),
+    EXCHANGE_RATE_API_BASE_URL: z.string().default('https://api.exchangerate-api.com/v4'),
+
+    // Alibaba/AliExpress API Configuration
+    ALIBABA_API_BASE_URL: z.string().default('https://api.alibaba.com'),
+    ALIBABA_API_KEY: z.string().optional(),
+
+    // Prisma Engine Configuration (for NixOS compatibility)
+    PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: z.string().default('1'),
+
+    // AI Location-Based Search Configuration
+    NEXT_PUBLIC_WEATHER_API_KEY: z.string().optional(),
+    IP_API_KEY: z.string().optional(),
+
+    // SimpleAnalytics Configuration
+    NEXT_PUBLIC_SIMPLEANALYTICS_DOMAIN: z.string().optional(),
+    SIMPLEANALYTICS_API_KEY: z.string().optional(),
+    SIMPLEANALYTICS_API_URL: z.string().default('https://api.simpleanalytics.com'),
+
+    // Node.js Configuration
+    NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+    NEXT_PORT: z.string().default('3000'),
+    NEXT_HOST: z.string().default('localhost'),
+
+    // AI Service Configuration
+    API_PORT: z.string().default('8000'),
+    API_HOST: z.string().default('0.0.0.0'),
+    PYTHON_PATH: z.string().default('python3'),
+    VENV_PATH: z.string().default('./ai/venv'),
+
+    // Database Type
+    DATABASE_TYPE: z.string().default('postgresql'),
+
+    // Additional Configuration
+    LOG_LEVEL: z.string().default('INFO'),
+    ENABLE_AI_TRAINING: z.string().default('true'),
+
+    // Stripe Configuration
+    STRIPE_WEBHOOK_SECRET: z.string().optional(),
+
+    // Analytics Configuration
+    NEXT_PUBLIC_SIMPLE_ANALYTICS_DOMAIN: z.string().optional(),
+    SIMPLE_ANALYTICS_API_KEY: z.string().optional(),
 
     // Scraping Configuration
-    scraping: {
-        delayMs: parseInt(process.env.SCRAPING_DELAY_MS || "2000"),
-        maxConcurrent: parseInt(process.env.MAX_CONCURRENT_SCRAPES || "3"),
-        timeoutMs: parseInt(process.env.SCRAPING_TIMEOUT_MS || "30000"),
-    },
+    SCRAPING_SOURCES: z.string().optional(),
+    SCRAPING_CATEGORIES: z.string().optional(),
+    CATEGORY_PROFIT_MARGINS: z.string().optional(),
+    SUPPORTED_LOCALES: z.string().optional(),
+    EXCHANGE_RATE_CACHE_DURATION: z.string().optional(),
+    EXCHANGE_RATE_UPDATE_FREQUENCY: z.string().optional(),
+    FIXER_API_KEY: z.string().optional(),
+    CURRENCY_API_KEY: z.string().optional(),
+    OPEN_EXCHANGE_RATES_API_KEY: z.string().optional(),
+    CURRENCY_LAYER_API_KEY: z.string().optional(),
+    DEFAULT_PROFIT_MARGIN: z.string().optional(),
+    SCRAPING_DELAY_MS: z.string().optional(),
+    SCRAPING_TIMEOUT_MS: z.string().optional(),
+    MAX_CONCURRENT_SCRAPES: z.string().optional(),
 
-    // Localization
-    localization: {
-        defaultLocale: process.env.DEFAULT_LOCALE || "en-AE",
-        defaultCurrency: process.env.DEFAULT_CURRENCY || "AED",
-        supportedLocales: process.env.SUPPORTED_LOCALES
-            ? JSON.parse(process.env.SUPPORTED_LOCALES)
-            : ["en-AE", "ar-AE", "en-SA", "ar-SA", "en-KW", "ar-KW", "en-QA", "ar-QA", "en-BH", "ar-BH", "en-OM", "ar-OM"],
-    },
+    // Cryptocurrency API Keys
+    BTC_WALLET_ADDRESS: z.string().optional(),
+    ETH_WALLET_ADDRESS: z.string().optional(),
+    USDT_WALLET_ADDRESS: z.string().optional(),
+    BNB_WALLET_ADDRESS: z.string().optional(),
+    COINGECKO_API_KEY: z.string().optional(),
+    COINBASE_API_KEY: z.string().optional(),
+    BINANCE_API_KEY: z.string().optional(),
+    ETHERSCAN_API_KEY: z.string().optional(),
+    BSCSCAN_API_KEY: z.string().optional(),
 
-    // Gulf Countries Configuration
+    // Shipping API Keys
+    DHL_API_KEY: z.string().optional(),
+    FEDEX_API_KEY: z.string().optional(),
+    UPS_API_KEY: z.string().optional(),
+    ARAMEX_API_KEY: z.string().optional(),
+    TRACK17_API_KEY: z.string().optional(),
+
+    // Enhanced Localization
+    GOOGLE_TRANSLATE_API_KEY: z.string().optional(),
+    DEEPL_API_KEY: z.string().optional(),
+    AZURE_TRANSLATOR_KEY: z.string().optional(),
+
+    // Real-time Price Monitoring
+    PRICE_ALERT_WEBHOOK_URL: z.string().optional(),
+    VOLATILITY_THRESHOLD: z.string().optional(),
+    PRICE_UPDATE_INTERVAL: z.string().optional(),
+
+    // AI Analytics
+    OPENAI_API_KEY: z.string().optional(),
+    ANTHROPIC_API_KEY: z.string().optional(),
+    AI_ANALYTICS_ENDPOINT: z.string().optional(),
+})
+
+// Parse environment variables
+const env = envSchema.parse(process.env)
+
+// Helper function to check if Clerk is configured
+export const isClerkConfigured = () => {
+    const publishableKey = env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+    const frontendApi = env.NEXT_PUBLIC_CLERK_FRONTEND_API
+
+    return (publishableKey || frontendApi) &&
+        publishableKey !== 'your_clerk_publishable_key_here' &&
+        publishableKey !== 'pk_test_your_clerk_publishable_key_here' &&
+        publishableKey !== 'pk_test_your_actual_publishable_key_here' &&
+        frontendApi !== 'https://handy-cow-68.clerk.accounts.dev'
+}
+
+// Export environment variables
+export default {
+    ...env,
+    // Parse JSON strings back to objects/arrays
+    scrapingSources: JSON.parse(env.SCRAPING_SOURCES || '["alibaba", "aliexpress"]'),
+    scrapingCategories: JSON.parse(env.SCRAPING_CATEGORIES || '["electronics", "clothing", "home", "beauty", "sports", "automotive", "toys", "jewelry"]'),
+    categoryProfitMargins: JSON.parse(env.CATEGORY_PROFIT_MARGINS || '{"electronics": 20, "clothing": 30, "home": 25, "beauty": 35, "sports": 25}'),
+    supportedLocales: JSON.parse(env.SUPPORTED_LOCALES || '["en-AE", "ar-AE", "en-SA", "ar-SA", "en-KW", "ar-KW", "en-QA", "ar-QA", "en-BH", "ar-BH", "en-OM", "ar-OM"]'),
+    // Add structured config for services that previously used `config` object
+    exchangeRate: {
+        cacheDuration: parseInt(env.EXCHANGE_RATE_CACHE_DURATION || '15'),
+        updateFrequency: parseInt(env.EXCHANGE_RATE_UPDATE_FREQUENCY || '15'),
+        primary: {
+            apiKey: env.EXCHANGE_RATE_API_KEY,
+            baseUrl: env.EXCHANGE_RATE_API_BASE_URL,
+            name: 'ExchangeRate-API'
+        },
+        fixer: {
+            apiKey: env.FIXER_API_KEY, // Assuming FIXER_API_KEY is also in env
+            baseUrl: 'http://data.fixer.io/api',
+            name: 'Fixer'
+        },
+        currency: {
+            apiKey: env.CURRENCY_API_KEY, // Assuming CURRENCY_API_KEY is also in env
+            baseUrl: 'https://api.currencyapi.com/v3',
+            name: 'CurrencyAPI'
+        },
+        openExchangeRates: {
+            apiKey: env.OPEN_EXCHANGE_RATES_API_KEY, // Assuming OPEN_EXCHANGE_RATES_API_KEY is also in env
+            baseUrl: 'https://openexchangerates.org/api',
+            name: 'OpenExchangeRates'
+        },
+        currencyLayer: {
+            apiKey: env.CURRENCY_LAYER_API_KEY, // Assuming CURRENCY_LAYER_API_KEY is also in env
+            baseUrl: 'http://api.currencylayer.com',
+            name: 'CurrencyLayer'
+        }
+    },
     gulfCountries: [
-        {
-            code: "AE",
-            name: "United Arab Emirates",
-            nameAr: "الإمارات العربية المتحدة",
-            currency: "AED",
-            currencyAr: "درهم إماراتي",
-            timezone: "Asia/Dubai",
-            locale: "ar-AE",
-        },
-        {
-            code: "SA",
-            name: "Saudi Arabia",
-            nameAr: "المملكة العربية السعودية",
-            currency: "SAR",
-            currencyAr: "ريال سعودي",
-            timezone: "Asia/Riyadh",
-            locale: "ar-SA",
-        },
-        {
-            code: "KW",
-            name: "Kuwait",
-            nameAr: "الكويت",
-            currency: "KWD",
-            currencyAr: "دينار كويتي",
-            timezone: "Asia/Kuwait",
-            locale: "ar-KW",
-        },
-        {
-            code: "QA",
-            name: "Qatar",
-            nameAr: "قطر",
-            currency: "QAR",
-            currencyAr: "ريال قطري",
-            timezone: "Asia/Qatar",
-            locale: "ar-QA",
-        },
-        {
-            code: "BH",
-            name: "Bahrain",
-            nameAr: "البحرين",
-            currency: "BHD",
-            currencyAr: "دينار بحريني",
-            timezone: "Asia/Bahrain",
-            locale: "ar-BH",
-        },
-        {
-            code: "OM",
-            name: "Oman",
-            nameAr: "عُمان",
-            currency: "OMR",
-            currencyAr: "ريال عماني",
-            timezone: "Asia/Muscat",
-            locale: "ar-OM",
-        },
+        { name: 'United Arab Emirates', locale: 'en-AE', currency: 'AED' },
+        { name: 'Saudi Arabia', locale: 'en-SA', currency: 'SAR' },
+        { name: 'Kuwait', locale: 'en-KW', currency: 'KWD' },
+        { name: 'Qatar', locale: 'en-QA', currency: 'QAR' },
+        { name: 'Bahrain', locale: 'en-BH', currency: 'BHD' },
+        { name: 'Oman', locale: 'en-OM', currency: 'OMR' },
     ],
-
-    // Profit Margins (percentage)
     profitMargins: {
-        default: parseFloat(process.env.DEFAULT_PROFIT_MARGIN || "25"),
-        byCategory: process.env.CATEGORY_PROFIT_MARGINS
-            ? JSON.parse(process.env.CATEGORY_PROFIT_MARGINS)
-            : {
-                electronics: 20,
-                clothing: 30,
-                home: 25,
-                beauty: 35,
-                sports: 25,
-            },
+        default: parseInt(env.DEFAULT_PROFIT_MARGIN || '25'),
+        byCategory: JSON.parse(env.CATEGORY_PROFIT_MARGINS || '{"electronics": 20, "clothing": 30, "home": 25, "beauty": 35, "sports": 25}')
     },
-
-    // Scraping Sources
-    scrapingSources: process.env.SCRAPING_SOURCES
-        ? JSON.parse(process.env.SCRAPING_SOURCES)
-        : ["alibaba", "aliexpress"],
-
-    scrapingCategories: process.env.SCRAPING_CATEGORIES
-        ? JSON.parse(process.env.SCRAPING_CATEGORIES)
-        : ["electronics", "clothing", "home", "beauty", "sports", "automotive", "toys", "jewelry"],
-
-    // Scheduled Tasks Configuration
-    scheduledTasks: {
-        exchangeRateUpdateInterval: process.env.EXCHANGE_RATE_UPDATE_INTERVAL || "*/15 * * * *", // Every 15 minutes
-        productPriceUpdateInterval: process.env.PRODUCT_PRICE_UPDATE_INTERVAL || "0 * * * *", // Every hour
-        cacheCleanupInterval: process.env.CACHE_CLEANUP_INTERVAL || "*/30 * * * *", // Every 30 minutes
-        dailyMaintenanceTime: process.env.DAILY_MAINTENANCE_TIME || "0 2 * * *", // 2 AM UTC
-        timezone: process.env.TASK_TIMEZONE || "UTC",
-    },
-};
-
-export default config;
+    scraping: {
+        delayMs: parseInt(env.SCRAPING_DELAY_MS || '2000'),
+        timeoutMs: parseInt(env.SCRAPING_TIMEOUT_MS || '30000'),
+        maxConcurrent: parseInt(env.MAX_CONCURRENT_SCRAPES || '3')
+    }
+}

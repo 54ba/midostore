@@ -2,13 +2,23 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/Button';
+import Button from '@/components/Button';
 import { ArrowLeft, User, Lock } from 'lucide-react';
 
 export default function SignInPage() {
     const router = useRouter();
     const [isClerkAvailable, setIsClerkAvailable] = useState(false);
     const [SignIn, setSignIn] = useState<any>(null);
+
+    // Get redirect URL from query parameters (client-side only)
+    const [redirectUrl, setRedirectUrl] = useState('/dashboard');
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const searchParams = new URLSearchParams(window.location.search);
+            setRedirectUrl(searchParams.get('redirect') || '/dashboard');
+        }
+    }, []);
 
     useEffect(() => {
         // Check if Clerk is available
@@ -42,11 +52,12 @@ export default function SignInPage() {
                         </div>
                         <h2 className="text-3xl font-bold text-gray-900 mb-2">Sign In to MidoHub</h2>
                         <p className="text-gray-600">
-                            Access your dropshipping dashboard
+                            {redirectUrl !== '/dashboard' ? `Complete your ${redirectUrl.includes('checkout') ? 'purchase' : 'action'}` : 'Access your dropshipping dashboard'}
                         </p>
                     </div>
 
                     <SignIn
+                        redirectUrl={redirectUrl}
                         appearance={{
                             elements: {
                                 formButtonPrimary: 'bg-blue-600 hover:bg-blue-700 text-white',

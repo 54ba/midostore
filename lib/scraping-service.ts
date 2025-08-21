@@ -1,7 +1,7 @@
 import puppeteer from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import AdblockerPlugin from 'puppeteer-extra-plugin-adblocker';
-import { config } from '../env.config';
+import envConfig from '../env.config';
 import { prisma } from './db';
 import { format } from 'date-fns';
 
@@ -29,6 +29,13 @@ export interface ScrapedProduct {
     maxOrderQuantity?: number;
     shippingWeight?: number;
     shippingDimensions?: string;
+    variants?: Array<{
+        name: string;
+        value: string;
+        price: number;
+        stock: number;
+        sku: string;
+    }>;
     supplier: {
         externalId: string;
         name: string;
@@ -91,7 +98,7 @@ export class ScrapingService {
 
                 // Delay between pages to avoid being blocked
                 if (page < pageCount) {
-                    await this.delay(config.scraping.delayMs);
+                    await this.delay(envConfig.scraping.delayMs);
                 }
             }
         } catch (error) {
@@ -114,7 +121,7 @@ export class ScrapingService {
 
                 // Delay between pages to avoid being blocked
                 if (page < pageCount) {
-                    await this.delay(config.scraping.delayMs);
+                    await this.delay(envConfig.scraping.delayMs);
                 }
             }
         } catch (error) {
@@ -132,7 +139,7 @@ export class ScrapingService {
             await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
             await page.setViewport({ width: 1920, height: 1080 });
 
-            await page.goto(url, { waitUntil: 'networkidle2', timeout: config.scraping.timeoutMs });
+            await page.goto(url, { waitUntil: 'networkidle2', timeout: envConfig.scraping.timeoutMs });
 
             // Wait for products to load
             await page.waitForSelector('[data-product-id]', { timeout: 10000 });
@@ -166,7 +173,7 @@ export class ScrapingService {
             await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
             await page.setViewport({ width: 1920, height: 1080 });
 
-            await page.goto(url, { waitUntil: 'networkidle2', timeout: config.scraping.timeoutMs });
+            await page.goto(url, { waitUntil: 'networkidle2', timeout: envConfig.scraping.timeoutMs });
 
             // Wait for products to load
             await page.waitForSelector('[data-product-id]', { timeout: 10000 });

@@ -1,80 +1,97 @@
 'use client'
 
-import React, { useState } from 'react'
-import { Star, ShoppingCart, Heart, Eye } from 'lucide-react'
-import Image from 'next/image'
-import ProductCard from './ProductCard'
+import React, { useState } from 'react';
+import { ShoppingCart, Heart, Eye, Star } from 'lucide-react';
+import Image from 'next/image';
+import { useCart } from '@/app/contexts/CartContext';
 
 interface Product {
-    product_id: string
-    product_name: string
-    price: number
-    alibaba_price: number
-    category: string
-    image_url?: string
-    rating?: number
-    review_count?: number
-    [key: string]: any
+    product_id: string;
+    product_name: string;
+    price: number;
+    alibaba_price?: number;
+    category?: string;
+    image_url?: string;
+    rating?: number;
+    review_count?: number;
 }
 
 interface ProductGridProps {
-    products: Product[]
-    onAddToCart: (productId: string, quantity: number) => Promise<void>
-    onProductClick?: (product: Product) => void
-    className?: string
-    loading?: boolean
+    products: Product[];
+    onAddToCart?: (productId: string, quantity: number) => void; // Keep for backward compatibility
+    onProductClick?: (product: Product) => void;
+    className?: string;
+    loading?: boolean;
 }
 
 export default function ProductGrid({
     products,
-    onAddToCart,
+    onAddToCart: legacyOnAddToCart,
     onProductClick,
     className = '',
     loading = false
 }: ProductGridProps) {
-    const [favorites, setFavorites] = useState<Set<string>>(new Set())
+    const [favorites, setFavorites] = useState<Set<string>>(new Set());
+    const { addToCart, isInCart } = useCart();
 
     const toggleFavorite = (productId: string) => {
-        const newFavorites = new Set(favorites)
-        if (newFavorites.has(productId)) {
-            newFavorites.delete(productId)
-        } else {
-            newFavorites.add(productId)
+        setFavorites(prev => {
+            const newFavorites = new Set(prev);
+            if (newFavorites.has(productId)) {
+                newFavorites.delete(productId);
+            } else {
+                newFavorites.add(productId);
+            }
+            return newFavorites;
+        });
+    };
+
+    const handleAddToCart = (product: Product, quantity: number = 1) => {
+        // Use the new cart context
+        addToCart({
+            product_id: product.product_id,
+            product_name: product.product_name,
+            price: product.price,
+            image_url: product.image_url,
+            category: product.category,
+            currency: 'USD'
+        }, quantity);
+
+        // Also call legacy callback if provided (for backward compatibility)
+        if (legacyOnAddToCart) {
+            legacyOnAddToCart(product.product_id, quantity);
         }
-        setFavorites(newFavorites)
-    }
+    };
 
     if (loading) {
         return (
-            <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 ${className}`}>
+            <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 ${className}`}>
                 {Array.from({ length: 8 }).map((_, index) => (
-                    <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 animate-pulse">
-                        <div className="bg-gray-200 rounded-lg h-48 mb-4"></div>
-                        <div className="space-y-3">
-                            <div className="bg-gray-200 rounded h-4"></div>
-                            <div className="bg-gray-200 rounded h-4 w-3/4"></div>
-                            <div className="bg-gray-200 rounded h-6 w-1/2"></div>
+                    <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden animate-pulse">
+                        <div className="aspect-square bg-gray-200"></div>
+                        <div className="p-4 space-y-3">
+                            <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                            <div className="h-8 bg-gray-200 rounded"></div>
                         </div>
                     </div>
                 ))}
             </div>
-        )
+        );
     }
 
     if (products.length === 0) {
         return (
-            <div className={`text-center py-12 ${className}`}>
-                <div className="w-24 h-24 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                    <ShoppingCart className="w-12 h-12 text-gray-400" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">No products found</h3>
+            <div className="text-center py-12">
+                <ShoppingCart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No products found</h3>
                 <p className="text-gray-500">Try adjusting your search or filter criteria</p>
             </div>
-        )
+        );
     }
 
     return (
-        <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 ${className}`}>
+        <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 ${className}`}>
             {products.map((product) => (
                 <div
                     key={product.product_id}
@@ -133,6 +150,15 @@ export default function ProductGrid({
                                 <span className="text-xs font-medium text-gray-700">{product.rating}</span>
                             </div>
                         )}
+
+                        {/* In Cart Badge */}
+                        {isInCart(product.product_id) && (
+                            <div className="absolute bottom-3 right-3">
+                                <span className="px-2 py-1 text-xs font-medium bg-green-500 text-white rounded-full">
+                                    In Cart
+                                </span>
+                            </div>
+                        )}
                     </div>
 
                     {/* Product Info */}
@@ -144,13 +170,13 @@ export default function ProductGrid({
                         {/* Price */}
                         <div className="flex items-center gap-2 mb-3">
                             <span className="text-lg font-bold text-gray-900">${product.price}</span>
-                            {product.alibaba_price < product.price && (
+                            {product.alibaba_price && product.alibaba_price < product.price && (
                                 <span className="text-sm text-gray-500 line-through">${product.alibaba_price}</span>
                             )}
                         </div>
 
                         {/* Savings */}
-                        {product.alibaba_price < product.price && (
+                        {product.alibaba_price && product.alibaba_price < product.price && (
                             <div className="mb-3">
                                 <span className="inline-block px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full animate-slide-up">
                                     Save ${((product.price - product.alibaba_price) / product.price * 100).toFixed(0)}%
@@ -160,11 +186,14 @@ export default function ProductGrid({
 
                         {/* Add to Cart Button */}
                         <button
-                            onClick={() => onAddToCart(product.product_id, 1)}
-                            className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-500/90 transition-colors flex items-center justify-center gap-2"
+                            onClick={() => handleAddToCart(product, 1)}
+                            className={`w-full py-2 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${isInCart(product.product_id)
+                                    ? 'bg-green-500 text-white hover:bg-green-600'
+                                    : 'bg-blue-500 text-white hover:bg-blue-600'
+                                }`}
                         >
                             <ShoppingCart className="w-4 h-4" />
-                            Add to Cart
+                            {isInCart(product.product_id) ? 'Added to Cart' : 'Add to Cart'}
                         </button>
                     </div>
                 </div>

@@ -1,7 +1,7 @@
 import { prisma } from './db';
+import envConfig from '../env.config';
 import { ExchangeRateService } from './exchange-rate-service';
-import { config } from '../env.config';
-// import { ScrapedProduct } from './scraping-service';
+import { ScrapedProduct } from './scraping-service';
 // import { format, zonedTimeToUtc } from '@date-fns/tz';
 
 export class ProductService {
@@ -11,65 +11,66 @@ export class ProductService {
         this.exchangeRateService = new ExchangeRateService();
     }
 
-    // async createProductFromScraped(scrapedProduct: ScrapedProduct): Promise<string> {
-    //     try {
-    //         // Create or update supplier
-    //         const supplier = await this.upsertSupplier(scrapedProduct.supplier);
+    async createProductFromScraped(scrapedProduct: ScrapedProduct): Promise<string> {
+        try {
+            // Create or update supplier
+            const supplier = await this.upsertSupplier(scrapedProduct.supplier);
 
-    //         // Calculate profit margin based on category
-    //         const profitMargin = this.getProfitMargin(scrapedProduct.category);
+            // Calculate profit margin based on category
+            const profitMargin = this.getProfitMargin(scrapedProduct.category);
 
-    //         // Create product
-    //         const product = await prisma.product.create({
-    //         data: {
-    //             externalId: scrapedProduct.externalId,
-    //             source: scrapedProduct.source,
-    //             title: scrapedProduct.title,
-    //             description: scrapedProduct.description,
-    //             price: scrapedProduct.price,
-    //             originalPrice: scrapedProduct.originalPrice,
-    //             currency: scrapedProduct.currency,
-    //             images: scrapedProduct.images,
-    //             category: scrapedProduct.category,
-    //             subcategory: scrapedProduct.subcategory,
-    //             tags: scrapedProduct.tags,
-    //             rating: scrapedProduct.rating,
-    //             reviewCount: scrapedProduct.reviewCount,
-    //             soldCount: scrapedProduct.soldCount,
-    //             minOrderQuantity: scrapedProduct.minOrderQuantity,
-    //             maxOrderQuantity: scrapedProduct.maxOrderQuantity,
-    //             shippingWeight: scrapedProduct.shippingWeight,
-    //             shippingDimensions: scrapedProduct.shippingDimensions,
-    //             supplierId: supplier.id,
-    //             profitMargin,
-    //             lastScraped: new Date(),
-    //         },
-    //     });
+            // Create product
+            const product = await prisma.product.create({
+                data: {
+                    externalId: scrapedProduct.externalId,
+                    source: scrapedProduct.source,
+                    title: scrapedProduct.title,
+                    description: scrapedProduct.description,
+                    price: scrapedProduct.price,
+                    originalPrice: scrapedProduct.originalPrice,
+                    currency: scrapedProduct.currency,
+                    images: scrapedProduct.images,
+                    category: scrapedProduct.category,
+                    subcategory: scrapedProduct.subcategory,
+                    tags: scrapedProduct.tags,
+                    rating: scrapedProduct.rating,
+                    reviewCount: scrapedProduct.reviewCount,
+                    soldCount: scrapedProduct.soldCount,
+                    minOrderQuantity: scrapedProduct.minOrderQuantity,
+                    maxOrderQuantity: scrapedProduct.maxOrderQuantity,
+                    shippingWeight: scrapedProduct.shippingWeight,
+                    shippingDimensions: scrapedProduct.shippingDimensions,
+                    supplierId: supplier.id,
+                    profitMargin,
+                    lastScraped: new Date(),
+                },
+            });
 
-    //         // Create variants if they exist
-    //         if (scrapedProduct.variants) {
-    //         for (const variant of scrapedProduct.variants) {
-    //             await prisma.productVariant.create({
-    //             data: {
-    //                 productId: product.id,
-    //                 name: variant.name,
-    //                 value: variant.value,
-    //                 price: variant.price,
-    //                 stock: variant.stock,
-    //                 sku: variant.sku,
-    //             },
-    //         });
-    //     }
+            // Create variants if they exist
+            if (scrapedProduct.variants) {
+                for (const variant of scrapedProduct.variants) {
+                    await prisma.productVariant.create({
+                        data: {
+                            productId: product.id,
+                            name: variant.name,
+                            value: variant.value,
+                            price: variant.price,
+                            stock: variant.stock,
+                            sku: variant.sku,
+                        },
+                    });
+                }
+            }
 
-    //         // Create localizations for Gulf countries
-    //         await this.createGulfLocalizations(product.id, scrapedProduct);
+            // Create localizations for Gulf countries
+            await this.createGulfLocalizations(product.id, scrapedProduct);
 
-    //         return product.id;
-    //     } catch (error) {
-    //         console.error('Error creating product from scraped data:', error);
-    //         throw error;
-    //     }
-    // }
+            return product.id;
+        } catch (error) {
+            console.error('Error creating product from scraped data:', error);
+            throw error;
+        }
+    }
 
     async updateProductPrices(): Promise<void> {
         try {
@@ -95,7 +96,7 @@ export class ProductService {
 
             if (!product) return;
 
-            for (const gulfCountry of config.gulfCountries) {
+            for (const gulfCountry of envConfig.gulfCountries) {
                 // Convert price to local currency
                 const localPrice = await this.exchangeRateService.convertPrice(
                     product.price,
@@ -104,7 +105,7 @@ export class ProductService {
                 );
 
                 // Apply profit margin
-                const profitMargin = product.profitMargin || config.profitMargins.default;
+                const profitMargin = product.profitMargin || envConfig.profitMargins.default;
                 const finalPrice = localPrice * (1 + profitMargin / 100);
 
                 // Update or create localization
@@ -136,7 +137,7 @@ export class ProductService {
                 product.currency,
                 'AED'
             );
-            const profitMargin = product.profitMargin || config.profitMargins.default;
+            const profitMargin = product.profitMargin || envConfig.profitMargins.default;
             const gulfPrice = uaePrice * (1 + profitMargin / 100);
 
             await prisma.product.update({
@@ -353,38 +354,39 @@ export class ProductService {
     }
 
     private getProfitMargin(category?: string): number {
-        if (category && config.profitMargins.byCategory[category.toLowerCase()]) {
-            return config.profitMargins.byCategory[category.toLowerCase()];
+        if (category && envConfig.profitMargins.byCategory[category.toLowerCase()]) {
+            return envConfig.profitMargins.byCategory[category.toLowerCase()];
         }
-        return config.profitMargins.default;
+        return envConfig.profitMargins.default;
     }
 
-    // private async createGulfLocalizations(productId: string, scrapedProduct: ScrapedProduct) {
-    //     for (const gulfCountry of config.gulfCountries) {
-    //         try {
-    //         const localPrice = await this.exchangeRateService.convertPrice(
-    //             scrapedProduct.price,
-    //             scrapedProduct.currency,
-    //             gulfCountry.currency
-    //         );
+    private async createGulfLocalizations(productId: string, scrapedProduct: ScrapedProduct) {
+        for (const gulfCountry of envConfig.gulfCountries) {
+            try {
+                const localPrice = await this.exchangeRateService.convertPrice(
+                    scrapedProduct.price,
+                    scrapedProduct.currency,
+                    gulfCountry.currency
+                );
 
-    //         const profitMargin = this.getProfitMargin(scrapedProduct.category);
-    //         const finalPrice = localPrice * (1 + profitMargin / 100);
+                const profitMargin = this.getProfitMargin(scrapedProduct.category);
+                const finalPrice = localPrice * (1 + profitMargin / 100);
 
-    //         await prisma.productLocalization.create({
-    //             data: {
-    //                 productId,
-    //                 locale: gulfCountry.locale,
-    //                 title: scrapedProduct.title,
-    //                 description: scrapedProduct.description,
-    //                 price: finalPrice,
-    //                 currency: gulfCountry.currency,
-    //             },
-    //         });
-    //     } catch (error) {
-    //         console.error(`Error creating localization for ${gulfCountry.locale}:`, error);
-    //     }
-    // }
+                await prisma.productLocalization.create({
+                    data: {
+                        productId,
+                        locale: gulfCountry.locale,
+                        title: scrapedProduct.title,
+                        description: scrapedProduct.description,
+                        price: finalPrice,
+                        currency: gulfCountry.currency,
+                    },
+                });
+            } catch (error) {
+                console.error(`Error creating localization for ${gulfCountry.locale}:`, error);
+            }
+        }
+    }
 }
 
 export default ProductService;

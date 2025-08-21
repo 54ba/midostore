@@ -1,10 +1,8 @@
-// Temporarily commented out to fix build issues
-/*
 import { NextRequest, NextResponse } from 'next/server';
 import { ScrapingService } from '@/lib/scraping-service';
 import { ProductService } from '@/lib/product-service';
 import { prisma } from '@/lib/db';
-import { config } from '@/env.config';
+import envConfig from '@/env.config';
 
 export async function POST(request: NextRequest) {
     try {
@@ -18,9 +16,9 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        if (!config.scrapingSources.includes(source)) {
+        if (!envConfig.scrapingSources.includes(source)) {
             return NextResponse.json(
-                { error: 'Invalid source. Must be one of: ' + config.scrapingSources.join(', ') },
+                { error: 'Invalid source. Must be one of: ' + envConfig.scrapingSources.join(', ') },
                 { status: 400 }
             );
         }
@@ -133,9 +131,4 @@ async function startScrapingJob(jobId: string, source: string, category: string,
     } finally {
         await scrapingService.close();
     }
-}
-*/
-
-export async function POST() {
-    return new Response('Scraping temporarily disabled', { status: 503 });
 }

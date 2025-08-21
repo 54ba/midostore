@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { ProductService } from '../../../../lib/product-service';
+import { isClerkConfigured } from '../../../../env.config';
 
 interface UserSession {
   user_id: string;
@@ -60,70 +61,100 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const cookieStore = await cookies()
-    const authToken = cookieStore.get('auth_token')
+    // Check if Clerk is configured for authentication
+    if (isClerkConfigured()) {
+      const cookieStore = await cookies()
+      const authToken = cookieStore.get('auth_token')
 
-    if (!authToken) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
-    }
+      if (!authToken) {
+        return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
+      }
 
-    const userSession: UserSession = JSON.parse(authToken.value)
-    const body = await request.json()
+      const userSession: UserSession = JSON.parse(authToken.value)
+      const body = await request.json()
 
-    const { alibaba_url, product_name, category, price, alibaba_price } = body
+      const { alibaba_url, product_name, category, price, alibaba_price } = body
 
-    if (!alibaba_url || !product_name || !category || !price || !alibaba_price) {
+      if (!alibaba_url || !product_name || !category || !price || !alibaba_price) {
+        return NextResponse.json({
+          error: 'Missing required fields: alibaba_url, product_name, category, price, alibaba_price'
+        }, { status: 400 })
+      }
+
+      // Generate unique product ID
+      const product_id = `prod_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+
+      // Add product to Google Sheets
+      const response = await fetch(`${PROXY_URL}/proxy/google-sheets`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          chatRoomUUID: CHAT_ROOM_UUID,
+          userUUID: USER_UUID,
+          functionUUID: FUNCTION_UUID,
+          operation: 'write',
+          spreadsheetId: SPREADSHEET_ID,
+          range: 'Product!A:F',
+          values: [[
+            product_id,
+            alibaba_url,
+            product_name,
+            category,
+            price,
+            alibaba_price
+          ]]
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to add product: ${response.statusText}`);
+      }
+
       return NextResponse.json({
-        error: 'Missing required fields: alibaba_url, product_name, category, price, alibaba_price'
-      }, { status: 400 })
+        success: true,
+        message: 'Product added successfully',
+        product_id
+      });
+    } else {
+      // Keyless mode - allow product creation without authentication
+      const body = await request.json()
+
+      const { alibaba_url, product_name, category, price, alibaba_price } = body
+
+      if (!alibaba_url || !product_name || !category || !price || !alibaba_price) {
+        return NextResponse.json({
+          error: 'Missing required fields: alibaba_url, product_name, category, price, alibaba_price'
+        }, { status: 400 })
+      }
+
+      // Generate unique product ID
+      const product_id = `prod_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+
+      // In keyless mode, we can still process the product
+      // You might want to store it in a local database or file system
+      console.log('Product created in keyless mode:', {
+        product_id,
+        alibaba_url,
+        product_name,
+        category,
+        price,
+        alibaba_price
+      });
+
+      return NextResponse.json({
+        success: true,
+        message: 'Product added successfully (keyless mode)',
+        product_id
+      });
     }
-
-    // Generate unique product ID
-    const product_id = `prod_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-
-    // Add product to Google Sheets
-    const response = await fetch(`${PROXY_URL}/proxy/google-sheets`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        chatRoomUUID: CHAT_ROOM_UUID,
-        userUUID: USER_UUID,
-        functionUUID: FUNCTION_UUID,
-        operation: 'write',
-        spreadsheetId: SPREADSHEET_ID,
-        range: 'Product!A:F',
-        values: [[
-          product_id,
-          alibaba_url,
-          product_name,
-          category,
-          price.toString(),
-          alibaba_price.toString()
-        ]],
-        valueInputOption: 'RAW'
-      })
-    })
-
-    if (!response.ok) {
-      return NextResponse.json({ error: 'Failed to create product' }, { status: 500 })
-    }
-
-    const newProduct: Product = {
-      product_id,
-      alibaba_url,
-      product_name,
-      category,
-      price: price.toString(),
-      alibaba_price: alibaba_price.toString()
-    }
-
-    return NextResponse.json({ success: true, data: newProduct })
-
   } catch (error) {
-    console.error('Error creating product:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error('Error adding product:', error);
+    return NextResponse.json(
+      { error: 'Failed to add product' },
+      { status: 500 }
+    );
   }
 }
 

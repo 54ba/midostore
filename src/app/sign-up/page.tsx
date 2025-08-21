@@ -2,13 +2,23 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/Button';
-import { ArrowLeft, UserPlus, Lock } from 'lucide-react';
+import Button from '@/components/Button';
+import { ArrowLeft, User, Lock } from 'lucide-react';
 
 export default function SignUpPage() {
     const router = useRouter();
     const [isClerkAvailable, setIsClerkAvailable] = useState(false);
     const [SignUp, setSignUp] = useState<any>(null);
+
+    // Get redirect URL from query parameters (client-side only)
+    const [redirectUrl, setRedirectUrl] = useState('/dashboard');
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const searchParams = new URLSearchParams(window.location.search);
+            setRedirectUrl(searchParams.get('redirect') || '/dashboard');
+        }
+    }, []);
 
     useEffect(() => {
         // Check if Clerk is available
@@ -38,15 +48,16 @@ export default function SignUpPage() {
                 <div className="max-w-md w-full">
                     <div className="text-center mb-8">
                         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <UserPlus className="w-8 h-8 text-green-600" />
+                            <User className="w-8 h-8 text-green-600" />
                         </div>
                         <h2 className="text-3xl font-bold text-gray-900 mb-2">Create Your Account</h2>
                         <p className="text-gray-600">
-                            Join MidoHub and start your dropshipping journey
+                            {redirectUrl !== '/dashboard' ? `Join MidoHub to ${redirectUrl.includes('checkout') ? 'complete your purchase' : 'continue'}` : 'Join MidoHub and start your dropshipping journey'}
                         </p>
                     </div>
 
                     <SignUp
+                        redirectUrl={redirectUrl}
                         appearance={{
                             elements: {
                                 formButtonPrimary: 'bg-green-600 hover:bg-green-700 text-white',
@@ -79,7 +90,7 @@ export default function SignUpPage() {
                 {/* Header */}
                 <div className="text-center">
                     <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <UserPlus className="w-8 h-8 text-green-600" />
+                        <User className="w-8 h-8 text-green-600" />
                     </div>
                     <h2 className="text-3xl font-bold text-gray-900 mb-2">Create Your Account</h2>
                     <p className="text-gray-600">

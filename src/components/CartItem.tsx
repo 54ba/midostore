@@ -1,198 +1,128 @@
-'use client'
+'use client';
 
-import { useId } from 'react'
-import Image from 'next/image'
+import React, { useId } from 'react';
+import { Minus, Plus, Trash2, Package } from 'lucide-react';
+import Image from 'next/image';
+import { CartItem as CartItemType } from '@/app/contexts/CartContext';
 
 interface CartItemProps {
-  id?: string
-  item: {
-    product_id: string
-    product_name: string
-    price: number
-    quantity: number
-  }
-  onUpdateQuantity?: (quantity: number) => void
-  onQuantityChange?: (productId: string, quantity: number) => void
-  onRemove: (productId?: string) => void
-  updating?: boolean
+  id?: string;
+  item: CartItemType;
+  onUpdateQuantity: (quantity: number) => void;
+  onRemove: () => void;
+  updating?: boolean;
 }
 
-export default function CartItem({ id, item, onUpdateQuantity, onQuantityChange, onRemove, updating = false }: CartItemProps) {
-  const defaultId = useId()
-  const componentId = id || defaultId
+export default function CartItem({
+  id,
+  item,
+  onUpdateQuantity,
+  onRemove,
+  updating = false
+}: CartItemProps) {
+  const defaultId = useId();
+  const componentId = id || defaultId;
 
   const handleQuantityDecrease = () => {
     if (item.quantity > 1) {
-      if (onUpdateQuantity) {
-        onUpdateQuantity(item.quantity - 1)
-      } else if (onQuantityChange) {
-        onQuantityChange(item.product_id, item.quantity - 1)
-      }
+      onUpdateQuantity(item.quantity - 1);
     }
-  }
+  };
 
   const handleQuantityIncrease = () => {
-    if (onUpdateQuantity) {
-      onUpdateQuantity(item.quantity + 1)
-    } else if (onQuantityChange) {
-      onQuantityChange(item.product_id, item.quantity + 1)
-    }
-  }
+    onUpdateQuantity(item.quantity + 1);
+  };
 
-  const handleRemove = () => {
-    if (onRemove) {
-      onRemove(item.product_id)
-    }
-  }
-
-  const totalPrice = item.price * item.quantity
+  const totalPrice = item.price * item.quantity;
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 transition-all duration-200 hover:shadow-md">
-      <div className="flex items-center gap-4">
-        {/* Product Image Placeholder */}
-        <div className="relative w-20 h-20 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden">
-          <div
-            id="cart-item-product-image"
-            className="w-full h-full bg-gradient-to-br from-teal-50 to-teal-100 flex items-center justify-center"
-          >
-            <div className="text-teal-600 font-semibold text-xs text-center px-2">
-              <span id="cart-item-image-text">Product Image</span>
+      <div className="flex items-start gap-4">
+        {/* Product Image */}
+        <div className="flex-shrink-0 w-20 h-20 bg-gray-100 rounded-lg overflow-hidden">
+          {item.image_url ? (
+            <Image
+              src={item.image_url}
+              alt={item.product_name}
+              width={80}
+              height={80}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <Package className="w-8 h-8 text-gray-400" />
             </div>
-          </div>
+          )}
         </div>
 
         {/* Product Details */}
         <div className="flex-1 min-w-0">
-          <h3
-            id="cart-item-product-name"
-            className="text-lg font-semibold text-gray-900 truncate mb-1"
-          >
+          <h3 className="text-lg font-medium text-gray-900 mb-1 line-clamp-2">
             {item.product_name}
           </h3>
-          <p
-            id="cart-item-product-price"
-            className="text-teal-600 font-bold text-lg"
-          >
-            ${item.price.toFixed(2)}
-          </p>
-        </div>
 
-        {/* Quantity Controls */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center border border-gray-300 rounded-lg">
-            <button
-              id="cart-item-decrease-button"
-              onClick={handleQuantityDecrease}
-              disabled={item.quantity <= 1 || updating}
-              className="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-teal-600 hover:bg-teal-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 rounded-l-lg"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-              </svg>
-            </button>
+          {item.category && (
+            <p className="text-sm text-gray-500 mb-2">
+              Category: {item.category}
+            </p>
+          )}
 
-            <div
-              id="cart-item-quantity-display"
-              className="w-12 h-10 flex items-center justify-center text-gray-900 font-semibold border-x border-gray-300 bg-gray-50"
-            >
-              {item.quantity}
+          <div className="flex items-center justify-between">
+            {/* Price */}
+            <div className="flex flex-col">
+              <span className="text-lg font-semibold text-gray-900">
+                ${item.price.toFixed(2)} each
+              </span>
+              <span className="text-sm text-gray-500">
+                Total: ${totalPrice.toFixed(2)}
+              </span>
             </div>
 
-            <button
-              id="cart-item-increase-button"
-              onClick={handleQuantityIncrease}
-              disabled={updating}
-              className="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-teal-600 hover:bg-teal-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 rounded-r-lg"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-            </button>
-          </div>
-        </div>
+            {/* Quantity Controls */}
+            <div className="flex items-center gap-3">
+              <div className="flex items-center border border-gray-300 rounded-lg">
+                <button
+                  onClick={handleQuantityDecrease}
+                  disabled={item.quantity <= 1 || updating}
+                  className="p-2 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  aria-label="Decrease quantity"
+                >
+                  <Minus className="w-4 h-4" />
+                </button>
 
-        {/* Total Price */}
-        <div className="text-right min-w-0">
-          <p
-            id="cart-item-total-label"
-            className="text-sm text-gray-500 mb-1"
-          >
-            Total
-          </p>
-          <p
-            id="cart-item-total-price"
-            className="text-xl font-bold text-gray-900"
-          >
-            ${totalPrice.toFixed(2)}
-          </p>
-        </div>
+                <span className="px-3 py-2 min-w-[3rem] text-center font-medium">
+                  {item.quantity}
+                </span>
 
-        {/* Remove Button */}
-        <button
-          id="cart-item-remove-button"
-          onClick={handleRemove}
-          disabled={updating}
-          className="ml-4 p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors duration-200 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
-          title="Remove item"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-          </svg>
-        </button>
-      </div>
-
-      {/* Mobile Layout Adjustments */}
-      <div className="sm:hidden mt-4 pt-4 border-t border-gray-200">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span
-              id="cart-item-mobile-quantity-label"
-              className="text-sm text-gray-600"
-            >
-              Quantity:
-            </span>
-            <div className="flex items-center border border-gray-300 rounded-lg">
-              <button
-                id="cart-item-mobile-decrease-button"
-                onClick={handleQuantityDecrease}
-                disabled={item.quantity <= 1}
-                className="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-teal-600 hover:bg-teal-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 rounded-l-lg"
-              >
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-                </svg>
-              </button>
-
-              <div
-                id="cart-item-mobile-quantity-display"
-                className="w-10 h-8 flex items-center justify-center text-gray-900 font-semibold border-x border-gray-300 bg-gray-50 text-sm"
-              >
-                {item.quantity}
+                <button
+                  onClick={handleQuantityIncrease}
+                  disabled={updating}
+                  className="p-2 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  aria-label="Increase quantity"
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
               </div>
 
+              {/* Remove Button */}
               <button
-                id="cart-item-mobile-increase-button"
-                onClick={handleQuantityIncrease}
-                className="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-teal-600 hover:bg-teal-50 transition-colors duration-200 rounded-r-lg"
+                onClick={onRemove}
+                disabled={updating}
+                className="p-2 text-red-600 hover:bg-red-50 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                aria-label="Remove item"
               >
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
+                <Trash2 className="w-4 h-4" />
               </button>
             </div>
           </div>
-
-          <div className="text-right">
-            <p
-              id="cart-item-mobile-total-price"
-              className="text-lg font-bold text-gray-900"
-            >
-              ${totalPrice.toFixed(2)}
-            </p>
-          </div>
         </div>
       </div>
+
+      {updating && (
+        <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+        </div>
+      )}
     </div>
-  )
+  );
 }

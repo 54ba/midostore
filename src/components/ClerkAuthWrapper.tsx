@@ -10,12 +10,16 @@ interface ClerkAuthWrapperProps {
 }
 
 export default function ClerkAuthWrapper({ children }: ClerkAuthWrapperProps) {
-    // Check if Clerk is available
+    // Check if Clerk is available and properly configured
+    const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+    const frontendApi = process.env.NEXT_PUBLIC_CLERK_FRONTEND_API;
+
     const isClerkAvailable = typeof window !== 'undefined' &&
-        (process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_CLERK_FRONTEND_API) &&
-        process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY !== 'your_clerk_publishable_key_here' &&
-        process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY !== 'pk_test_your_clerk_publishable_key_here' &&
-        process.env.NEXT_PUBLIC_CLERK_FRONTEND_API !== 'https://handy-cow-68.clerk.accounts.dev';
+        (publishableKey || frontendApi) &&
+        publishableKey !== 'your_clerk_publishable_key_here' &&
+        publishableKey !== 'pk_test_your_clerk_publishable_key_here' &&
+        publishableKey !== 'pk_test_your_actual_publishable_key_here' &&
+        frontendApi !== 'https://handy-cow-68.clerk.accounts.dev';
 
     // Only use Clerk hooks if available
     const clerkUser = isClerkAvailable ? useUser() : { user: null, isLoaded: true };

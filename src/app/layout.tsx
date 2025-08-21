@@ -4,6 +4,8 @@ import Script from 'next/script'
 import { Suspense } from 'react'
 import NavigationLogger from '@/components/NavigationLogger'
 import { AuthProvider } from '@/app/contexts/AuthContext'
+import { CartProvider } from '@/app/contexts/CartContext'
+import LiveSalesTicker from '@/components/LiveSalesTicker'
 import { LocalizationProvider } from '@/app/contexts/LocalizationContext'
 import ClerkProviderWrapper from '@/components/ClerkProviderWrapper'
 import ClerkAuthWrapper from '@/components/ClerkAuthWrapper'
@@ -29,16 +31,35 @@ export const metadata: Metadata = {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+  // Check if Clerk is properly configured
+  const isClerkConfigured = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY &&
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY !== 'your_clerk_publishable_key_here' &&
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY !== 'pk_test_your_clerk_publishable_key_here' &&
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY !== 'pk_test_your_actual_publishable_key_here';
+
   const content = (
     <>
       <Suspense fallback={null}>
         <NavigationLogger />
       </Suspense>
+
+      {/* Live Sales Ticker */}
+      <Suspense fallback={null}>
+        <LiveSalesTicker />
+      </Suspense>
+
       <LocalizationProvider>
         <AuthProvider>
-          <ClerkAuthWrapper>
-            {children}
-          </ClerkAuthWrapper>
+          <CartProvider>
+            {isClerkConfigured ? (
+              <ClerkAuthWrapper>
+                {children}
+              </ClerkAuthWrapper>
+            ) : (
+              // Keyless mode - render children directly
+              children
+            )}
+          </CartProvider>
         </AuthProvider>
       </LocalizationProvider>
 
@@ -52,6 +73,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         />
       </Suspense>
 
+      {/* Removed Edit Elements Service scripts */}
+      {/*
       <Script id="edit-config" strategy="beforeInteractive" dangerouslySetInnerHTML={{
         __html: `
         window.APP_ID = "f0d77951-6589-4855-889a-e574b12631d5";
@@ -62,15 +85,21 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       `,
       }} />
       <Script src="https://cdn.tasker.ai/EditModeLoader.js" strategy="afterInteractive" />
+      */}
     </>
   )
 
   return (
     <html lang="en" className="h-full">
       <body className="h-full font-sans">
-        <ClerkProviderWrapper>
-          {content}
-        </ClerkProviderWrapper>
+        {isClerkConfigured ? (
+          <ClerkProviderWrapper>
+            {content}
+          </ClerkProviderWrapper>
+        ) : (
+          // Keyless mode - render content directly
+          content
+        )}
       </body>
     </html>
   )

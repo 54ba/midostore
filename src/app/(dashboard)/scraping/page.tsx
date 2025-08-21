@@ -1,8 +1,25 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Play, Pause, RefreshCw, Eye, Trash2, Download, AlertCircle, CheckCircle, Clock, XCircle } from 'lucide-react';
-import { config } from '../../../../env.config';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/app/contexts/AuthContext';
+import envConfig from '../../../../env.config';
+import {
+    Search,
+    Filter,
+    Download,
+    Upload,
+    Settings,
+    Play,
+    Pause,
+    RotateCcw,
+    CheckCircle,
+    RefreshCw,
+    XCircle,
+    Clock,
+    Eye,
+    Trash2
+} from 'lucide-react';
 
 interface ScrapingJob {
     id: string;
@@ -28,8 +45,8 @@ export default function ScrapingDashboard() {
         pageCount: 1,
     });
 
-    const sources = config.scrapingSources;
-    const categories = config.scrapingCategories;
+    const sources = envConfig.scrapingSources;
+    const categories = envConfig.scrapingCategories;
 
     useEffect(() => {
         fetchJobs();
@@ -76,7 +93,7 @@ export default function ScrapingDashboard() {
     const getStatusIcon = (status: string) => {
         switch (status) {
             case 'completed':
-                return <CheckCircle className="h-5 w-5 text-blue-500 animate-pulse-glow" />;
+                return <CheckCircle className="h-5 w-5 text-green-500" />;
             case 'running':
                 return <RefreshCw className="h-5 w-5 text-blue-500 animate-spin" />;
             case 'failed':
@@ -93,21 +110,27 @@ export default function ScrapingDashboard() {
             case 'running':
                 return 'bg-blue-100 text-blue-800';
             case 'completed':
-                return 'bg-blue-100 text-blue-800';
+                return 'bg-green-100 text-green-800';
             case 'failed':
                 return 'bg-red-100 text-red-800';
+            case 'pending':
+                return 'bg-yellow-100 text-yellow-800';
             default:
                 return 'bg-gray-100 text-gray-800';
         }
     };
 
-    const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleString();
-    };
-
     const getProgressPercentage = (job: ScrapingJob) => {
         if (job.totalProducts === 0) return 0;
         return Math.round((job.scrapedProducts / job.totalProducts) * 100);
+    };
+
+    const formatDate = (dateString: string) => {
+        try {
+            return new Date(dateString).toLocaleDateString();
+        } catch {
+            return 'Invalid date';
+        }
     };
 
     return (

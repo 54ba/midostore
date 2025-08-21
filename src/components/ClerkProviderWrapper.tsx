@@ -15,18 +15,22 @@ export default function ClerkProviderWrapper({ children }: ClerkProviderWrapperP
     // Use either publishable key or frontend API
     const clerkConfig = publishableKey || frontendApi;
 
-    if (!clerkConfig ||
-        clerkConfig === 'your_clerk_publishable_key_here' ||
-        clerkConfig === 'pk_test_your_clerk_publishable_key_here' ||
-        clerkConfig === 'pk_test_your_actual_publishable_key_here') {
-        // During build time or when Clerk is not configured, render children without Clerk
-        console.warn('Clerk is not configured. Please set NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY in your environment variables.');
+    // Check if Clerk is properly configured (not placeholder values)
+    const isClerkConfigured = clerkConfig &&
+        clerkConfig !== 'your_clerk_publishable_key_here' &&
+        clerkConfig !== 'pk_test_your_clerk_publishable_key_here' &&
+        clerkConfig !== 'pk_test_your_actual_publishable_key_here' &&
+        clerkConfig !== 'https://handy-cow-68.clerk.accounts.dev';
+
+    if (!isClerkConfigured) {
+        // Clerk is in keyless mode - render children without Clerk
+        console.warn('Clerk is in keyless mode. Please set NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY in your environment variables.');
         console.warn('See CLERK_SETUP_GUIDE.md for setup instructions.');
         return <>{children}</>;
     }
 
     // If using frontend API (older Clerk version)
-    if (frontendApi && !publishableKey) {
+    if (frontendApi && !publishableKey && isClerkConfigured) {
         return (
             <ClerkProvider
                 frontendApi={frontendApi}

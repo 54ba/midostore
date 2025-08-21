@@ -26,9 +26,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState<boolean>(true);
   const [isClerkLoaded, setIsClerkLoaded] = useState(false);
 
-  // Check if Clerk is available
+  // Check if Clerk is available and properly configured
+  const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+  const frontendApi = process.env.NEXT_PUBLIC_CLERK_FRONTEND_API;
+
   const isClerkAvailable = typeof window !== 'undefined' &&
-    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+    (publishableKey || frontendApi) &&
+    publishableKey !== 'your_clerk_publishable_key_here' &&
+    publishableKey !== 'pk_test_your_clerk_publishable_key_here' &&
+    publishableKey !== 'pk_test_your_actual_publishable_key_here' &&
+    frontendApi !== 'https://handy-cow-68.clerk.accounts.dev';
 
   // Load Clerk hooks if available
   useEffect(() => {
@@ -42,6 +49,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setLoading(false);
       });
     } else {
+      // Clerk is in keyless mode
       setIsClerkLoaded(true);
       setLoading(false);
     }
