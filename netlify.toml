@@ -73,9 +73,16 @@
     "puppeteer-extra-plugin-adblocker",
     "python-shell",
     "xlsx",
-    "json2csv"
+    "json2csv",
+    "electron",
+    "electron-builder",
+    "dmg-builder",
+    "@img/sharp-libvips-linux-x64",
+    "@img/sharp-libvips-linuxmusl-x64",
+    "@prisma/engines",
+    "@next/swc-linux-x64-gnu"
   ]
-  included_files = ["prisma/**"]
+  included_files = ["prisma/schema.prisma"]
 
 # Environment-specific configurations
 [context.production.environment]

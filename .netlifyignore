@@ -1,4 +1,5 @@
 # Heavy dependencies that should not be deployed to Netlify
+node_modules/
 node_modules/puppeteer/
 node_modules/puppeteer-extra/
 node_modules/puppeteer-extra-plugin-*/
@@ -7,6 +8,9 @@ node_modules/xlsx/
 node_modules/json2csv/
 node_modules/@prisma/client/
 node_modules/prisma/
+node_modules/electron/
+node_modules/electron-builder/
+node_modules/dmg-builder/
 
 # AI and Python files (too heavy for Netlify)
 ai/
@@ -16,6 +20,8 @@ __pycache__/
 *.pkl
 *.h5
 *.model
+*.env
+*.env.*
 
 # Development and build artifacts
 scripts/
@@ -24,6 +30,7 @@ scripts/
 .env.development
 .env.test
 .env.production
+.env.production.local
 
 # Large data files
 *.csv
@@ -67,3 +74,20 @@ __tests__/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Build artifacts
+.next/
+out/
+build/
+coverage/
+
+# Package files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp

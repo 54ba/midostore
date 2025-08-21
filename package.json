@@ -10,6 +10,8 @@
     "lint": "next lint",
     "netlify:build": "chmod +x scripts/netlify-build.sh && ./scripts/netlify-build.sh",
     "netlify:build:optimized": "chmod +x scripts/netlify-build.sh && ./scripts/netlify-build.sh && echo '✅ Optimized build completed - functions are under 250MB limit'",
+    "netlify:clean": "./scripts/clean-for-netlify.sh",
+    "netlify:deploy": "./scripts/clean-for-netlify.sh && npm run build && netlify deploy --prod",
     "netlify:prebuild": "npm run netlify:setup",
     "netlify:postbuild": "echo 'Post-build completed'",
     "netlify:setup": "npm run netlify:install && npm run netlify:env:check",
