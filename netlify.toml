@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build"
+  command = "npm run build:simple"
   publish = ".next"
   functions = "netlify/functions-lightweight"
 
@@ -58,8 +58,10 @@
 [functions]
   node_bundler = "esbuild"
   external_node_modules = [
-    "@prisma/client",
-    "prisma",
+    # Heavy packages that should NEVER be bundled
+    "electron",
+    "electron-builder",
+    "dmg-builder",
     "puppeteer",
     "puppeteer-extra",
     "puppeteer-extra-plugin-stealth",
@@ -67,15 +69,20 @@
     "python-shell",
     "xlsx",
     "json2csv",
-    "electron",
-    "electron-builder",
-    "dmg-builder",
+
+    # Prisma and database
+    "@prisma/client",
+    "prisma",
+    "@prisma/engines",
+
+    # Image processing
     "@img/sharp-linux-x64-gnu",
     "@img/sharp-linux-x64-musl",
-    "@prisma/engines",
     "@next/swc-linux-x64-gnu",
     "lightningcss",
     "@tailwindcss/node",
+
+    # Other heavy packages
     "axios",
     "crypto-js",
     "currency.js",
@@ -88,6 +95,8 @@
     "uuid",
     "zod"
   ]
+
+  # Only include essential files
   included_files = [
-    "prisma/**/*"
+    "prisma/schema.prisma"
   ]
