@@ -6,6 +6,7 @@ import NavigationLogger from '@/components/NavigationLogger'
 import { AuthProvider } from '@/app/contexts/AuthContext'
 import { LocalizationProvider } from '@/app/contexts/LocalizationContext'
 import ClerkProviderWrapper from '@/components/ClerkProviderWrapper'
+import ClerkAuthWrapper from '@/components/ClerkAuthWrapper'
 import SimpleAnalyticsTracker from '@/components/SimpleAnalyticsTracker'
 
 export const viewport: Viewport = {
@@ -35,7 +36,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </Suspense>
       <LocalizationProvider>
         <AuthProvider>
-          {children}
+          <ClerkAuthWrapper>
+            {children}
+          </ClerkAuthWrapper>
         </AuthProvider>
       </LocalizationProvider>
 

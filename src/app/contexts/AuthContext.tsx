@@ -16,13 +16,14 @@ type AuthContextValue = {
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   isClerkUser: boolean;
+  setUser: (user: User | null) => void;
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [isClerkLoaded, setIsClerkLoaded] = useState(false);
 
   // Check if Clerk is available
@@ -35,11 +36,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       import('@clerk/nextjs').then(({ useUser, useAuth }) => {
         // Clerk is available, mark as loaded
         setIsClerkLoaded(true);
+        setLoading(false);
       }).catch(() => {
         setIsClerkLoaded(true);
+        setLoading(false);
       });
     } else {
       setIsClerkLoaded(true);
+      setLoading(false);
     }
   }, [isClerkAvailable]);
 
@@ -64,7 +68,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     try {
-      setUser(null);
+      // Try to use Clerk logout if available
+      if (typeof window !== 'undefined' && (window as any).clerkLogout) {
+        await (window as any).clerkLogout();
+      } else {
+        setUser(null);
+      }
     } catch (error) {
       console.error('Error during logout:', error);
       setUser(null);
@@ -77,7 +86,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       loading: loading || !isClerkLoaded,
       login,
       logout,
-      isClerkUser: false // Will be updated when Clerk is properly integrated
+      isClerkUser: isClerkAvailable,
+      setUser
     }}>
       {children}
     </AuthContext.Provider>
@@ -98,7 +108,31 @@ export function RequireAuth({
   fallback?: React.ReactNode;
 }) {
   const { user, loading } = useAuth();
-  if (loading) return <>{fallback}</>;
-  if (!user) return <>{fallback}</>;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[rgb(var(--background))] flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[rgb(var(--primary))] mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return fallback || (
+      <div className="min-h-screen bg-[rgb(var(--background))] flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-[rgb(var(--foreground))] mb-4">Access Denied</h2>
+          <p className="text-gray-600 mb-6">Please log in to access the dashboard.</p>
+          <a href="/sign-in" className="text-[rgb(var(--primary))] hover:text-[rgb(var(--secondary))] underline">
+            Go to Sign In
+          </a>
+        </div>
+      </div>
+    );
+  }
+
   return <>{children}</>;
 }
