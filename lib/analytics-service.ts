@@ -261,8 +261,8 @@ export class AnalyticsService {
         const opportunities = categories
             .filter((cat: { category: any; }) => cat.category)
             .map((cat: { category: any; _avg: { rating: any; soldCount: any; }; _count: { id: any; }; }) => {
-                const avgRating = cat._avg.rating || 0;
-                const avgSales = cat._avg.soldCount || 0;
+                const avgRating = Number(cat._avg.rating) || 0;
+                const avgSales = Number(cat._avg.soldCount) || 0;
                 const count = cat._count.id;
 
                 let opportunity = '';
@@ -454,7 +454,7 @@ export class AnalyticsService {
             where: { isActive: true },
             _avg: { rating: true }
         });
-        return result._avg.rating || 0;
+        return Number(result._avg.rating) || 0;
     }
 
     private async getCategoryRevenue(category: string): Promise<number> {
@@ -475,7 +475,7 @@ export class AnalyticsService {
         const result = await this.prisma.order.aggregate({
             _avg: { total: true }
         });
-        return result._avg.total || 0;
+        return Number(result._avg.total) || 0;
     }
 
     private async getAverageProfitMargin(): Promise<number> {
@@ -483,7 +483,7 @@ export class AnalyticsService {
             where: { isActive: true },
             _avg: { profitMargin: true }
         });
-        return result._avg.profitMargin || 0;
+        return Number(result._avg.profitMargin) || 0;
     }
 
     private getSeason(month: number): string {
