@@ -287,8 +287,8 @@ export class AILocationRecommendationService {
         // For now, using intelligent mock data based on location
 
         const mockData = {
-            categories: [] as Array<{ category: string; demand: number; trend: 'rising' | 'stable' | 'declining' }>             ,
-            preferences: [] as Array<{ preference: string; strength: number }>  ,
+            categories: [] as Array<{ category: string; demand: number; trend: 'rising' | 'stable' | 'declining' }>,
+            preferences: [] as Array<{ preference: string; strength: number }>,
             competition: {
                 localCompetitors: [] as Array<{ name: string; strength: number; focus: string }>,
                 marketGaps: [] as Array<{ category: string; opportunity: number; description: string }>,
@@ -478,7 +478,8 @@ export class AILocationRecommendationService {
         });
 
         // Analyze preferences
-        const categoryPreferences = products.reduce((acc: Record<string, any>, product: { category: string; price: string; rating: number; count: number; totalPrice: number; avgRating: number; }) => {
+        const categoryPreferences = products.reduce((acc: Record<string, any>, product: { category: string | null; price: any; rating: number | null; tags: string[] }) => {
+            if (!product.category) return acc;
             if (!acc[product.category]) acc[product.category] = { count: 0, totalPrice: 0, avgRating: 0 };
             acc[product.category].count++;
             acc[product.category].totalPrice += Number(product.price);
@@ -547,7 +548,7 @@ export class AILocationRecommendationService {
             });
 
             // Score each product based on multiple factors
-            const scoredProducts = products.map((product: { id: string; title: string; category: string; price: string; rating: number; relevanceScore: number; reasoning: any; matchFactors: string[]; estimatedDemand: number; competitiveAdvantage: string; }) => {
+            const scoredProducts = products.map((product: { id: string; title: string; category: string; price: any; rating: number; relevanceScore: number; reasoning: any; matchFactors: string[]; estimatedDemand: number; competitiveAdvantage: string; }) => {
                 const score: { total: number; reasoning: any; factors: string[]; demand: number; advantage: string; } = this.calculateProductScore(
                     product,
                     userContext,
@@ -570,7 +571,7 @@ export class AILocationRecommendationService {
             return scoredProducts
                 .sort((a: { relevanceScore: number; }, b: { relevanceScore: number; }) => b.relevanceScore - a.relevanceScore)
                 .slice(0, limit)
-                .map((product: { id: string; title: string; category: string; price: string; rating: number; relevanceScore: number; reasoning: any; matchFactors: string[]; estimatedDemand: number; competitiveAdvantage: string; }) => ({
+                .map((product: { id: string; title: string; category: string; price: any; rating: number; relevanceScore: number; reasoning: any; matchFactors: string[]; estimatedDemand: number; competitiveAdvantage: string; }) => ({
                     productId: product.id,
                     title: product.title,
                     category: product.category || 'General',
@@ -712,7 +713,7 @@ export class AILocationRecommendationService {
                 take: limit
             });
 
-            return trendingProducts.map((product: { id: string; title: string; category: string; price: string; rating: number; soldCount: number; images: string; }) => ({
+            return trendingProducts.map((product: { id: string; title: string; category: string; price: any; rating: number; soldCount: number; images: string; }) => ({
                 ...product,
                 price: Number(product.price),
                 trendReason: `Trending in ${location.city}, ${location.country}`
@@ -748,7 +749,7 @@ export class AILocationRecommendationService {
                 take: limit
             });
 
-            return seasonalProducts.map((product: { id: string; title: string; category: string; price: string; rating: number; soldCount: number; images: string; })            => ({
+            return seasonalProducts.map((product: { id: string; title: string; category: string; price: any; rating: number; soldCount: number; images: string; }) => ({
                 ...product,
                 price: Number(product.price),
                 seasonalReason: `Perfect for ${this.getSeason(new Date().getMonth(), location.latitude)} in ${location.city}`
