@@ -527,6 +527,79 @@ export class EnhancedLocalizationService {
             console.error('Error updating product price info:', error);
         }
     }
+
+    async getPriceUpdates(limit: number = 10): Promise<any[]> {
+        try {
+            // Get recent price updates from products
+            const recentProducts = await prisma.product.findMany({
+                where: {
+                    lastPriceUpdate: {
+                        not: null,
+                    },
+                },
+                orderBy: {
+                    lastPriceUpdate: 'desc',
+                },
+                take: limit,
+                select: {
+                    id: true,
+                    title: true,
+                    price: true,
+                    currency: true,
+                    lastPriceUpdate: true,
+                    isVolatile: true,
+                },
+            });
+
+            // Get recent exchange rate updates
+            const recentRates = await prisma.exchangeRate.findMany({
+                where: {
+                    lastUpdated: {
+                        not: null,
+                    },
+                },
+                orderBy: {
+                    lastUpdated: 'desc',
+                },
+                take: Math.floor(limit / 2),
+                select: {
+                    currency: true,
+                    rate: true,
+                    volatility: true,
+                    lastUpdated: true,
+                },
+            });
+
+            // Combine and format the data
+            const updates = [
+                ...recentProducts.map(product => ({
+                    type: 'product',
+                    id: product.id,
+                    title: product.title,
+                    price: product.price,
+                    currency: product.currency,
+                    timestamp: product.lastPriceUpdate,
+                    isVolatile: product.isVolatile,
+                })),
+                ...recentRates.map(rate => ({
+                    type: 'currency',
+                    id: rate.currency,
+                    title: `${rate.currency} Exchange Rate`,
+                    price: rate.rate,
+                    currency: 'USD',
+                    timestamp: rate.lastUpdated,
+                    isVolatile: rate.volatility > 0.05,
+                })),
+            ];
+
+            return updates
+                .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+                .slice(0, limit);
+        } catch (error) {
+            console.error('Error getting price updates:', error);
+            return [];
+        }
+    }
 }
 
 export default EnhancedLocalizationService;

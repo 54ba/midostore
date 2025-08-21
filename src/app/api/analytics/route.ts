@@ -4,6 +4,23 @@ import { prisma } from '../../../../lib/db';
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
+        const action = searchParams.get('action');
+        const limit = parseInt(searchParams.get('limit') || '10');
+
+        // Handle specific actions
+        if (action === 'live-sales') {
+            return await getLiveSales(limit);
+        }
+
+        if (action === 'price-updates') {
+            return await getPriceUpdates(limit);
+        }
+
+        if (action === 'inventory-updates') {
+            return await getInventoryUpdates(limit);
+        }
+
+        // Default analytics behavior
         const timeRange = searchParams.get('timeRange') || '30d';
         const analysisType = searchParams.get('type') || 'comprehensive';
 
@@ -409,4 +426,132 @@ function generateRecommendations(products: any[], orders: any[], reviews: any[])
     }
 
     return recommendations;
+}
+
+// Action handlers for LiveSalesTicker component
+async function getLiveSales(limit: number) {
+    try {
+        // Mock live sales data for now
+        const mockSales = [
+            {
+                id: 'sale-1',
+                customer: 'Ahmed Hassan',
+                productTitle: 'Wireless Bluetooth Headphones',
+                amount: 89.99,
+                currency: 'USD',
+                paymentMethod: 'card' as const,
+                location: 'Dubai, UAE',
+                timestamp: new Date(Date.now() - 1000 * 60 * 5), // 5 mins ago
+            },
+            {
+                id: 'sale-2',
+                customer: 'Fatima Kuwait',
+                productTitle: 'Smart Fitness Watch',
+                amount: 199.99,
+                currency: 'USD',
+                paymentMethod: 'crypto' as const,
+                cryptoAmount: 0.005,
+                cryptoType: 'BTC',
+                location: 'Kuwait City, Kuwait',
+                timestamp: new Date(Date.now() - 1000 * 60 * 15), // 15 mins ago
+            },
+            {
+                id: 'sale-3',
+                customer: 'Omar Dubai',
+                productTitle: 'Organic Face Cream',
+                amount: 29.99,
+                currency: 'USD',
+                paymentMethod: 'card' as const,
+                location: 'Abu Dhabi, UAE',
+                timestamp: new Date(Date.now() - 1000 * 60 * 25), // 25 mins ago
+            }
+        ];
+
+        return NextResponse.json({
+            success: true,
+            data: mockSales.slice(0, limit)
+        });
+    } catch (error) {
+        console.error('Error getting live sales:', error);
+        return NextResponse.json(
+            { success: false, error: 'Failed to get live sales' },
+            { status: 500 }
+        );
+    }
+}
+
+async function getPriceUpdates(limit: number) {
+    try {
+        // Mock price updates data for now
+        const mockPriceUpdates = [
+            {
+                id: 'price-1',
+                productId: 'prod-1',
+                productTitle: 'Wireless Bluetooth Headphones',
+                oldPrice: 89.99,
+                newPrice: 79.99,
+                currency: 'USD',
+                changePercent: -11.1,
+                isVolatile: false,
+                timestamp: new Date(Date.now() - 1000 * 60 * 10), // 10 mins ago
+            },
+            {
+                id: 'price-2',
+                productId: 'prod-2',
+                productTitle: 'Smart Fitness Watch',
+                oldPrice: 199.99,
+                newPrice: 189.99,
+                currency: 'USD',
+                changePercent: -5.0,
+                isVolatile: false,
+                timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 mins ago
+            }
+        ];
+
+        return NextResponse.json({
+            success: true,
+            data: mockPriceUpdates.slice(0, limit)
+        });
+    } catch (error) {
+        console.error('Error getting price updates:', error);
+        return NextResponse.json(
+            { success: false, error: 'Failed to get price updates' },
+            { status: 500 }
+        );
+    }
+}
+
+async function getInventoryUpdates(limit: number) {
+    try {
+        // Mock inventory updates data for now
+        const mockInventoryUpdates = [
+            {
+                id: 'inventory-1',
+                productId: 'prod-1',
+                productTitle: 'Wireless Bluetooth Headphones',
+                action: 'restocked' as const,
+                quantity: 50,
+                timestamp: new Date(Date.now() - 1000 * 60 * 20), // 20 mins ago
+            },
+            {
+                id: 'inventory-2',
+                productId: 'prod-3',
+                productTitle: 'Organic Face Cream',
+                action: 'low_stock' as const,
+                quantity: 5,
+                timestamp: new Date(Date.now() - 1000 * 60 * 45), // 45 mins ago
+            }
+        ];
+
+        return NextResponse.json({
+            success: true,
+            data: mockInventoryUpdates.slice(0, limit)
+        });
+    } catch (error) {
+        console.error('Error getting inventory updates:', error);
+        return NextResponse.json(
+            { success: false, error: 'Failed to get inventory updates' },
+            { status: 500 }
+        );
+    }
 }

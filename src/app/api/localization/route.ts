@@ -79,6 +79,15 @@ export async function GET(request: NextRequest) {
                     data: shipping,
                 });
 
+            case 'price-updates':
+                const limit = parseInt(searchParams.get('limit') || '10');
+                const priceUpdates = await localizationService.getPriceUpdates(limit);
+
+                return NextResponse.json({
+                    success: true,
+                    data: priceUpdates,
+                });
+
             default:
                 return NextResponse.json(
                     { error: 'Invalid action parameter' },

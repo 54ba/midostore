@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 
+/** @type {import('next').NextConfig} */
 const nextConfig: NextConfig = {
     /* config options here */
 
@@ -28,16 +29,29 @@ const nextConfig: NextConfig = {
     output: 'standalone',
 
     // Server external packages (moved from experimental)
-    serverExternalPackages: ['prisma', '@prisma/client'],
+    serverExternalPackages: ['puppeteer-extra', 'puppeteer-extra-plugin-stealth', 'puppeteer-extra-plugin-adblocker'],
 
     // Images configuration
     images: {
-        domains: [
-            'localhost',
-            'api.internal.tasker.ai',
-            'cdn.tasker.ai',
-            'images.unsplash.com',
-            'via.placeholder.com'
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: 'images.unsplash.com',
+                port: '',
+                pathname: '/**',
+            },
+            {
+                protocol: 'https',
+                hostname: 'via.placeholder.com',
+                port: '',
+                pathname: '/**',
+            },
+            {
+                protocol: 'https',
+                hostname: 'picsum.photos',
+                port: '',
+                pathname: '/**',
+            },
         ],
         dangerouslyAllowSVG: true,
         contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",

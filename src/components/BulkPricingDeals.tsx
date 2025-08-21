@@ -2,18 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import {
-    TrendingUp,
-    Clock,
-    Users,
-    DollarSign,
-    ShoppingCart,
-    Fire,
-    Zap,
-    Star,
-    AlertTriangle,
-    CheckCircle,
     ArrowRight,
-    Timer
+    CheckCircle,
+    Clock,
+    Flame, // Changed from Fire to Flame
+    ShoppingCart,
+    Timer,
+    TrendingUp,
+    Users,
+    Zap
 } from 'lucide-react';
 
 interface BulkPricingDealsProps {
@@ -116,7 +113,7 @@ export default function BulkPricingDeals({ className = '' }: BulkPricingDealsPro
                     <div className="flex items-center gap-2">
                         {deal.isHotDeal && (
                             <div className="flex items-center gap-1 px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium">
-                                <Fire className="w-3 h-3" />
+                                <Flame className="w-3 h-3" />
                                 Hot Deal
                             </div>
                         )}
@@ -276,15 +273,15 @@ export default function BulkPricingDeals({ className = '' }: BulkPricingDealsPro
                 <div className="flex space-x-1 mt-6">
                     {[
                         { id: 'all', label: 'All Deals', count: deals.length, icon: TrendingUp },
-                        { id: 'hot', label: 'Hot Deals', count: hotDeals.length, icon: Fire },
+                        { id: 'hot', label: 'Hot Deals', count: hotDeals.length, icon: Flame },
                         { id: 'expiring', label: 'Expiring Soon', count: expiringDeals.length, icon: Clock },
                     ].map((tab) => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${activeTab === tab.id
-                                    ? 'bg-green-100 text-green-700'
-                                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                                ? 'bg-green-100 text-green-700'
+                                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                                 }`}
                         >
                             <tab.icon className="w-4 h-4" />
@@ -319,7 +316,7 @@ export default function BulkPricingDeals({ className = '' }: BulkPricingDealsPro
                     <div className="space-y-6">
                         {hotDeals.length === 0 ? (
                             <div className="text-center py-12">
-                                <Fire className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                                <Flame className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                                 <h3 className="text-lg font-semibold text-gray-900 mb-2">No Hot Deals Right Now</h3>
                                 <p className="text-gray-600">Hot deals appear when tiers are 80%+ filled!</p>
                             </div>

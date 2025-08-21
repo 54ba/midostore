@@ -2,18 +2,15 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import {
-    TrendingUp,
-    Fire,
-    Star,
-    DollarSign,
-    Clock,
-    Eye,
-    ShoppingCart,
-    Zap,
-    ArrowUp,
     ArrowDown,
+    ArrowUp,
     Bitcoin,
-    Package
+    Clock,
+    Flame, // Changed from Fire to Flame
+    Package,
+    ShoppingCart,
+    TrendingUp,
+    Zap
 } from 'lucide-react';
 
 interface LiveSale {
@@ -59,6 +56,7 @@ export default function LiveSalesTicker() {
     const [inventoryUpdates, setInventoryUpdates] = useState<LiveInventoryUpdate[]>([]);
     const [isPaused, setIsPaused] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [currentTime, setCurrentTime] = useState<string>('');
     const tickerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -77,11 +75,17 @@ export default function LiveSalesTicker() {
             }
         }, 4000); // Change every 4 seconds
 
+        // Update time every second
+        const timeInterval = setInterval(() => {
+            setCurrentTime(new Date().toLocaleTimeString());
+        }, 1000);
+
         return () => {
             clearInterval(salesInterval);
             clearInterval(priceInterval);
             clearInterval(inventoryInterval);
             clearInterval(scrollInterval);
+            clearInterval(timeInterval);
         };
     }, [isPaused]);
 
@@ -194,21 +198,21 @@ export default function LiveSalesTicker() {
 
     // Combine all updates for ticker
     const allUpdates = [
-        ...sales.map(sale => ({
+        ...(Array.isArray(sales) ? sales.map(sale => ({
             type: 'sale' as const,
             data: sale,
             priority: 3,
-        })),
-        ...priceUpdates.map(update => ({
+        })) : []),
+        ...(Array.isArray(priceUpdates) ? priceUpdates.map(update => ({
             type: 'price' as const,
             data: update,
             priority: update.isVolatile ? 2 : 1,
-        })),
-        ...inventoryUpdates.map(update => ({
+        })) : []),
+        ...(Array.isArray(inventoryUpdates) ? inventoryUpdates.map(update => ({
             type: 'inventory' as const,
             data: update,
             priority: 1,
-        })),
+        })) : []),
     ].sort((a, b) => b.priority - a.priority);
 
     const currentUpdate = allUpdates[currentIndex % allUpdates.length];
@@ -234,7 +238,7 @@ export default function LiveSalesTicker() {
 
     const renderSaleUpdate = (sale: LiveSale) => (
         <div className="flex items-center gap-3 text-green-600">
-            <Fire className="w-4 h-4 animate-pulse" />
+            <Flame className="w-4 h-4 animate-pulse" />
             <span className="font-medium">{sale.customer}</span>
             <span>just bought</span>
             <span className="font-semibold">{sale.productTitle}</span>
@@ -362,23 +366,23 @@ export default function LiveSalesTicker() {
                 <div className="flex items-center gap-4">
                     <div className="flex items-center gap-1">
                         <ShoppingCart className="w-3 h-3" />
-                        <span>{sales.length} sales today</span>
+                        <span>{Array.isArray(sales) ? sales.length : 0} sales today</span>
                     </div>
 
                     <div className="flex items-center gap-1">
                         <TrendingUp className="w-3 h-3" />
-                        <span>{priceUpdates.length} price updates</span>
+                        <span>{Array.isArray(priceUpdates) ? priceUpdates.length : 0} price updates</span>
                     </div>
 
                     <div className="flex items-center gap-1">
                         <Package className="w-3 h-3" />
-                        <span>{inventoryUpdates.length} inventory changes</span>
+                        <span>{Array.isArray(inventoryUpdates) ? inventoryUpdates.length : 0} inventory changes</span>
                     </div>
                 </div>
 
                 <div className="flex items-center gap-2">
                     <span className="text-gray-300">Last updated:</span>
-                    <span>{new Date().toLocaleTimeString()}</span>
+                    <span>{currentTime}</span>
                 </div>
             </div>
         </div>

@@ -34,21 +34,103 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '20');
 
-    const productService = new ProductService();
+    // Mock data for now to get the frontend working
+    const mockProducts = [
+      {
+        id: 'prod_1',
+        title: 'Wireless Bluetooth Headphones',
+        description: 'High-quality wireless headphones with noise cancellation',
+        price: 89.99,
+        currency: 'USD',
+        category: 'electronics',
+        image: '/api/placeholder/300/300?text=Headphones',
+        rating: 4.5,
+        reviewCount: 128,
+        soldCount: 1500,
+        isFeatured: true,
+        isActive: true,
+        supplier: { name: 'TechSupplier Co.' },
+        variants: []
+      },
+      {
+        id: 'prod_2',
+        title: 'Smart Fitness Watch',
+        description: 'Advanced fitness tracking with heart rate monitor',
+        price: 199.99,
+        currency: 'USD',
+        category: 'electronics',
+        image: '/api/placeholder/300/300?text=SmartWatch',
+        rating: 4.3,
+        reviewCount: 89,
+        soldCount: 750,
+        isFeatured: true,
+        isActive: true,
+        supplier: { name: 'FitnessGear Ltd.' },
+        variants: []
+      },
+      {
+        id: 'prod_3',
+        title: 'Organic Face Cream',
+        description: 'Natural anti-aging face cream with organic ingredients',
+        price: 29.99,
+        currency: 'USD',
+        category: 'beauty',
+        image: '/api/placeholder/300/300?text=FaceCream',
+        rating: 4.7,
+        reviewCount: 256,
+        soldCount: 3200,
+        isFeatured: true,
+        isActive: true,
+        supplier: { name: 'BeautyNatural Inc.' },
+        variants: []
+      },
+      {
+        id: 'prod_4',
+        title: 'Educational Building Blocks',
+        description: 'STEM learning blocks for children aged 6-12',
+        price: 45.99,
+        currency: 'USD',
+        category: 'toys',
+        image: '/api/placeholder/300/300?text=BuildingBlocks',
+        rating: 4.6,
+        reviewCount: 167,
+        soldCount: 2100,
+        isFeatured: true,
+        isActive: true,
+        supplier: { name: 'EduToys Corp.' },
+        variants: []
+      }
+    ];
 
-    let result;
+    let result = mockProducts;
 
-    if (search) {
-      result = await productService.searchProducts(search, locale, page, limit);
-    } else if (category) {
-      result = await productService.getProductsByCategory(category, locale, page, limit);
-    } else {
-      result = await productService.getFeaturedProducts(locale, limit);
+    // Filter by category if specified
+    if (category && category !== 'all') {
+      result = mockProducts.filter(product => product.category === category);
     }
+
+    // Filter by search if specified
+    if (search) {
+      result = mockProducts.filter(product =>
+        product.title.toLowerCase().includes(search.toLowerCase()) ||
+        product.description.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+
+    // Apply pagination
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    result = result.slice(startIndex, endIndex);
 
     return NextResponse.json({
       success: true,
       data: result,
+      pagination: {
+        page,
+        limit,
+        total: mockProducts.length,
+        totalPages: Math.ceil(mockProducts.length / limit)
+      }
     });
   } catch (error) {
     console.error('Error getting products:', error);

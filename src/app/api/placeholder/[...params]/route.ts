@@ -2,10 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: { params: string[] } }
+    { params }: { params: Promise<{ params: string[] }> }
 ) {
     try {
-        const [width, height, ...textParts] = params.params;
+        const resolvedParams = await params;
+        const [width, height, ...textParts] = resolvedParams.params;
         const text = textParts.length > 0 ? textParts.join('/') : 'Placeholder';
 
         // Parse dimensions

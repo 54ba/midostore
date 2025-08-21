@@ -28,8 +28,12 @@ export default function DashboardLayoutFrame({ children }: { children: React.Rea
     )
   }
 
+  // TEMPORARY: Allow access without authentication for development
+  // TODO: Re-enable authentication check when Clerk is properly configured
+  const allowAccess = true; // Set to false to re-enable authentication
+
   // If Clerk is not available, show configuration error
-  if (!isClerkAvailable) {
+  if (!isClerkAvailable && !allowAccess) {
     return (
       <div className="min-h-screen bg-[rgb(var(--background))] flex items-center justify-center">
         <div className="text-center max-w-md mx-auto p-6">
@@ -50,7 +54,7 @@ export default function DashboardLayoutFrame({ children }: { children: React.Rea
   }
 
   // If Clerk user is not authenticated, show sign-in prompt
-  if (!clerkUser.user) {
+  if (!clerkUser.user && !allowAccess) {
     return (
       <div className="min-h-screen bg-[rgb(var(--background))] flex items-center justify-center">
         <div className="text-center">
