@@ -1,257 +1,101 @@
 #!/bin/bash
 
-# Netlify Build Script for MidoStore
-# Handles database setup, AI model training, and package installation
+# Netlify Build Script - Optimized for Size Limits
+# This script ensures the build stays under the 250MB function size limit
 
-set -e  # Exit on any error
+set -e
 
-echo "🚀 Starting Netlify build process..."
+echo "🚀 Starting optimized Netlify build..."
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+# Check if we're in the right directory
+if [ ! -f "package.json" ]; then
+    echo "❌ Error: package.json not found. Please run this script from the project root."
+    exit 1
+fi
 
-# Function to print colored output
-print_status() {
-    echo -e "${BLUE}[INFO]${NC} $1"
-}
+# Clean previous builds
+echo "🧹 Cleaning previous builds..."
+rm -rf .next
+rm -rf netlify/functions/.next
+rm -rf node_modules/.cache
 
-print_success() {
-    echo -e "${GREEN}[SUCCESS]${NC} $1"
-}
+# Install dependencies (production only for functions)
+echo "📦 Installing dependencies..."
+npm ci --production=false
 
-print_warning() {
-    echo -e "${YELLOW}[WARNING]${NC} $1"
-}
+# Generate Prisma client
+echo "🗄️ Generating Prisma client..."
+npx prisma generate
 
-print_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
-}
+# Build Next.js application
+echo "🔨 Building Next.js application..."
+npm run build
 
-# Function to check if command exists
-command_exists() {
-    command -v "$1" >/dev/null 2>&1
-}
+# Check function sizes
+echo "📏 Checking function sizes..."
+FUNCTIONS_DIR="netlify/functions"
+MAX_SIZE=250000000  # 250MB in bytes
 
-# Function to check environment variables
-check_env() {
-    print_status "Checking environment variables..."
+for func in "$FUNCTIONS_DIR"/*.js; do
+    if [ -f "$func" ]; then
+        func_name=$(basename "$func")
+        func_size=$(stat -c%s "$func" 2>/dev/null || stat -f%z "$func" 2>/dev/null || echo "0")
 
-    local missing_vars=()
+        echo "  📁 $func_name: $((func_size / 1024))KB"
 
-    # Required variables
-    local required_vars=("DATABASE_URL" "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY" "CLERK_SECRET_KEY")
-
-    for var in "${required_vars[@]}"; do
-        if [[ -z "${!var}" ]]; then
-            missing_vars+=("$var")
-        else
-            print_success "$var is set"
+        if [ "$func_size" -gt "$MAX_SIZE" ]; then
+            echo "  ⚠️  WARNING: $func_name exceeds size limit!"
+            echo "  💡 Consider splitting or optimizing this function"
         fi
-    done
-
-    if [[ ${#missing_vars[@]} -gt 0 ]]; then
-        print_error "Missing required environment variables: ${missing_vars[*]}"
-        exit 1
     fi
+done
 
-    print_success "Environment check passed"
-}
+# Check for heavy dependencies in node_modules
+echo "🔍 Checking for heavy dependencies..."
+HEAVY_DEPS=("puppeteer" "puppeteer-extra" "python-shell" "xlsx" "json2csv")
 
-# Function to install Node.js dependencies
-install_node_deps() {
-    print_status "Installing Node.js dependencies..."
-
-    if [[ -f "package-lock.json" ]]; then
-        npm ci --production=false
-    else
-        npm install
+for dep in "${HEAVY_DEPS[@]}"; do
+    if [ -d "node_modules/$dep" ]; then
+        dep_size=$(du -sb "node_modules/$dep" | cut -f1)
+        dep_size_mb=$((dep_size / 1024 / 1024))
+        echo "  ⚠️  Heavy dependency found: $dep (${dep_size_mb}MB)"
+        echo "  💡 This dependency should be excluded from Netlify functions"
     fi
+done
 
-    print_success "Node.js dependencies installed"
-}
+# Create optimized function bundle
+echo "📦 Creating optimized function bundle..."
+cd netlify/functions
 
-# Function to setup Python environment
-setup_python() {
-    print_status "Setting up Python environment..."
+# Remove any heavy dependencies that might have been copied
+echo "  🗑️  Removing heavy dependencies from function bundle..."
+rm -rf node_modules 2>/dev/null || true
 
-    # Check if Python is available
-    if ! command_exists python3; then
-        print_warning "Python3 not found, skipping AI setup"
-        return 0
-    fi
+# Check final function sizes
+echo "📏 Final function size check..."
+for func in *.js; do
+    if [ -f "$func" ]; then
+        func_size=$(stat -c%s "$func" 2>/dev/null || stat -f%z "$func" 2>/dev/null || echo "0")
+        func_size_kb=$((func_size / 1024))
+        echo "  ✅ $func: ${func_size_kb}KB"
 
-    # Check Python version
-    local python_version=$(python3 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')
-    print_status "Python version: $python_version"
-
-    # Create AI directory if it doesn't exist
-    if [[ ! -d "ai" ]]; then
-        print_warning "AI directory not found, creating basic structure"
-        mkdir -p ai
-        echo "# Basic AI setup" > ai/requirements.txt
-    fi
-
-    # Setup Python virtual environment
-    cd ai
-    if [[ ! -d "venv" ]]; then
-        print_status "Creating Python virtual environment..."
-        python3 -m venv venv
-    fi
-
-    # Activate virtual environment
-    source venv/bin/activate
-
-    # Upgrade pip
-    pip install --upgrade pip
-
-    # Install requirements if they exist
-    if [[ -f "requirements.txt" ]]; then
-        print_status "Installing Python dependencies..."
-        pip install -r requirements.txt
-        print_success "Python dependencies installed"
-    else
-        print_warning "No requirements.txt found, skipping Python dependency installation"
-    fi
-
-    # Go back to root directory
-    cd ..
-
-    print_success "Python environment setup completed"
-}
-
-# Function to setup database
-setup_database() {
-    print_status "Setting up database..."
-
-    # Generate Prisma client
-    print_status "Generating Prisma client..."
-    npm run db:generate
-
-    # Push database schema
-    print_status "Pushing database schema..."
-    npm run db:push
-
-    print_success "Database setup completed"
-}
-
-# Function to seed database
-seed_database() {
-    print_status "Seeding database..."
-
-    # Check if seeding script exists
-    if [[ -f "scripts/db-seed.ts" ]]; then
-        npm run db:seed
-        print_success "Database seeded successfully"
-    else
-        print_warning "Database seeding script not found, skipping"
-    fi
-}
-
-# Function to setup AI model
-setup_ai_model() {
-    print_status "Setting up AI model..."
-
-    # Check if AI training is enabled
-    if [[ "${ENABLE_AI_TRAINING}" != "true" ]]; then
-        print_warning "AI training disabled, skipping model setup"
-        return 0
-    fi
-
-    # Check if Python environment is ready
-    if [[ ! -d "ai/venv" ]]; then
-        print_warning "Python virtual environment not found, skipping AI setup"
-        return 0
-    fi
-
-    # Activate virtual environment and check LightFM
-    cd ai
-    source venv/bin/activate
-
-    if python -c "import lightfm" 2>/dev/null; then
-        print_success "LightFM is available"
-
-        # Check if model already exists
-        if [[ -f "models/recommendation_model.pkl" ]]; then
-            print_status "AI model already exists, skipping training"
-        else
-            print_status "Training AI model..."
-            python recommendation_engine.py --train || {
-                print_warning "AI model training failed, continuing with build"
-            }
+        if [ "$func_size" -gt "$MAX_SIZE" ]; then
+            echo "  ❌ ERROR: $func still exceeds 250MB limit!"
+            echo "  🚨 Build will fail. Please optimize this function."
+            exit 1
         fi
-    else
-        print_warning "LightFM not available, skipping AI model setup"
     fi
+done
 
-    cd ..
+cd ../..
 
-    print_success "AI model setup completed"
-}
+echo "✅ Build completed successfully!"
+echo "📊 Function sizes are within limits"
+echo "🚀 Ready for Netlify deployment"
 
-# Function to build Next.js application
-build_nextjs() {
-    print_status "Building Next.js application..."
-
-    npm run build
-
-    print_success "Next.js build completed"
-}
-
-# Function to cleanup
-cleanup() {
-    print_status "Cleaning up build artifacts..."
-
-    # Remove Python virtual environment to save space
-    if [[ -d "ai/venv" ]]; then
-        print_status "Removing Python virtual environment to save space..."
-        rm -rf ai/venv
-    fi
-
-    # Remove node_modules if not needed for production
-    if [[ "${NODE_ENV}" == "production" ]]; then
-        print_status "Keeping node_modules for production"
-    else
-        print_status "Removing node_modules to save space..."
-        rm -rf node_modules
-    fi
-
-    print_success "Cleanup completed"
-}
-
-# Main build process
-main() {
-    print_status "Starting MidoStore build process..."
-
-    # Check environment
-    check_env
-
-    # Install dependencies
-    install_node_deps
-
-    # Setup Python environment
-    setup_python
-
-    # Setup database
-    setup_database
-
-    # Seed database
-    seed_database
-
-    # Setup AI model
-    setup_ai_model
-
-    # Build Next.js application
-    build_nextjs
-
-    # Cleanup
-    cleanup
-
-    print_success "🎉 Build process completed successfully!"
-}
-
-# Run main function
-main "$@"
+# Optional: Show deployment commands
+echo ""
+echo "💡 To deploy:"
+echo "  netlify deploy --prod"
+echo "  # or"
+echo "  netlify deploy --dir=.next --functions=netlify/functions"

@@ -64,7 +64,27 @@
 
 [functions]
   node_bundler = "esbuild"
-  external_node_modules = ["@prisma/client", "prisma"]
+  external_node_modules = [
+    "@prisma/client",
+    "prisma",
+    "puppeteer",
+    "puppeteer-extra",
+    "puppeteer-extra-plugin-stealth",
+    "puppeteer-extra-plugin-adblocker",
+    "python-shell",
+    "xlsx",
+    "json2csv"
+  ]
+  included_files = ["prisma/**"]
+  excluded_files = [
+    "node_modules/puppeteer/**",
+    "node_modules/puppeteer-extra/**",
+    "node_modules/python-shell/**",
+    "node_modules/xlsx/**",
+    "node_modules/json2csv/**",
+    "ai/**",
+    "scripts/**"
+  ]
 
 # Environment-specific configurations
 [context.production.environment]
