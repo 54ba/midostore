@@ -1,4 +1,5 @@
-import { PrismaClient } from '@prisma/client';
+// Use any type to accept both real PrismaClient and MockPrismaClient
+type PrismaClientType = any;
 
 export interface AIScrapingConfig {
     source: 'alibaba' | 'aliexpress' | 'amazon' | 'ebay' | 'custom';
