@@ -36,9 +36,9 @@ export interface UserContext {
 export interface AIRecommendation {
     productId: string;
     title: string;
-    category: string;
+    category: string | null;
     price: number;
-    rating: number;
+    rating: number | null;
     relevanceScore: number;
     reasoning: any;
     matchFactors: string[];
@@ -50,9 +50,9 @@ export interface AIRecommendation {
 export interface TrendingProduct {
     id: string;
     title: string;
-    category: string;
+    category: string | null;
     price: number;
-    rating: number;
+    rating: number | null;
     soldCount: number;
     trendReason: string;
     image?: string | null;
@@ -61,9 +61,9 @@ export interface TrendingProduct {
 export interface SeasonalProduct {
     id: string;
     title: string;
-    category: string;
+    category: string | null;
     price: number;
-    rating: number;
+    rating: number | null;
     soldCount: number;
     seasonalReason: string;
     image?: string | null;
