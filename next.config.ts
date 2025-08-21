@@ -6,12 +6,12 @@ const nextConfig: NextConfig = {
 
     // Do not fail production builds on ESLint issues
     eslint: {
-        ignoreDuringBuilds: true,
+        // ignoreDuringBuilds: true,
     },
 
     // Allow build to pass even with TS errors
     typescript: {
-        ignoreBuildErrors: true,
+        // ignoreBuildErrors: true,
     },
 
     // Optimize for Netlify deployment
