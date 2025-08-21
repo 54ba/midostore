@@ -62,8 +62,11 @@ node_modules/zod/
 node_modules/xlsx/
 node_modules/json2csv/
 
-# Keep only essential files
-!netlify/functions/*.js
+# OLD FUNCTIONS DIRECTORY - EXCLUDE COMPLETELY
+netlify/functions/
+
+# Keep only essential files and standalone functions
+!functions-standalone/*.js
 !netlify.toml
 !package.json
 !next.config.ts

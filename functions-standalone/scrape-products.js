@@ -1,4 +1,4 @@
-exports.handler = async (event, context) => {
+exports.handler = async (event) => {
     const headers = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'POST, OPTIONS' };
 
     if (event.httpMethod === 'OPTIONS') return { statusCode: 200, headers, body: '' };
@@ -26,10 +26,10 @@ exports.handler = async (event, context) => {
             headers,
             body: JSON.stringify({
                 success: true,
-                jobId: `minimal_${Date.now()}`,
+                jobId: `standalone_${Date.now()}`,
                 totalProducts: products.length,
                 products: products.slice(0, 5),
-                message: 'Minimal function working - no external deps'
+                message: 'Standalone function working - no bundling issues'
             })
         };
     } catch (error) {
