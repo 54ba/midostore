@@ -35,7 +35,7 @@ const nextConfig: NextConfig = {
     },
 
     // Optimize for production builds
-    swcMinify: true,
+    // swcMinify: true, // Removed as it's no longer needed in Next.js 15
 
     // Webpack configuration to handle Node.js modules
     webpack: (config, { isServer }) => {
