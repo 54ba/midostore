@@ -32,7 +32,6 @@ export class ScheduledTaskService {
                 console.error('❌ Failed to update exchange rates:', error);
             }
         }, {
-            scheduled: true,
             timezone: 'UTC'
         });
 
@@ -46,7 +45,6 @@ export class ScheduledTaskService {
                 console.error('❌ Failed to update product prices:', error);
             }
         }, {
-            scheduled: true,
             timezone: 'UTC'
         });
 
@@ -61,7 +59,6 @@ export class ScheduledTaskService {
                 console.error('❌ Failed to clear cache:', error);
             }
         }, {
-            scheduled: true,
             timezone: 'UTC'
         });
 
@@ -75,7 +72,6 @@ export class ScheduledTaskService {
                 console.error('❌ Daily maintenance failed:', error);
             }
         }, {
-            scheduled: true,
             timezone: 'UTC'
         });
 

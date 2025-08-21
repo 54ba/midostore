@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
 
         // Get user's IP address for additional context
         const forwarded = request.headers.get('x-forwarded-for');
-        const ip = forwarded ? forwarded.split(',')[0] : request.ip || 'unknown';
+        const ip = forwarded ? forwarded.split(',')[0] : 'unknown';
 
         // Enhanced user context with IP and headers
         const enhancedContext = {
@@ -108,16 +108,16 @@ async function getLocationBasedRecommendations(
         });
 
         // Score products based on location and user context
-        const scoredProducts = products.map(product => {
+        const scoredProducts = products.map((product: any) => {
             const score = calculateLocationScore(product, location, userContext, searchQuery);
             return { ...product, relevanceScore: score.total, reasoning: score.reasoning };
         });
 
         // Sort by relevance and return top results
         return scoredProducts
-            .sort((a, b) => b.relevanceScore - a.relevanceScore)
+            .sort((a: any, b: any) => b.relevanceScore - a.relevanceScore)
             .slice(0, limit)
-            .map(product => ({
+            .map((product: any) => ({
                 productId: product.id,
                 title: product.title,
                 category: product.category || 'General',
@@ -235,7 +235,7 @@ async function getTrendingProductsByLocation(location: any, limit: number) {
             take: limit
         });
 
-        return trendingProducts.map(product => ({
+        return trendingProducts.map((product: any) => ({
             ...product,
             price: Number(product.price),
             trendReason: `Trending in ${location.city}, ${location.country}`,
@@ -275,7 +275,7 @@ async function getSeasonalRecommendations(location: any, limit: number) {
             take: limit
         });
 
-        return seasonalProducts.map(product => ({
+        return seasonalProducts.map((product: any) => ({
             ...product,
             price: Number(product.price),
             seasonalReason: `Perfect for ${season} in ${location.city}`,
@@ -302,9 +302,9 @@ async function getMarketInsights(location: any) {
 
         // Get trending categories
         const trendingCategories = categoryStats
-            .sort((a, b) => (b._sum.soldCount || 0) - (a._sum.soldCount || 0))
+            .sort((a: any, b: any) => (b._sum.soldCount || 0) - (a._sum.soldCount || 0))
             .slice(0, 5)
-            .map(cat => ({
+            .map((cat: any) => ({
                 category: cat.category || 'General',
                 productCount: cat._count.id,
                 avgPrice: Number(cat._avg.price || 0),
@@ -314,8 +314,8 @@ async function getMarketInsights(location: any) {
 
         // Get market opportunities
         const marketOpportunities = categoryStats
-            .filter(cat => (cat._sum.soldCount || 0) < 100 && (cat._avg.rating || 0) > 4.0)
-            .map(cat => ({
+            .filter((cat: any) => (cat._sum.soldCount || 0) < 100 && (cat._avg.rating || 0) > 4.0)
+            .map((cat: any) => ({
                 category: cat.category || 'General',
                 opportunity: 'High demand, low supply',
                 potential: 'High'

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import {
     Play,
     Pause,
-    Stop,
+    Square,
     Settings,
     Brain,
     Zap,
@@ -148,7 +148,7 @@ export default function AIPoweredScrapingDashboard({ className = '' }: AIScrapin
             },
         ];
         setSessions(mockSessions);
-    }, []);
+    }, [activeConfig]);
 
     const startNewSession = async () => {
         setIsStarting(true);
@@ -385,8 +385,8 @@ export default function AIPoweredScrapingDashboard({ className = '' }: AIScrapin
                     <div
                         key={session.id}
                         className={`border rounded-lg p-4 transition-all duration-200 cursor-pointer ${selectedSession === session.id
-                                ? 'border-blue-500 bg-blue-50'
-                                : 'border-gray-200 hover:border-gray-300'
+                            ? 'border-blue-500 bg-blue-50'
+                            : 'border-gray-200 hover:border-gray-300'
                             }`}
                         onClick={() => setSelectedSession(session.id)}
                     >
@@ -429,7 +429,7 @@ export default function AIPoweredScrapingDashboard({ className = '' }: AIScrapin
                                     onClick={(e) => { e.stopPropagation(); controlSession(session.id, 'stop'); }}
                                     className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
                                 >
-                                    <Stop className="w-4 h-4" />
+                                    <Square className="w-4 h-4" />
                                 </button>
                             </div>
                         </div>

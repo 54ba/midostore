@@ -65,16 +65,59 @@ export default function AIEnhancedSearch({
     const [userLocation, setUserLocation] = useState<any>(null);
     const [locationLoading, setLocationLoading] = useState(false);
 
-    const searchTimeoutRef = useRef<NodeJS.Timeout>();
+    const searchTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
     const searchInputRef = useRef<HTMLInputElement>(null);
 
-    // Get user location on component mount
-    useEffect(() => {
-        getUserLocation();
+    // Get location from coordinates using reverse geocoding
+    const getLocationFromCoords = useCallback(async (lat: number, lon: number): Promise<any> => {
+        try {
+            const response = await fetch(`https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${process.env.NEXT_PUBLIC_WEATHER_API_KEY || 'demo'}`);
+            const data = await response.json();
+
+            if (data && data[0]) {
+                return {
+                    city: data[0].name,
+                    country: data[0].country,
+                    latitude: lat,
+                    longitude: lon,
+                    displayName: `${data[0].name}, ${data[0].country}`
+                };
+            }
+        } catch (error) {
+            console.error('Error getting location from coordinates:', error);
+        }
+
+        return {
+            latitude: lat,
+            longitude: lon,
+            displayName: `${lat.toFixed(2)}, ${lon.toFixed(2)}`
+        };
     }, []);
 
+    // Get location from IP address
+    const getLocationFromIP = useCallback(async () => {
+        try {
+            const response = await fetch('https://ipapi.co/json/');
+            const data = await response.json();
+
+            const locationData = {
+                city: data.city,
+                country: data.country_name,
+                latitude: data.latitude,
+                longitude: data.longitude,
+                displayName: `${data.city}, ${data.country_name}`
+            };
+
+            setUserLocation(locationData);
+            setFilters(prev => ({ ...prev, location: locationData }));
+            onLocationChange(locationData);
+        } catch (error) {
+            console.error('Error getting location from IP:', error);
+        }
+    }, [onLocationChange]);
+
     // Get user's current location
-    const getUserLocation = async () => {
+    const getUserLocation = useCallback(async () => {
         setLocationLoading(true);
         try {
             if (navigator.geolocation) {
@@ -102,55 +145,12 @@ export default function AIEnhancedSearch({
         } finally {
             setLocationLoading(false);
         }
-    };
+    }, [getLocationFromCoords, getLocationFromIP, onLocationChange]);
 
-    // Get location from coordinates using reverse geocoding
-    const getLocationFromCoords = async (lat: number, lon: number): Promise<any> => {
-        try {
-            const response = await fetch(`https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${process.env.NEXT_PUBLIC_WEATHER_API_KEY || 'demo'}`);
-            const data = await response.json();
-
-            if (data && data[0]) {
-                return {
-                    city: data[0].name,
-                    country: data[0].country,
-                    latitude: lat,
-                    longitude: lon,
-                    displayName: `${data[0].name}, ${data[0].country}`
-                };
-            }
-        } catch (error) {
-            console.error('Error getting location from coordinates:', error);
-        }
-
-        return {
-            latitude: lat,
-            longitude: lon,
-            displayName: `${lat.toFixed(2)}, ${lon.toFixed(2)}`
-        };
-    };
-
-    // Get location from IP address
-    const getLocationFromIP = async () => {
-        try {
-            const response = await fetch('https://ipapi.co/json/');
-            const data = await response.json();
-
-            const locationData = {
-                city: data.city,
-                country: data.country_name,
-                latitude: data.latitude,
-                longitude: data.longitude,
-                displayName: `${data.city}, ${data.country_name}`
-            };
-
-            setUserLocation(locationData);
-            setFilters(prev => ({ ...prev, location: locationData }));
-            onLocationChange(locationData);
-        } catch (error) {
-            console.error('Error getting location from IP:', error);
-        }
-    };
+    // Get user location on component mount
+    useEffect(() => {
+        getUserLocation();
+    }, [getUserLocation]);
 
     // Handle search input changes
     const handleSearchChange = (query: string) => {
@@ -513,8 +513,8 @@ export default function AIEnhancedSearch({
                             <button
                                 onClick={() => handleFilterChange({ category: 'all' })}
                                 className={`px-3 py-2 text-sm rounded-lg transition-colors ${filters.category === 'all'
-                                        ? 'bg-blue-500 text-white'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    ? 'bg-blue-500 text-white'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                     }`}
                             >
                                 All Categories
@@ -524,8 +524,8 @@ export default function AIEnhancedSearch({
                                     key={category}
                                     onClick={() => handleFilterChange({ category })}
                                     className={`px-3 py-2 text-sm rounded-lg transition-colors ${filters.category === category
-                                            ? 'bg-blue-500 text-white'
-                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                        ? 'bg-blue-500 text-white'
+                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                         }`}
                                 >
                                     {category}

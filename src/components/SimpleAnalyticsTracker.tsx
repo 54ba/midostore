@@ -52,7 +52,7 @@ const SimpleAnalyticsTracker: React.FC<SimpleAnalyticsTrackerProps> = ({
                 // Set up global tracking functions
                 window.sa = window.sa || function (...args: any[]) {
                     if (window.sa_event) {
-                        window.sa_event(...args);
+                        (window.sa_event as any)(...args);
                     }
                 };
 

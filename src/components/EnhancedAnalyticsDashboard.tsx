@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
     BarChart,
     Bar,
@@ -109,11 +109,7 @@ const EnhancedAnalyticsDashboard: React.FC = () => {
     const [timeRange, setTimeRange] = useState('30d');
     const [includeRealTime, setIncludeRealTime] = useState(false);
 
-    useEffect(() => {
-        fetchEnhancedAnalytics();
-    }, [timeRange, includeRealTime]);
-
-    const fetchEnhancedAnalytics = async () => {
+    const fetchEnhancedAnalytics = useCallback(async () => {
         try {
             setLoading(true);
             const response = await fetch(
@@ -128,10 +124,15 @@ const EnhancedAnalyticsDashboard: React.FC = () => {
             setAnalyticsData(result.data);
         } catch (error) {
             console.error('Error fetching enhanced analytics:', error);
+            // Could set default/empty analytics data here if needed
         } finally {
             setLoading(false);
         }
-    };
+    }, [timeRange, includeRealTime]);
+
+    useEffect(() => {
+        fetchEnhancedAnalytics();
+    }, [timeRange, includeRealTime, fetchEnhancedAnalytics]);
 
     const exportData = async (format: 'json' | 'csv') => {
         try {
@@ -252,8 +253,8 @@ const EnhancedAnalyticsDashboard: React.FC = () => {
                             key={tab}
                             onClick={() => setActiveTab(tab)}
                             className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === tab
-                                    ? 'border-blue-500 text-blue-600'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                ? 'border-blue-500 text-blue-600'
+                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                 }`}
                         >
                             {tab.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
@@ -445,8 +446,8 @@ const EnhancedAnalyticsDashboard: React.FC = () => {
                                             <span className="text-sm text-gray-700">{factor.factor}</span>
                                             <div className="flex items-center gap-2">
                                                 <span className={`text-xs px-2 py-1 rounded-full ${factor.impact === 'positive' ? 'bg-green-100 text-green-800' :
-                                                        factor.impact === 'negative' ? 'bg-red-100 text-red-800' :
-                                                            'bg-gray-100 text-gray-800'
+                                                    factor.impact === 'negative' ? 'bg-red-100 text-red-800' :
+                                                        'bg-gray-100 text-gray-800'
                                                     }`}>
                                                     {factor.impact}
                                                 </span>
@@ -506,7 +507,7 @@ const EnhancedAnalyticsDashboard: React.FC = () => {
                                                     <div className="flex-1 bg-gray-200 rounded-full h-2">
                                                         <div
                                                             className={`h-2 rounded-full ${opportunity.difficulty < 30 ? 'bg-green-500' :
-                                                                    opportunity.difficulty < 60 ? 'bg-yellow-500' : 'bg-red-500'
+                                                                opportunity.difficulty < 60 ? 'bg-yellow-500' : 'bg-red-500'
                                                                 }`}
                                                             style={{ width: `${opportunity.difficulty}%` }}
                                                         />
@@ -544,8 +545,8 @@ const EnhancedAnalyticsDashboard: React.FC = () => {
                         <div className="space-y-4">
                             {insights.crossPlatformInsights.map((insight, index) => (
                                 <div key={index} className={`p-4 rounded-lg border ${insight.priority === 'high' ? 'bg-red-50 border-red-200' :
-                                        insight.priority === 'medium' ? 'bg-yellow-50 border-yellow-200' :
-                                            'bg-green-50 border-green-200'
+                                    insight.priority === 'medium' ? 'bg-yellow-50 border-yellow-200' :
+                                        'bg-green-50 border-green-200'
                                     }`}>
                                     <div className="flex items-start justify-between">
                                         <div className="flex-1">
@@ -561,8 +562,8 @@ const EnhancedAnalyticsDashboard: React.FC = () => {
                                             </div>
                                         </div>
                                         <div className={`ml-4 px-3 py-1 rounded-full text-xs font-medium ${insight.priority === 'high' ? 'bg-red-100 text-red-800' :
-                                                insight.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                                                    'bg-green-100 text-green-800'
+                                            insight.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                                                'bg-green-100 text-green-800'
                                             }`}>
                                             {insight.priority.toUpperCase()}
                                         </div>

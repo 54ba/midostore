@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
                 return NextResponse.json({
                     success: true,
                     data: {
-                        crossPlatformInsights: enhancedData.insights.crossPlatformInsights,
+                        insights: enhancedData.insights,
                         webAnalytics: enhancedData.webAnalytics,
                     },
                 });

@@ -76,7 +76,7 @@ const nextConfig: NextConfig = {
                 config.externals.push(...problematicModules);
             } else if (typeof config.externals === 'function') {
                 const originalExternals = config.externals;
-                config.externals = (context, request, callback) => {
+                config.externals = (context: any, request: any, callback: any) => {
                     if (request && problematicModules.some(mod => request.includes(mod))) {
                         return callback(null, 'commonjs ' + request);
                     }

@@ -55,7 +55,7 @@ export default function SocialTrendAnalysisPage() {
                         <p className="text-gray-600">
                             Track trending hashtags and conversations on Twitter in real-time.
                             Analyze viral tweets, engagement metrics, and sentiment to understand
-                            what's capturing public attention.
+                            what&apos;s capturing public attention.
                         </p>
                     </div>
 

@@ -4,7 +4,7 @@ import AdblockerPlugin from 'puppeteer-extra-plugin-adblocker';
 import { config } from '../env.config';
 import { prisma } from './db';
 import { format } from 'date-fns';
-import { zonedTimeToUtc } from 'date-fns-tz';
+
 
 // Add plugins to puppeteer
 puppeteer.use(StealthPlugin());
@@ -51,7 +51,7 @@ export class ScrapingService {
         if (this.isInitialized) return;
 
         this.browser = await puppeteer.launch({
-            headless: 'new',
+            headless: true,
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',

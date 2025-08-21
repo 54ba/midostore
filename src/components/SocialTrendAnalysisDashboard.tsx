@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import {
     TrendingUp,
-    Reddit,
+    MessageSquare,
     Twitter,
     Globe,
     Brain,
@@ -12,7 +12,6 @@ import {
     Activity,
     Zap,
     Users,
-    MessageSquare,
     Share2,
     ArrowUp,
     ArrowDown,
@@ -309,7 +308,7 @@ export default function SocialTrendAnalysisDashboard() {
     const getPlatformIcon = (platform: string) => {
         switch (platform) {
             case 'reddit':
-                return <Reddit className="w-5 h-5 text-orange-500" />;
+                return <MessageSquare className="w-5 h-5 text-orange-500" />;
             case 'twitter':
                 return <Twitter className="w-5 h-5 text-blue-400" />;
             case 'news':
@@ -481,7 +480,7 @@ export default function SocialTrendAnalysisDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                 <div className="bg-gradient-to-br from-red-50 to-red-100 p-4 rounded-lg border border-red-200">
                     <div className="flex items-center space-x-3">
-                        <Reddit className="w-8 h-8 text-red-500" />
+                        <MessageSquare className="w-8 h-8 text-red-500" />
                         <div>
                             <p className="text-sm font-medium text-red-800">Reddit Trends</p>
                             <p className="text-2xl font-bold text-red-900">

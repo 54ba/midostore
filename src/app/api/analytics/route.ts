@@ -134,7 +134,7 @@ async function getTotalRevenue(startDate: Date): Promise<number> {
         where: { createdAt: { gte: startDate } },
         select: { total: true }
     });
-    return orders.reduce((sum, order) => sum + order.total, 0);
+    return orders.reduce((sum: number, order: { total: number }) => sum + order.total, 0);
 }
 
 async function getAverageRating(): Promise<number> {
@@ -240,7 +240,7 @@ function getBestPerformingProducts(products: any[]) {
 }
 
 function getCategoryOpportunities(products: any[]) {
-    const categoryStats = new Map<string, { count: number; avgRating: number; avgSales: number }>();
+    const categoryStats = new Map<string, { count: number; avgRating: number; avgSales: number; totalRating: number; totalSales: number }>();
 
     products.forEach(product => {
         const category = product.category || 'Unknown';

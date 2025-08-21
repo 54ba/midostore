@@ -90,7 +90,7 @@ export default function ProductsPage() {
         } finally {
             setLoading(false);
         }
-    }, [searchQuery, selectedCategory, currentLocale, currentPage, fetchProducts]);
+    }, [searchQuery, selectedCategory, currentLocale, currentPage]);
 
     useEffect(() => {
         fetchProducts();
@@ -130,11 +130,8 @@ export default function ProductsPage() {
 
         // Track filter preferences for AI recommendations
         if (filters.category && filters.category !== 'all') {
-            trackUserBehavior({
-                preferences: {
-                    categories: [filters.category]
-                }
-            });
+            // Note: preferences not supported in current behavior tracking
+            // Could be added to the behavior interface in the future
         }
 
         // Get AI recommendations with new filters
@@ -143,7 +140,7 @@ export default function ProductsPage() {
         }
 
         // You can implement the actual filter logic here
-    }, [trackUserBehavior, location, getRecommendations, searchQuery]);
+    }, [location, getRecommendations, searchQuery]);
 
     const getCurrentCountry = () => {
         return config.gulfCountries.find(c => c.locale === currentLocale);
