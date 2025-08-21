@@ -255,3 +255,26 @@ enum OrderStatus {
   DELIVERED
   CANCELLED
 }
+
+model TrendData {
+  id               String   @id @default(cuid())
+  platform         String   // "reddit", "twitter", "news", etc.
+  topic            String
+  category         String?
+  sentiment        String   // "positive", "negative", "neutral"
+  engagement       Json     // Store engagement metrics as JSON
+  trendingScore    Float
+  relatedProducts  String[] // Array of product IDs
+  keywords         String[] // Array of keywords
+  timestamp        DateTime @default(now())
+  source           String?  // Source URL or identifier
+  url              String?  // Direct URL to the trend
+  aiInsights       Json?    // AI analysis insights as JSON
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([category, sentiment])
+  @@index([platform, timestamp])
+  @@index([trendingScore])
+}

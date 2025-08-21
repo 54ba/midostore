@@ -248,7 +248,7 @@ class MockReviewSeedingService {
         const batchSize = 50;
         for (let i = 0; i < shuffledReviews.length; i += batchSize) {
             const batch = shuffledReviews.slice(i, i + batchSize);
-            await this.prisma.createMany({
+            await this.prisma.review.createMany({
                 data: batch,
                 skipDuplicates: true,
             });
@@ -257,7 +257,7 @@ class MockReviewSeedingService {
         // Update product review count and rating
         const avgRating = reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length;
 
-        await this.prisma.update({
+        await this.prisma.product.update({
             where: { id: productId },
             data: {
                 reviewCount: reviews.length,
@@ -284,7 +284,7 @@ class MockReviewSeedingService {
     ): Promise<void> {
         console.log('🚀 Starting review generation for all products...');
 
-        const products = await this.prisma.findMany({
+        const products = await this.prisma.product.findMany({
             select: {
                 id: true,
                 title: true,
