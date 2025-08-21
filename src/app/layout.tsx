@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter } from 'next/font/google'
 import './globals.css'
 import Script from 'next/script'
 import { Suspense } from 'react'
@@ -8,8 +7,6 @@ import { AuthProvider } from '@/app/contexts/AuthContext'
 import { LocalizationProvider } from '@/app/contexts/LocalizationContext'
 import ClerkProviderWrapper from '@/components/ClerkProviderWrapper'
 import SimpleAnalyticsTracker from '@/components/SimpleAnalyticsTracker'
-
-const inter = Inter({ subsets: ['latin'] })
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -67,7 +64,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <html lang="en" className="h-full">
-      <body className={`${inter.className} h-full`}>
+      <body className="h-full font-sans">
         <ClerkProviderWrapper>
           {content}
         </ClerkProviderWrapper>
