@@ -561,39 +561,47 @@ export class AIPoweredScrapingService {
     private async storeScrapingResults(sessionId: string, products: AIScrapedProduct[]): Promise<void> {
         try {
             for (const product of products) {
-                await this.prisma.scrapedProduct.create({
-                    data: {
-                        externalId: product.externalId,
+                // Create or update the main product
+                const productData = await this.prisma.product.upsert({
+                    where: { externalId: product.externalId },
+                    update: {
                         title: product.title,
                         description: product.description,
                         price: product.price.original,
+                        originalPrice: product.price.original,
                         currency: product.price.currency,
                         images: product.images,
                         category: product.category,
                         subcategory: product.subcategory,
-                        brand: product.brand,
+                        tags: product.tags || [],
                         rating: product.rating,
                         reviewCount: product.reviewCount,
-                        availability: product.availability,
-                        shippingCost: product.shipping.cost,
-                        shippingDays: product.shipping.estimatedDays,
-                        freeShipping: product.shipping.freeShipping,
-                        specifications: product.specifications,
-                        sellerName: product.seller.name,
-                        sellerRating: product.seller.rating,
-                        sellerVerified: product.seller.verified,
-                        sellerGoldMember: product.seller.goldMember,
-                        aiConfidence: product.aiInsights.confidence,
-                        dataQuality: product.aiInsights.dataQuality,
-                        extractionMethod: product.aiInsights.extractionMethod,
-                        validationStatus: product.aiInsights.validationStatus,
-                        enrichmentData: product.aiInsights.enrichmentData,
+                        lastScraped: new Date(),
+                        // Note: Some fields from AIScrapedProduct don't map to Product model
+                        // You may need to create additional models for these fields
+                    },
+                    create: {
+                        externalId: product.externalId,
                         source: product.metadata.source,
-                        url: product.metadata.url,
-                        scrapedAt: product.metadata.scrapedAt,
-                        extractionTime: product.metadata.extractionTime,
+                        title: product.title,
+                        description: product.description,
+                        price: product.price.original,
+                        originalPrice: product.price.original,
+                        currency: product.price.currency,
+                        images: product.images,
+                        category: product.category,
+                        subcategory: product.subcategory,
+                        tags: product.tags || [],
+                        rating: product.rating,
+                        reviewCount: product.reviewCount,
+                        soldCount: 0,
+                        minOrderQuantity: 1,
+                        // Create a default supplier or use existing one
+                        supplierId: 'default-supplier-id', // You'll need to handle this properly
                     },
                 });
+
+                console.log(`Stored/updated product: ${productData.title}`);
             }
             console.log(`Stored ${products.length} products for session ${sessionId}`);
         } catch (error) {
