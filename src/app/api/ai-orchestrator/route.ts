@@ -262,7 +262,7 @@ export async function POST(request: NextRequest) {
                 });
 
             case 'manual-decision':
-                const { decisionType, reasoning, priority, resources } = data;
+                const { decisionType, reasoning, priority: decisionPriority, resources } = data;
                 if (!decisionType || !reasoning) {
                     return NextResponse.json(
                         { error: 'Decision type and reasoning are required' },
@@ -273,7 +273,7 @@ export async function POST(request: NextRequest) {
                 const manualDecision = {
                     id: `manual-${Date.now()}`,
                     type: decisionType,
-                    priority: priority || 'medium',
+                    priority: decisionPriority || 'medium',
                     decision: `Manual decision: ${decisionType}`,
                     reasoning,
                     expectedImpact: 70,

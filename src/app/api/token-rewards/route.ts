@@ -253,9 +253,9 @@ export async function POST(request: NextRequest) {
                 }
 
             case 'product-purchase':
-                const { userId: purchaseUserId, productId, amount, quantity } = data;
+                const { userId: purchaseUserId, productId, amount: purchaseAmount, quantity } = data;
 
-                if (!purchaseUserId || !productId || !amount) {
+                if (!purchaseUserId || !productId || !purchaseAmount) {
                     return NextResponse.json(
                         { error: 'User ID, product ID, and amount are required' },
                         { status: 400 }

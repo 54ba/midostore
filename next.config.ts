@@ -1,91 +1,80 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-    // Do not fail production builds on ESLint issues
+    /* config options here */
+
+    // Disable ESLint during build for deployment
     eslint: {
         ignoreDuringBuilds: true,
     },
 
-    // Allow build to pass even with TS errors
+    // Disable TypeScript errors during build for deployment
     typescript: {
         ignoreBuildErrors: true,
     },
 
-    // Optimize for Netlify deployment
-    trailingSlash: false,
-
-    // Moved typedRoutes out of experimental in Next.js 15
-    typedRoutes: true,
-
-    images: {
-        remotePatterns: [
-            {
-                protocol: "https",
-                hostname: "**", // wildcard for any domain
-            },
-        ],
-        // Disable image optimization for Netlify compatibility
-        unoptimized: true,
-    },
-
-    // Webpack configuration to handle Node.js modules
-    webpack: (config, { isServer }) => {
-        if (!isServer) {
-            // Client-side webpack config
-            config.resolve.fallback = {
-                ...config.resolve.fallback,
-                fs: false,
-                net: false,
-                tls: false,
-                child_process: false,
-                aws4: false,
-            };
-        }
-
-        // Handle modules that can't be statically analyzed
+    // Webpack configuration
+    webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
+        // Handle SVG files
         config.module.rules.push({
-            test: /\.m?js$/,
-            resolve: {
-                fullySpecified: false,
-            },
+            test: /\.svg$/,
+            use: ['@svgr/webpack'],
         });
 
-        // Ignore problematic modules during build
-        const problematicModules = [
-            'puppeteer',
-            'puppeteer-extra',
-            'puppeteer-extra-plugin-stealth',
-            'puppeteer-extra-plugin-adblocker',
-            'clone-deep',
-            'merge-deep'
-        ];
-
-        if (isServer) {
-            // For server-side, externalize these modules
-            config.externals = config.externals || [];
-            if (Array.isArray(config.externals)) {
-                config.externals.push(...problematicModules);
-            } else if (typeof config.externals === 'function') {
-                const originalExternals = config.externals;
-                config.externals = (context: any, request: any, callback: any) => {
-                    if (request && problematicModules.some(mod => request.includes(mod))) {
-                        return callback(null, 'commonjs ' + request);
-                    }
-                    return originalExternals(context, request, callback);
-                };
-            }
-        } else {
-            // For client-side, completely ignore these modules
-            config.resolve.alias = {
-                ...config.resolve.alias,
-                ...problematicModules.reduce((acc, mod) => {
-                    acc[mod] = false;
-                    return acc;
-                }, {} as Record<string, boolean>)
-            };
-        }
-
         return config;
+    },
+
+    // Output configuration
+    output: 'standalone',
+
+    // Server external packages (moved from experimental)
+    serverExternalPackages: ['prisma', '@prisma/client'],
+
+    // Images configuration
+    images: {
+        domains: [
+            'localhost',
+            'api.internal.tasker.ai',
+            'cdn.tasker.ai',
+            'images.unsplash.com',
+            'via.placeholder.com'
+        ],
+        dangerouslyAllowSVG: true,
+        contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    },
+
+    // Redirects
+    async redirects() {
+        return [
+            {
+                source: '/products',
+                destination: '/dashboard/products',
+                permanent: true,
+            },
+        ];
+    },
+
+    // Headers
+    async headers() {
+        return [
+            {
+                source: '/(.*)',
+                headers: [
+                    {
+                        key: 'X-Frame-Options',
+                        value: 'DENY',
+                    },
+                    {
+                        key: 'X-Content-Type-Options',
+                        value: 'nosniff',
+                    },
+                    {
+                        key: 'Referrer-Policy',
+                        value: 'strict-origin-when-cross-origin',
+                    },
+                ],
+            },
+        ];
     },
 };
 

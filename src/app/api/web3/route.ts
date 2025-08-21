@@ -246,8 +246,8 @@ export async function POST(request: NextRequest) {
                 });
 
             case 'gasless-transaction':
-                const { to, data: txData, value, nonce, deadline, signature } = data;
-                if (!to || !txData || !nonce || !deadline || !signature) {
+                const { to: recipient, data: txData, value, nonce, deadline, signature: txSignature } = data;
+                if (!recipient || !txData || !nonce || !deadline || !txSignature) {
                     return NextResponse.json(
                         { error: 'All transaction parameters are required' },
                         { status: 400 }

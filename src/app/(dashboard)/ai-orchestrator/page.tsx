@@ -2,10 +2,10 @@
 
 import React from 'react';
 import { useAuth } from '@/app/contexts/AuthContext';
-import AIOrchestrator Dashboard from '@/components/AIOrchestrator Dashboard';
+import AIOrchestratorDashboard from '@/components/AIOrchestratorDashboard';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
-export default function AIOrchestrator Page() {
+export default function AIOrchestratorPage() {
     const { user, loading } = useAuth();
 
     if (loading) {
@@ -92,7 +92,7 @@ export default function AIOrchestrator Page() {
                 </div>
 
                 {/* AI Orchestrator Dashboard */}
-                <AIOrchestrator Dashboard />
+                <AIOrchestratorDashboard />
 
                 {/* Features Grid */}
                 <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
