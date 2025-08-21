@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🚀 Starting optimized Netlify deployment..."
+echo "🚀 Starting simple Netlify deployment (no Next.js plugin)..."
 
 # Clean up any previous builds
 echo "🧹 Cleaning previous builds..."
@@ -31,9 +31,12 @@ echo "✅ Functions directory verified"
 echo "📊 Checking function sizes..."
 npm run netlify:check
 
-# Deploy to Netlify with simplified approach
-echo "🚀 Deploying to Netlify..."
-netlify deploy --prod --dir=.next --functions=netlify/functions-lightweight --no-functions-cache
+# Deploy to Netlify using basic deployment (no plugin)
+echo "🚀 Deploying to Netlify (basic deployment)..."
+netlify deploy --prod --dir=.next --functions=netlify/functions-lightweight --no-functions-cache --no-build
 
 echo "✅ Deployment completed!"
 echo "🌐 Your site should be live in a few minutes"
+echo ""
+echo "💡 Note: This deployment bypasses the Next.js plugin to avoid Blobs issues."
+echo "   If you need advanced Next.js features, consider setting up Blobs environment variables."

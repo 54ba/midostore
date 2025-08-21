@@ -13,6 +13,7 @@
     "netlify:clean": "./scripts/clean-for-netlify.sh",
     "netlify:deploy": "./scripts/clean-for-netlify.sh && npm run build && netlify deploy --prod",
     "netlify:deploy:optimized": "./scripts/deploy-netlify-optimized.sh",
+    "netlify:deploy:simple": "./scripts/deploy-netlify-simple.sh",
     "netlify:check": "node scripts/check-function-sizes.js",
     "netlify:prebuild": "npm run netlify:setup",
     "netlify:postbuild": "echo 'Post-build completed'",

@@ -10,10 +10,6 @@
   NEXT_APP_DIR = "1"
   NEXT_PAGES_DIR = "0"
 
-# Next.js plugin for Netlify
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
-
 # Redirects for API routes to Netlify functions
 [[redirects]]
   from = "/api/*"
@@ -74,8 +70,8 @@
     "electron",
     "electron-builder",
     "dmg-builder",
-    "@img/sharp-libvips-linux-x64",
-    "@img/sharp-libvips-linuxmusl-x64",
+    "@img/sharp-linux-x64-gnu",
+    "@img/sharp-linux-x64-musl",
     "@prisma/engines",
     "@next/swc-linux-x64-gnu",
     "lightningcss",
