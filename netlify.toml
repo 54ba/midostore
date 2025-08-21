@@ -1,7 +1,7 @@
 [build]
   command = "npm run build"
   publish = ".next"
-  functions = "functions-standalone"
+  functions = "netlify/functions-lightweight"
 
 [build.environment]
   NODE_VERSION = "22"
@@ -91,4 +91,7 @@
     "stripe",
     "uuid",
     "zod"
+  ]
+  included_files = [
+    "prisma/**/*"
   ]

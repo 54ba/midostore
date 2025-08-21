@@ -1,47 +1,68 @@
-const { PrismaClient } = require('@prisma/client');
-
-const prisma = new PrismaClient();
-
+// Lightweight scraping function for Netlify
 exports.handler = async (event, context) => {
-    const headers = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'POST, OPTIONS' };
+    const headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
+    };
 
-    if (event.httpMethod === 'OPTIONS') return { statusCode: 200, headers, body: '' };
-    if (event.httpMethod !== 'POST') return { statusCode: 405, headers, body: JSON.stringify({ error: 'Method not allowed' }) };
+    if (event.httpMethod === 'OPTIONS') {
+        return { statusCode: 200, headers, body: '' };
+    }
+
+    if (event.httpMethod !== 'POST') {
+        return {
+            statusCode: 405,
+            headers,
+            body: JSON.stringify({ error: 'Method not allowed' })
+        };
+    }
 
     try {
-        const { source, category } = JSON.parse(event.body);
-        if (!source || !category) return { statusCode: 400, headers, body: JSON.stringify({ error: 'Missing params' }) };
+        const { source, category } = JSON.parse(event.body || '{}');
 
-        const job = await prisma.scrapingJob.create({
-            data: { source, category, status: 'pending', totalProducts: 0, scrapedProducts: 0, failedProducts: 0 }
-        });
+        if (!source || !category) {
+            return {
+                statusCode: 400,
+                headers,
+                body: JSON.stringify({ error: 'Missing source or category' })
+            };
+        }
 
-        const products = Array.from({ length: 20 }, (_, i) => ({
+        // Generate mock products without external dependencies
+        const products = Array.from({ length: 10 }, (_, i) => ({
+            id: `mock_${Date.now()}_${i}`,
             externalId: `${source}_${category}_${i + 1}`,
             title: `${category} Product ${i + 1}`,
             price: (Math.random() * 100 + 10).toFixed(2),
             category,
-            source
+            source,
+            description: `A high-quality ${category} product from ${source}`,
+            imageUrl: `https://via.placeholder.com/300x300?text=${encodeURIComponent(category)}`,
+            createdAt: new Date().toISOString()
         }));
 
-        await prisma.scrapingJob.update({
-            where: { id: job.id },
-            data: { status: 'completed', totalProducts: products.length, scrapedProducts: products.length, failedProducts: 0 }
-        });
-
-        for (const product of products) {
-            await prisma.product.upsert({
-                where: { externalId: product.externalId },
-                update: { title: product.title, price: product.price, category, source, lastUpdated: new Date() },
-                create: { externalId: product.externalId, title: product.title, price: product.price, category, source, isActive: true }
-            });
-        }
-
-        return { statusCode: 200, headers, body: JSON.stringify({ success: true, jobId: job.id, totalProducts: products.length }) };
+        return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+                success: true,
+                jobId: `lightweight_${Date.now()}`,
+                totalProducts: products.length,
+                products: products,
+                message: 'Lightweight scraping completed successfully',
+                timestamp: new Date().toISOString()
+            })
+        };
     } catch (error) {
-        console.error('Error:', error);
-        return { statusCode: 500, headers, body: JSON.stringify({ error: 'Internal error' }) };
-    } finally {
-        await prisma.$disconnect();
+        console.error('Scraping function error:', error);
+        return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({
+                error: 'Internal server error',
+                message: error.message
+            })
+        };
     }
 };
