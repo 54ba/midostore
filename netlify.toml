@@ -59,9 +59,6 @@
   node_bundler = "esbuild"
   external_node_modules = [
     # Heavy packages that should NEVER be bundled
-    "electron",
-    "electron-builder",
-    "dmg-builder",
     "puppeteer",
     "puppeteer-extra",
     "puppeteer-extra-plugin-stealth",

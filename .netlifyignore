@@ -48,9 +48,9 @@ coverage/
 tmp/
 temp/
 
-# Electron
-electron/
-dist-electron/
+# Electron (removed)
+# electron/
+# dist-electron/
 
 # Prisma
 prisma/migrations/

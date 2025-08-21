@@ -2,7 +2,7 @@
   "name": "next_js",
   "version": "0.1.0",
   "private": true,
-  "main": "electron/main.js",
+  "main": "index.js",
   "scripts": {
     "dev": "next dev",
     "build": "node scripts/clean-build.js",
@@ -26,9 +26,9 @@
     "netlify:db:seed": "npm run db:seed",
     "netlify:ai:setup": "cd ai && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt",
     "netlify:ai:train": "cd ai && source venv/bin/activate && python recommendation_engine.py --train",
-    "electron:dev": "concurrently -k -n NEXT,ELECTRON -c green,blue \"npm run dev\" \"wait-on http://localhost:3000 && cross-env NODE_ENV=development ELECTRON_START_URL=http://localhost:3000 electron .\"",
-    "electron:build": "npm run build && electron-builder --linux AppImage --x64",
-    "electron:start-prod": "node electron/main.js",
+    "electron:dev": "echo 'Electron functionality disabled'",
+    "electron:build": "echo 'Electron functionality disabled'",
+    "electron:start-prod": "echo 'Electron functionality disabled'",
     "scrape:products": "tsx scripts/scrape-products.ts",
     "db:migrate": "tsx scripts/db-migrate.ts",
     "db:seed": "tsx scripts/db-seed.ts",
@@ -84,8 +84,6 @@
     "@types/react-dom": "^19",
     "concurrently": "^9.1.0",
     "cross-env": "^10.0.0",
-    "electron": "^37.3.1",
-    "electron-builder": "^26.0.12",
     "eslint": "^9.33.0",
     "eslint-config-next": "^15.5.0",
     "tsx": "^4.0.0",
@@ -97,7 +95,6 @@
     "productName": "TaskerNet",
     "asar": true,
     "files": [
-      "electron/**",
       "package.json"
     ],
     "extraResources": [
