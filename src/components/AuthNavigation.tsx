@@ -50,42 +50,42 @@ export default function AuthNavigation() {
     };
 
     return (
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2">
             {/* Authentication */}
             {user ? (
-                <div className="flex items-center space-x-4">
-                    <span className="text-sm text-gray-700">
+                <div className="flex items-center space-x-2">
+                    <span className="text-xs text-gray-700 hidden sm:block">
                         Welcome, {user.full_name}
                     </span>
                     {isClerkUser && isClerkAvailable && UserButton ? (
                         <UserButton
                             appearance={{
                                 elements: {
-                                    userButtonAvatarBox: 'w-8 h-8',
+                                    userButtonAvatarBox: 'w-6 h-6',
                                 }
                             }}
                         />
                     ) : (
                         <button
                             onClick={handleLogout}
-                            className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                            className="text-gray-700 hover:text-gray-900 px-2 py-1 rounded-md text-xs font-medium"
                         >
                             Logout
                         </button>
                     )}
                 </div>
             ) : (
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-1">
                     {isClerkAvailable && SignInButton ? (
                         <SignInButton mode="modal">
-                            <button className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                            <button className="text-gray-700 hover:text-gray-900 px-2 py-1 rounded-md text-xs font-medium">
                                 Sign In
                             </button>
                         </SignInButton>
                     ) : (
                         <Link
                             href={isClerkUser ? "/sign-in" : "/dashboard"}
-                            className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                            className="text-gray-700 hover:text-gray-900 px-2 py-1 rounded-md text-xs font-medium"
                         >
                             {isClerkUser ? "Sign In" : "Dashboard"}
                         </Link>
@@ -93,14 +93,14 @@ export default function AuthNavigation() {
 
                     {isClerkAvailable && SignUpButton ? (
                         <SignUpButton mode="modal">
-                            <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                            <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-xs font-medium">
                                 Sign Up
                             </button>
                         </SignUpButton>
                     ) : (
                         <Link
                             href={isClerkUser ? "/sign-up" : "/dashboard"}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-xs font-medium"
                         >
                             {isClerkUser ? "Sign Up" : "Get Started"}
                         </Link>

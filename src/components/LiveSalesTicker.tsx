@@ -22,7 +22,7 @@ interface LiveSale {
     currency: string;
     paymentMethod: 'crypto' | 'traditional' | 'mixed';
     location: string;
-    timestamp: Date;
+    timestamp: Date | string;
     isNew: boolean;
     priceChange?: number;
     cryptoAmount?: number;
@@ -38,7 +38,7 @@ interface LivePriceUpdate {
     currency: string;
     changePercent: number;
     isVolatile: boolean;
-    timestamp: Date;
+    timestamp: Date | string;
 }
 
 interface LiveInventoryUpdate {
@@ -47,7 +47,7 @@ interface LiveInventoryUpdate {
     productTitle: string;
     action: 'added' | 'restocked' | 'low_stock' | 'out_of_stock';
     quantity: number;
-    timestamp: Date;
+    timestamp: Date | string;
 }
 
 export default function LiveSalesTicker() {
@@ -224,9 +224,10 @@ export default function LiveSalesTicker() {
         }).format(amount);
     };
 
-    const formatTimeAgo = (timestamp: Date) => {
+    const formatTimeAgo = (timestamp: Date | string) => {
         const now = new Date();
-        const diffMs = now.getTime() - timestamp.getTime();
+        const timestampDate = timestamp instanceof Date ? timestamp : new Date(timestamp);
+        const diffMs = now.getTime() - timestampDate.getTime();
         const diffMins = Math.floor(diffMs / 60000);
 
         if (diffMins < 1) return 'Just now';

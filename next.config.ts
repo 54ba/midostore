@@ -4,6 +4,12 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
     /* config options here */
 
+    // Disable telemetry to prevent mkdir errors
+    telemetry: false,
+
+    // Set the output file tracing root to silence workspace root warning
+    outputFileTracingRoot: __dirname,
+
     // Disable ESLint during build for deployment
     eslint: {
         ignoreDuringBuilds: true,
@@ -60,11 +66,7 @@ const nextConfig: NextConfig = {
     // Redirects
     async redirects() {
         return [
-            {
-                source: '/products',
-                destination: '/dashboard/products',
-                permanent: true,
-            },
+            // Removed incorrect redirect - products page is accessible at /products
         ];
     },
 

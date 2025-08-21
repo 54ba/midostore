@@ -26,7 +26,8 @@ import {
     Minus,
     Send,
     Download,
-    Upload
+    Upload,
+    Flame
 } from 'lucide-react';
 
 interface DecentralizedDashboardProps {
@@ -289,8 +290,8 @@ export default function DecentralizedDashboard({ className = '' }: Decentralized
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${activeTab === tab.id
-                                    ? 'bg-green-100 text-green-700'
-                                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                                ? 'bg-green-100 text-green-700'
+                                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                                 }`}
                         >
                             <tab.icon className="w-4 h-4" />

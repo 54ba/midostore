@@ -1,99 +1,75 @@
-'use client'
+"use client";
 
-import { useId } from 'react'
+import React from 'react';
+import { Loader2 } from 'lucide-react';
 
-interface ButtonProps {
-  id?: string
-  variant?: 'primary' | 'secondary' | 'danger' | 'outline'
-  size?: 'sm' | 'md' | 'lg'
-  children: React.ReactNode
-  onClick?: () => void
-  disabled?: boolean
-  loading?: boolean
-  type?: 'button' | 'submit' | 'reset'
-  className?: string
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'default' | 'outline' | 'ghost' | 'link' | 'gradient' | 'success' | 'warning' | 'danger';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  loading?: boolean;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
+  children: React.ReactNode;
+  className?: string;
 }
 
 export default function Button({
-  id,
-  variant = 'primary',
+  variant = 'default',
   size = 'md',
-  children,
-  onClick,
-  disabled = false,
   loading = false,
-  type = 'button',
-  className = ''
+  leftIcon,
+  rightIcon,
+  children,
+  className = '',
+  disabled,
+  ...props
 }: ButtonProps) {
-  const defaultId = useId()
-  const buttonId = id || defaultId
+  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 active:scale-95';
 
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault()
-    if (onClick && !disabled && !loading) {
-      try {
-        onClick()
-      } catch (error) {
-        console.error('Button click error:', error)
-      }
-    }
-  }
+  const sizeClasses = {
+    sm: 'px-3 py-1.5 text-sm',
+    md: 'px-4 py-2 text-sm',
+    lg: 'px-6 py-3 text-base',
+    xl: 'px-8 py-4 text-lg'
+  };
 
-  const getVariantClasses = () => {
-    switch (variant) {
-      case 'primary':
-        return 'bg-[rgb(var(--primary))] text-[rgb(var(--primary-foreground))] hover:bg-teal-700 active:bg-teal-800'
-      case 'secondary':
-        return 'bg-[rgb(var(--secondary))] text-[rgb(var(--secondary-foreground))] hover:bg-amber-600 active:bg-amber-700'
-      case 'danger':
-        return 'bg-[rgb(var(--error))] text-white hover:bg-red-600 active:bg-red-700'
-      case 'outline':
-        return 'border-2 border-[rgb(var(--primary))] text-[rgb(var(--primary))] bg-transparent hover:bg-[rgb(var(--primary))] hover:text-[rgb(var(--primary-foreground))] active:bg-teal-700'
-      default:
-        return 'bg-[rgb(var(--primary))] text-[rgb(var(--primary-foreground))] hover:bg-teal-700 active:bg-teal-800'
-    }
-  }
+  const variantClasses = {
+    default: 'bg-gray-900 text-white hover:bg-gray-800 focus:ring-gray-500 shadow-lg hover:shadow-xl',
+    outline: 'border-2 border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 focus:ring-gray-500',
+    ghost: 'text-gray-700 hover:bg-gray-100 focus:ring-gray-500',
+    link: 'text-blue-600 hover:text-blue-800 underline-offset-4 hover:underline focus:ring-blue-500',
+    gradient: 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 focus:ring-blue-500 shadow-lg hover:shadow-xl',
+    success: 'bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 shadow-lg hover:shadow-xl',
+    warning: 'bg-yellow-500 text-white hover:bg-yellow-600 focus:ring-yellow-500 shadow-lg hover:shadow-xl',
+    danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-blue-500 shadow-lg hover:shadow-xl'
+  };
 
-  const getSizeClasses = () => {
-    switch (size) {
-      case 'sm':
-        return 'px-3 py-1.5 text-sm h-8'
-      case 'md':
-        return 'px-4 py-2 text-sm h-10'
-      case 'lg':
-        return 'px-6 py-3 text-base h-12'
-      default:
-        return 'px-4 py-2 text-sm h-10'
-    }
-  }
-
-  const baseClasses = 'inline-flex items-center justify-center whitespace-nowrap rounded-[var(--radius)] font-medium ring-offset-[rgb(var(--background))] transition-all duration-200 transform cursor-pointer'
-  const focusClasses = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--ring))] focus-visible:ring-offset-2'
-  const disabledClasses = 'disabled:pointer-events-none disabled:opacity-50'
-  const hoverClasses = 'hover:scale-[1.02] active:scale-[0.98]'
-
-  const variantClasses = getVariantClasses()
-  const sizeClasses = getSizeClasses()
+  const classes = [
+    baseClasses,
+    sizeClasses[size],
+    variantClasses[variant],
+    className
+  ].join(' ');
 
   return (
     <button
-      id={buttonId}
-      type={type}
-      onClick={handleClick}
+      className={classes}
       disabled={disabled || loading}
-      className={`${baseClasses} ${variantClasses} ${sizeClasses} ${focusClasses} ${disabledClasses} ${!disabled && !loading ? hoverClasses : ''} ${className}`}
+      {...props}
     >
       {loading && (
-        <div className="mr-2 flex items-center">
-          <div
-            id="button-loading-spinner"
-            className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
-          />
-        </div>
+        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
       )}
-      <span id="button-content" className={loading ? 'opacity-75' : ''}>
-        {children}
-      </span>
+
+      {!loading && leftIcon && (
+        <span className="mr-2">{leftIcon}</span>
+      )}
+
+      {children}
+
+      {!loading && rightIcon && (
+        <span className="ml-2">{rightIcon}</span>
+      )}
     </button>
-  )
+  );
 }

@@ -1,240 +1,266 @@
-'use client'
+"use client";
 
-import { useId } from 'react'
-import Link from 'next/link'
+import React from 'react';
+import Link from 'next/link';
+import {
+  Crown,
+  Mail,
+  Phone,
+  MapPin,
+  Globe,
+  Twitter,
+  Facebook,
+  Instagram,
+  Linkedin,
+  Youtube,
+  ArrowRight,
+  Heart,
+  Shield,
+  Truck,
+  Zap,
+  Star
+} from 'lucide-react';
 
-interface FooterProps {
-  id?: string
-}
+export default function Footer() {
+  const currentYear = new Date().getFullYear();
 
-export default function Footer({ id }: FooterProps) {
-  const defaultId = useId()
-  const footerId = id || defaultId
+  const footerLinks = {
+    product: [
+      { name: 'Electronics', href: '/products?category=electronics' },
+      { name: 'Toys & Games', href: '/products?category=toys' },
+      { name: 'Beauty & Health', href: '/products?category=beauty' },
+      { name: 'Home & Garden', href: '/products?category=home' },
+      { name: 'Fashion', href: '/products?category=fashion' },
+      { name: 'Sports & Outdoor', href: '/products?category=sports' }
+    ],
+    platform: [
+      { name: 'Dashboard', href: '/dashboard' },
+      { name: 'AI Recommendations', href: '/ai-recommendations' },
+      { name: 'Bulk Pricing', href: '/bulk-deals' },
+      { name: 'Advertising', href: '/advertising' },
+      { name: 'Scraping Tools', href: '/scraping' },
+      { name: 'Analytics', href: '/enhanced-dashboard' }
+    ],
+    support: [
+      { name: 'Help Center', href: '/help' },
+      { name: 'Contact Support', href: '/contact' },
+      { name: 'API Documentation', href: '/api-docs' },
+      { name: 'Community Forum', href: '/community' },
+      { name: 'Video Tutorials', href: '/tutorials' },
+      { name: 'Live Chat', href: '/chat' }
+    ],
+    company: [
+      { name: 'About Us', href: '/about' },
+      { name: 'Our Mission', href: '/mission' },
+      { name: 'Careers', href: '/careers' },
+      { name: 'Press Kit', href: '/press' },
+      { name: 'Partnerships', href: '/partnerships' },
+      { name: 'Legal', href: '/legal' }
+    ]
+  };
+
+  const socialLinks = [
+    { name: 'Twitter', href: '#', icon: Twitter, color: 'hover:text-blue-400' },
+    { name: 'Facebook', href: '#', icon: Facebook, color: 'hover:text-blue-600' },
+    { name: 'Instagram', href: '#', icon: Instagram, color: 'hover:text-pink-500' },
+    { name: 'LinkedIn', href: '#', icon: Linkedin, color: 'hover:text-blue-700' },
+    { name: 'YouTube', href: '#', icon: Youtube, color: 'hover:text-red-500' }
+  ];
+
+  const features = [
+    {
+      icon: Shield,
+      title: 'Secure Platform',
+      description: 'Bank-level security with SSL encryption and secure payment processing'
+    },
+    {
+      icon: Truck,
+      title: 'Fast Shipping',
+      description: 'Optimized shipping routes with major carriers for quick delivery'
+    },
+    {
+      icon: Zap,
+      title: '24/7 Support',
+      description: 'Round-the-clock customer support in Arabic and English'
+    },
+    {
+      icon: Star,
+      title: 'Quality Assured',
+      description: 'Every product pre-vetted for quality standards and authenticity'
+    }
+  ];
 
   return (
-    <footer className="bg-white border-t border-gray-200 mt-auto">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Company Info */}
-          <div className="col-span-1 md:col-span-1">
-            <div className="flex items-center mb-4">
-              <div className="w-8 h-8 bg-teal-600 rounded-lg flex items-center justify-center mr-3">
-                <span id="footer-logo-text" className="text-white font-bold text-lg">M</span>
+    <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
+      {/* Main Footer Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        {/* Top Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
+          {/* Brand Section */}
+          <div className="lg:col-span-2">
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center">
+                <Crown className="w-7 h-7 text-white" />
               </div>
-              <span id="footer-brand-name" className="text-xl font-bold text-gray-900">MidoHub</span>
+              <div>
+                <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                  MidoHub
+                </h3>
+                <p className="text-gray-400 text-sm">Premium Dropshipping Platform</p>
+              </div>
             </div>
-            <p id="footer-company-description" className="text-gray-600 text-sm leading-relaxed mb-4">
-              Your trusted dropshipping platform connecting Gulf consumers to affordable toys and cosmetics from Alibaba.
+
+            <p className="text-gray-300 mb-6 leading-relaxed">
+              Transform your business with MidoHub's AI-powered dropshipping platform.
+              Connect directly to Alibaba's verified suppliers and build your empire in the Gulf region.
             </p>
-            <div className="flex space-x-4">
-              <a 
-                href="#" 
-                id="footer-social-facebook"
-                className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-teal-100 transition-colors"
-                aria-label="Facebook"
-              >
-                <svg className="w-4 h-4 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                </svg>
-              </a>
-              <a 
-                href="#" 
-                id="footer-social-twitter"
-                className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-teal-100 transition-colors"
-                aria-label="Twitter"
-              >
-                <svg className="w-4 h-4 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
-                </svg>
-              </a>
-              <a 
-                href="#" 
-                id="footer-social-instagram"
-                className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-teal-100 transition-colors"
-                aria-label="Instagram"
-              >
-                <svg className="w-4 h-4 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 6.62 5.367 11.987 11.988 11.987 6.62 0 11.987-5.367 11.987-11.987C24.014 5.367 18.637.001 12.017.001zM8.449 16.988c-1.297 0-2.448-.49-3.323-1.297C4.198 14.895 3.708 13.744 3.708 12.447s.49-2.448 1.418-3.323C6.001 8.198 7.152 7.708 8.449 7.708s2.448.49 3.323 1.416c.875.875 1.365 2.026 1.365 3.323s-.49 2.448-1.365 3.323c-.875.807-2.026 1.218-3.323 1.218zm7.718-1.297c-.875.807-2.026 1.297-3.323 1.297s-2.448-.49-3.323-1.297c-.875-.875-1.365-2.026-1.365-3.323s.49-2.448 1.365-3.323c.875-.926 2.026-1.416 3.323-1.416s2.448.49 3.323 1.416c.875.875 1.365 2.026 1.365 3.323s-.49 2.448-1.365 3.323z"/>
-                </svg>
-              </a>
+
+            {/* Features Grid */}
+            <div className="grid grid-cols-2 gap-4">
+              {features.map((feature, index) => (
+                <div key={index} className="flex items-start space-x-3">
+                  <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <feature.icon className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-semibold text-white mb-1">{feature.title}</h4>
+                    <p className="text-xs text-gray-400 leading-relaxed">{feature.description}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Products */}
-          <div className="col-span-1">
-            <h3 id="footer-products-heading" className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">
-              Products
-            </h3>
-            <ul className="space-y-3">
-              <li>
-                <Link 
-                  href="/dashboard" 
-                  id="footer-link-toys"
-                  className="text-gray-600 hover:text-teal-600 text-sm transition-colors"
-                >
-                  Toys & Games
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  href="/dashboard" 
-                  id="footer-link-cosmetics"
-                  className="text-gray-600 hover:text-teal-600 text-sm transition-colors"
-                >
-                  Cosmetics & Beauty
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  href="/dashboard" 
-                  id="footer-link-featured"
-                  className="text-gray-600 hover:text-teal-600 text-sm transition-colors"
-                >
-                  Featured Products
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  href="/dashboard" 
-                  id="footer-link-new-arrivals"
-                  className="text-gray-600 hover:text-teal-600 text-sm transition-colors"
-                >
-                  New Arrivals
-                </Link>
-              </li>
+          {/* Product Links */}
+          <div>
+            <h4 className="text-lg font-semibold text-white mb-4">Products</h4>
+            <ul className="space-y-2">
+              {footerLinks.product.map((link) => (
+                <li key={link.name}>
+                  <Link
+                    href={link.href}
+                    className="text-gray-300 hover:text-white transition-colors duration-200 text-sm flex items-center group"
+                  >
+                    <ArrowRight className="w-3 h-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Account */}
-          <div className="col-span-1">
-            <h3 id="footer-account-heading" className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">
-              Account
-            </h3>
-            <ul className="space-y-3">
-              <li>
-                <Link 
-                  href="/profile" 
-                  id="footer-link-profile"
-                  className="text-gray-600 hover:text-teal-600 text-sm transition-colors"
-                >
-                  My Profile
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  href="/orders" 
-                  id="footer-link-orders"
-                  className="text-gray-600 hover:text-teal-600 text-sm transition-colors"
-                >
-                  Order History
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  href="/cart" 
-                  id="footer-link-cart"
-                  className="text-gray-600 hover:text-teal-600 text-sm transition-colors"
-                >
-                  Shopping Cart
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  href="/checkout" 
-                  id="footer-link-checkout"
-                  className="text-gray-600 hover:text-teal-600 text-sm transition-colors"
-                >
-                  Checkout
-                </Link>
-              </li>
+          {/* Platform Links */}
+          <div>
+            <h4 className="text-lg font-semibold text-white mb-4">Platform</h4>
+            <ul className="space-y-2">
+              {footerLinks.platform.map((link) => (
+                <li key={link.name}>
+                  <Link
+                    href={link.href}
+                    className="text-gray-300 hover:text-white transition-colors duration-200 text-sm flex items-center group"
+                  >
+                    <ArrowRight className="w-3 h-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Support */}
-          <div className="col-span-1">
-            <h3 id="footer-support-heading" className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">
-              Support
-            </h3>
-            <ul className="space-y-3">
-              <li>
-                <Link 
-                  href="/contact" 
-                  id="footer-link-contact"
-                  className="text-gray-600 hover:text-teal-600 text-sm transition-colors"
-                >
-                  Contact Us
-                </Link>
-              </li>
-              <li>
-                <a 
-                  href="#" 
-                  id="footer-link-help"
-                  className="text-gray-600 hover:text-teal-600 text-sm transition-colors"
-                >
-                  Help Center
-                </a>
-              </li>
-              <li>
-                <a 
-                  href="#" 
-                  id="footer-link-shipping"
-                  className="text-gray-600 hover:text-teal-600 text-sm transition-colors"
-                >
-                  Shipping Info
-                </a>
-              </li>
-              <li>
-                <a 
-                  href="#" 
-                  id="footer-link-returns"
-                  className="text-gray-600 hover:text-teal-600 text-sm transition-colors"
-                >
-                  Returns & Refunds
-                </a>
-              </li>
+          {/* Support Links */}
+          <div>
+            <h4 className="text-lg font-semibold text-white mb-4">Support</h4>
+            <ul className="space-y-2">
+              {footerLinks.support.map((link) => (
+                <li key={link.name}>
+                  <Link
+                    href={link.href}
+                    className="text-gray-300 hover:text-white transition-colors duration-200 text-sm flex items-center group"
+                  >
+                    <ArrowRight className="w-3 h-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
 
+        {/* Newsletter Section */}
+        <div className="border-t border-gray-700 pt-8 mb-8">
+          <div className="text-center">
+            <h3 className="text-2xl font-bold text-white mb-2">
+              Stay Updated with MidoHub
+            </h3>
+            <p className="text-gray-400 mb-6">
+              Get the latest dropshipping tips, product updates, and exclusive deals
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+              <input
+                type="email"
+                placeholder="Enter your email address"
+                className="flex-1 px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              />
+              <button className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl transition-all duration-200 transform hover:scale-105">
+                Subscribe
+              </button>
+            </div>
+          </div>
+        </div>
+
         {/* Bottom Section */}
-        <div className="mt-12 pt-8 border-t border-gray-200">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-6">
-              <p id="footer-copyright" className="text-gray-500 text-sm">
-                © 2024 MidoHub. All rights reserved.
-              </p>
-              <div className="flex space-x-6">
-                <a 
-                  href="#" 
-                  id="footer-link-privacy"
-                  className="text-gray-500 hover:text-teal-600 text-sm transition-colors"
+        <div className="border-t border-gray-700 pt-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            {/* Copyright */}
+            <div className="text-gray-400 text-sm">
+              © {currentYear} MidoHub. All rights reserved. Made with{' '}
+              <Heart className="inline w-4 h-4 text-red-500" /> in the Gulf Region
+            </div>
+
+            {/* Social Links */}
+            <div className="flex items-center space-x-4">
+              {socialLinks.map((social) => (
+                <a
+                  key={social.name}
+                  href={social.href}
+                  className={`text-gray-400 ${social.color} transition-colors duration-200 p-2 hover:bg-gray-800 rounded-lg`}
+                  aria-label={social.name}
                 >
-                  Privacy Policy
+                  <social.icon className="w-5 h-5" />
                 </a>
-                <a 
-                  href="#" 
-                  id="footer-link-terms"
-                  className="text-gray-500 hover:text-teal-600 text-sm transition-colors"
-                >
-                  Terms of Service
-                </a>
-                <a 
-                  href="#" 
-                  id="footer-link-cookies"
-                  className="text-gray-500 hover:text-teal-600 text-sm transition-colors"
-                >
-                  Cookie Policy
-                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Contact Info Bar */}
+      <div className="bg-black/50 border-t border-gray-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-400">
+            <div className="flex items-center space-x-6">
+              <div className="flex items-center space-x-2">
+                <Mail className="w-4 h-4" />
+                <span>support@midohub.com</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Phone className="w-4 h-4" />
+                <span>+971 4 123 4567</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <MapPin className="w-4 h-4" />
+                <span>Dubai, UAE</span>
               </div>
             </div>
-            <div className="mt-4 md:mt-0">
-              <p id="footer-powered-by" className="text-gray-500 text-sm">
-                Powered by Alibaba Integration
-              </p>
+
+            <div className="flex items-center space-x-4">
+              <span>🌍 Available in 7 countries</span>
+              <span>🔒 SSL Secured</span>
+              <span>⚡ Fast & Reliable</span>
             </div>
           </div>
         </div>
       </div>
     </footer>
-  )
+  );
 }

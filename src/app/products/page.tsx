@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useLocationRecommendations } from '@/hooks/useLocationRecommendations';
 import { Globe, DollarSign, Star, ShoppingCart, Eye } from 'lucide-react';
-import envConfig from '../../../../env.config';
+import envConfig from '../../../env.config';
 import AIEnhancedSearch from '@/components/AIEnhancedSearch';
 import ProductGrid from '@/components/ProductGrid';
 import LocalizationPanel from '@/components/LocalizationPanel';
@@ -98,6 +98,7 @@ export default function ProductsPage() {
 
     const handleSearch = useCallback(async (query: string, filters: any) => {
         setSearchQuery(query);
+        setSelectedCategory(filters.category || '');
         setCurrentPage(1);
 
         // Track search behavior for AI recommendations
