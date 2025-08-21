@@ -15,21 +15,21 @@ interface User {
 }
 
 export interface SimpleUser {
-  username: string;
-  email: string;
-  role?: string;
-  avatar?: string;
-  id: string;
-  userId?: string;
-  user_id?: string;
-  bio?: string;
-  isPremium?: boolean;
-  sessionData?: {
-    cartItems: any[];
-    wishlist: string[];
-    recentlyViewed: string[];
-    searchHistory: string[];
-  };
+    username: string;
+    email: string;
+    role?: string;
+    avatar?: string;
+    id: string;
+    userId?: string;
+    user_id?: string;
+    bio?: string;
+    isPremium?: boolean;
+    sessionData?: {
+        cartItems: any[];
+        wishlist: string[];
+        recentlyViewed: string[];
+        searchHistory: string[];
+    };
 }
 
 interface SimpleAuthContextType {
@@ -91,11 +91,19 @@ export function SimpleAuthProvider({ children }: { children: React.ReactNode }) 
                 const storedUser = localStorage.getItem(STORAGE_KEYS.USER);
                 if (storedUser) {
                     console.log('SimpleAuth: Found stored user, parsing...');
-                    const parsedUser = JSON.parse(storedUser);
-                    // Update last seen
-                    parsedUser.lastSeen = new Date();
-                    setUser(parsedUser);
-                    console.log('SimpleAuth: Stored user loaded:', parsedUser.username);
+                    try {
+                        const parsedUser = JSON.parse(storedUser);
+                        // Update last seen
+                        parsedUser.lastSeen = new Date();
+                        setUser(parsedUser);
+                        console.log('SimpleAuth: Stored user loaded:', parsedUser.username);
+                    } catch (parseError) {
+                        console.error('SimpleAuth: Error parsing stored user, creating new guest:', parseError);
+                        // Clear corrupted data and create new guest
+                        localStorage.removeItem(STORAGE_KEYS.USER);
+                        const guestUser = getOrCreateGuest();
+                        setUser(guestUser);
+                    }
                 } else {
                     console.log('SimpleAuth: No stored user, creating guest...');
                     // Create or load guest user
@@ -218,7 +226,21 @@ export function SimpleAuthProvider({ children }: { children: React.ReactNode }) 
     const signIn = async (username: string, password?: string): Promise<void> => {
         try {
             // Check if user exists in local storage
-            const existingUsers = JSON.parse(localStorage.getItem('midohub_users') || '[]');
+            let existingUsers = [];
+            try {
+                const usersData = localStorage.getItem('midohub_users');
+                if (usersData) {
+                    existingUsers = JSON.parse(usersData);
+                    if (!Array.isArray(existingUsers)) {
+                        existingUsers = [];
+                    }
+                }
+            } catch (parseError) {
+                console.error('Error parsing users data, resetting:', parseError);
+                localStorage.removeItem('midohub_users');
+                existingUsers = [];
+            }
+
             let existingUser = existingUsers.find((u: any) => u.username === username);
 
             if (existingUser) {
@@ -259,7 +281,12 @@ export function SimpleAuthProvider({ children }: { children: React.ReactNode }) 
                     ...newUser,
                     passwordHash: password ? simpleHash(password) : undefined
                 });
-                localStorage.setItem('midohub_users', JSON.stringify(existingUsers));
+
+                try {
+                    localStorage.setItem('midohub_users', JSON.stringify(existingUsers));
+                } catch (storageError) {
+                    console.error('Error saving user to localStorage:', storageError);
+                }
 
                 setUser(newUser);
             }
@@ -273,7 +300,21 @@ export function SimpleAuthProvider({ children }: { children: React.ReactNode }) 
     const signUp = async (username: string, password?: string, email?: string): Promise<void> => {
         try {
             // Check if username already exists
-            const existingUsers = JSON.parse(localStorage.getItem('midohub_users') || '[]');
+            let existingUsers = [];
+            try {
+                const usersData = localStorage.getItem('midohub_users');
+                if (usersData) {
+                    existingUsers = JSON.parse(usersData);
+                    if (!Array.isArray(existingUsers)) {
+                        existingUsers = [];
+                    }
+                }
+            } catch (parseError) {
+                console.error('Error parsing users data, resetting:', parseError);
+                localStorage.removeItem('midohub_users');
+                existingUsers = [];
+            }
+
             if (existingUsers.find((u: any) => u.username === username)) {
                 throw new Error('Username already exists');
             }
@@ -305,7 +346,12 @@ export function SimpleAuthProvider({ children }: { children: React.ReactNode }) 
                 ...newUser,
                 passwordHash: password ? simpleHash(password) : undefined
             });
-            localStorage.setItem('midohub_users', JSON.stringify(existingUsers));
+
+            try {
+                localStorage.setItem('midohub_users', JSON.stringify(existingUsers));
+            } catch (storageError) {
+                console.error('Error saving user to localStorage:', storageError);
+            }
 
             setUser(newUser);
         } catch (error) {

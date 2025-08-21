@@ -39,9 +39,18 @@ export function CartProvider({ children }: CartProviderProps) {
     try {
       const savedCart = localStorage.getItem('midohub_cart');
       if (savedCart) {
-        const parsedCart = JSON.parse(savedCart);
-        if (Array.isArray(parsedCart)) {
-          setCartItems(parsedCart);
+        try {
+          const parsedCart = JSON.parse(savedCart);
+          if (Array.isArray(parsedCart)) {
+            setCartItems(parsedCart);
+          } else {
+            console.warn('Cart data is not an array, resetting to empty cart');
+            setCartItems([]);
+          }
+        } catch (parseError) {
+          console.error('Error parsing cart data, resetting to empty cart:', parseError);
+          localStorage.removeItem('midohub_cart');
+          setCartItems([]);
         }
       }
     } catch (error) {

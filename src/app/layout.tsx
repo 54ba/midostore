@@ -2,6 +2,7 @@ import { LocalizationProvider } from '@/app/contexts/LocalizationContext'
 import { ThemeProvider } from '@/app/contexts/ThemeContext'
 import { SimpleAuthProvider } from '@/app/contexts/SimpleAuthContext'
 import { CartProvider } from '@/app/contexts/CartContext'
+import { Suspense } from 'react'
 
 import { LocalizationProvider as LocalizationProviderType } from '@/app/contexts/LocalizationContext'
 import { ThemeProvider as ThemeProviderType } from '@/app/contexts/ThemeContext'
@@ -79,8 +80,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 {/* Main Content */}
                 {children}
 
-                {/* Analytics Tracker */}
-                <SimpleAnalyticsTracker />
+                {/* Analytics Tracker - Wrapped in Suspense */}
+                <Suspense fallback={null}>
+                  <SimpleAnalyticsTracker />
+                </Suspense>
               </CartProvider>
             </LocalizationProvider>
           </SimpleAuthProvider>

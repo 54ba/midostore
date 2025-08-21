@@ -84,7 +84,7 @@ export default function Header({ id }: { id?: string } = {}) {
 
             {/* Cart */}
             <Link
-              href="/dashboard/cart"
+              href="/cart"
               className="relative p-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
             >
               <ShoppingBag className="w-6 h-6" />

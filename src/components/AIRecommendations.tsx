@@ -133,14 +133,33 @@ export default function AIRecommendations({
 
             // Store guest interactions in localStorage for potential future use
             try {
-                const guestInteractions = JSON.parse(localStorage.getItem('guestInteractions') || '[]');
+                let guestInteractions = [];
+                const storedInteractions = localStorage.getItem('guestInteractions');
+                if (storedInteractions) {
+                    try {
+                        guestInteractions = JSON.parse(storedInteractions);
+                        if (!Array.isArray(guestInteractions)) {
+                            guestInteractions = [];
+                        }
+                    } catch (parseError) {
+                        console.error('Error parsing guest interactions, resetting:', parseError);
+                        localStorage.removeItem('guestInteractions');
+                        guestInteractions = [];
+                    }
+                }
+
                 guestInteractions.push({
                     productId,
                     type: interactionType,
                     timestamp: new Date().toISOString(),
                     sessionId: localStorage.getItem('guestSessionId') || `guest_${Date.now()}`
                 });
-                localStorage.setItem('guestInteractions', JSON.stringify(guestInteractions));
+
+                try {
+                    localStorage.setItem('guestInteractions', JSON.stringify(guestInteractions));
+                } catch (storageError) {
+                    console.error('Error saving guest interactions:', storageError);
+                }
 
                 // Show a subtle notification for guest interactions
                 if (interactionType === 'like') {
