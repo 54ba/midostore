@@ -15,12 +15,9 @@
 [build.processing]
   skip_processing = false
 
-# Next.js plugin for Netlify with App Router configuration
+# Next.js plugin for Netlify
 [[plugins]]
   package = "@netlify/plugin-nextjs"
-  [plugins.inputs]
-    # Ensure App Router is used
-    appDir = true
 
 # Redirects for API routes to Netlify functions
 [[redirects]]
