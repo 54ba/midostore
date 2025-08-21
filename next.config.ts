@@ -21,6 +21,15 @@ const nextConfig: NextConfig = {
     experimental: {
         // Remove appDir as it's not valid in Next.js 15
         // appDir: true,
+
+        // Force App Router only
+        typedRoutes: true,
+
+        // Disable Pages Router features
+        ppr: false,
+
+        // Disable static generation for error pages
+        staticPageGenerationTimeout: 0,
     },
 
     // Disable static export to prevent Pages Router generation

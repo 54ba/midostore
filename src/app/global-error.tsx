@@ -1,5 +1,7 @@
 'use client';
 
+import { unstable_noStore as noStore } from 'next/cache';
+
 export default function GlobalError({
     error,
     reset,
@@ -7,6 +9,9 @@ export default function GlobalError({
     error: Error & { digest?: string };
     reset: () => void;
 }) {
+    // Prevent static generation
+    noStore();
+
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50">
             <div className="max-w-md w-full text-center">

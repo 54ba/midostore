@@ -1,4 +1,9 @@
+import { unstable_noStore as noStore } from 'next/cache';
+
 export default function NotFound() {
+    // Prevent static generation
+    noStore();
+
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50">
             <div className="max-w-md w-full text-center">

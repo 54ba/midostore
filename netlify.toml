@@ -8,8 +8,10 @@
   NPM_VERSION = "10"
   PYTHON_VERSION = "3.12"
   PIP_VERSION = "24.0"
-  # Force Next.js to use App Router only
-  NEXT_PRIVATE_STANDALONE = "true"
+  # Force App Router only and prevent Pages Router generation
+  NEXT_TELEMETRY_DISABLED = "1"
+  NEXT_APP_DIR = "1"
+  NEXT_PAGES_DIR = "0"
 
 # Database and AI setup during build
 [build.processing]
