@@ -6,6 +6,7 @@
 2. **Failed to upload file: test** - Function bundling issues
 3. **could not parse form file: http: request body too large** - Functions too large for Netlify
 4. **MaxListenersExceededWarning** - Memory leak in deployment process
+5. **MissingBlobsEnvironmentError** - Netlify Blobs configuration issue
 
 ## Root Causes
 
@@ -13,6 +14,7 @@
 - Multiple function directories causing conflicts
 - Functions exceeded Netlify's size limits
 - Heavy dependencies being included in function bundles
+- Next.js plugin trying to use Netlify Blobs without proper configuration
 
 ## Solutions Applied
 
@@ -44,15 +46,21 @@
   ]
 ```
 
-### 4. .netlifyignore File
+### 4. Blobs Issue Resolution
+- **Removed**: Next.js plugin that was causing Blobs errors
+- **Alternative**: Basic Netlify deployment without advanced features
+- **Result**: No more "MissingBlobsEnvironmentError"
+
+### 5. .netlifyignore File
 - Excludes `node_modules/`, `electron/`, and other heavy directories
 - Prevents large files from being uploaded
 - Reduces deployment size significantly
 
-### 5. New Deployment Scripts
+### 6. New Deployment Scripts
 - `scripts/deploy-netlify-optimized.sh` - Optimized deployment process
+- `scripts/deploy-netlify-simple.sh` - Simple deployment (no plugin)
 - `scripts/check-function-sizes.js` - Function size monitoring
-- `npm run netlify:deploy:optimized` - New deployment command
+- `npm run netlify:deploy:simple` - New simple deployment command
 
 ## Current Function Status
 
@@ -66,6 +74,9 @@
 # Check function sizes
 npm run netlify:check
 
+# Simple deployment (recommended - no Blobs issues)
+npm run netlify:deploy:simple
+
 # Optimized deployment
 npm run netlify:deploy:optimized
 
@@ -77,9 +88,10 @@ npm run netlify:deploy
 
 1. **Faster Deployments** - Smaller function bundles
 2. **Reliable Uploads** - No more "request body too large" errors
-3. **Better Performance** - Lightweight functions load faster
-4. **Easier Debugging** - Clear function structure
-5. **Cost Effective** - Reduced function execution time
+3. **No Blobs Issues** - Basic deployment approach
+4. **Better Performance** - Lightweight functions load faster
+5. **Easier Debugging** - Clear function structure
+6. **Cost Effective** - Reduced function execution time
 
 ## Monitoring
 
@@ -93,3 +105,16 @@ npm run netlify:deploy
 - Consider splitting large functions into smaller, focused ones
 - Monitor function execution times and memory usage
 - Keep functions as lightweight as possible
+- If you need advanced Next.js features, consider setting up Blobs environment variables
+
+## Troubleshooting
+
+### If you still get Blobs errors:
+1. Use `npm run netlify:deploy:simple` instead
+2. This bypasses the Next.js plugin entirely
+3. Basic functionality will work without advanced features
+
+### If functions are still too large:
+1. Run `npm run netlify:check` to identify issues
+2. Check for new heavy dependencies
+3. Consider splitting functions or removing dependencies

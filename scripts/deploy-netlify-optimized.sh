@@ -33,7 +33,7 @@ npm run netlify:check
 
 # Deploy to Netlify with simplified approach
 echo "🚀 Deploying to Netlify..."
-netlify deploy --prod --dir=.next --functions=netlify/functions-lightweight --no-functions-cache
+npx netlify deploy --prod --dir=.next --functions=netlify/functions-lightweight
 
 echo "✅ Deployment completed!"
 echo "🌐 Your site should be live in a few minutes"

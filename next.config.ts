@@ -1,9 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-    // Remove standalone output to fix build issues
-    // output: "standalone",
-
     // Do not fail production builds on ESLint issues
     eslint: {
         ignoreDuringBuilds: true,
@@ -17,27 +14,8 @@ const nextConfig: NextConfig = {
     // Optimize for Netlify deployment
     trailingSlash: false,
 
-    // Explicitly disable Pages Router and ensure App Router only
-    experimental: {
-        // Remove appDir as it's not valid in Next.js 15
-        // appDir: true,
-
-        // Force App Router only
-        typedRoutes: true,
-
-        // Disable Pages Router features
-        ppr: false,
-
-        // Disable static generation for error pages
-        staticPageGenerationTimeout: 0,
-    },
-
-    // Disable static export to prevent Pages Router generation
-    output: undefined,
-
-    // Force App Router only by disabling Pages Router features
-    // This should prevent the generation of _document.js, _app.js, and _error.js
-    // by ensuring all routing goes through the App Router
+    // Moved typedRoutes out of experimental in Next.js 15
+    typedRoutes: true,
 
     images: {
         remotePatterns: [
@@ -49,9 +27,6 @@ const nextConfig: NextConfig = {
         // Disable image optimization for Netlify compatibility
         unoptimized: true,
     },
-
-    // Optimize for production builds
-    // swcMinify: true, // Removed as it's no longer needed in Next.js 15
 
     // Webpack configuration to handle Node.js modules
     webpack: (config, { isServer }) => {

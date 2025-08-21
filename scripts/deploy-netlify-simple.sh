@@ -7,9 +7,9 @@ echo "🧹 Cleaning previous builds..."
 rm -rf .next
 rm -rf .netlify
 
-# Build the Next.js application
-echo "🔨 Building Next.js application..."
-npm run build
+# Build the Next.js application using simple build
+echo "🔨 Building Next.js application (simple build)..."
+npm run build:simple
 
 # Verify the build output
 if [ ! -d ".next" ]; then
@@ -33,7 +33,7 @@ npm run netlify:check
 
 # Deploy to Netlify using basic deployment (no plugin)
 echo "🚀 Deploying to Netlify (basic deployment)..."
-netlify deploy --prod --dir=.next --functions=netlify/functions-lightweight --no-functions-cache --no-build
+npx netlify deploy --prod --dir=.next --functions=netlify/functions-lightweight --no-build
 
 echo "✅ Deployment completed!"
 echo "🌐 Your site should be live in a few minutes"
