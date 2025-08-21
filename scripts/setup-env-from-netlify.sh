@@ -1,0 +1,257 @@
+#!/usr/bin/env bash
+
+echo "🔧 Setting up environment variables from netlify.env..."
+
+# Check if netlify.env exists
+if [ ! -f "netlify.env" ]; then
+    echo "❌ netlify.env file not found!"
+    exit 1
+fi
+
+# Create .env.local from netlify.env template
+echo "📝 Creating .env.local from netlify.env..."
+
+# Remove existing .env.local if it exists
+if [ -f ".env.local" ]; then
+    echo "⚠️  Backing up existing .env.local to .env.local.backup"
+    cp .env.local .env.local.backup
+fi
+
+# Create comprehensive .env.local file
+cat > .env.local << 'EOF'
+# Environment Variables for MidoStore
+# Local development and production environment configuration
+
+# =============================================================================
+# REQUIRED VARIABLES (Must be set)
+# =============================================================================
+
+# Database Configuration
+DATABASE_URL=postgresql://username:password@host:port/database_name
+
+# Clerk Authentication (Configure these for authentication)
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_your_clerk_publishable_key
+CLERK_SECRET_KEY=sk_test_your_clerk_secret_key
+NEXT_PUBLIC_CLERK_FRONTEND_API=https://your-clerk-frontend-api.clerk.accounts.dev
+
+# =============================================================================
+# AI & ANALYTICS CONFIGURATION
+# =============================================================================
+
+# AI Model Configuration
+OPENAI_API_KEY=your_openai_api_key
+ANTHROPIC_API_KEY=your_anthropic_api_key
+AI_ANALYTICS_ENDPOINT=http://localhost:8000
+AI_MODEL_PATH=ai/models/recommendation_model.pkl
+AI_TRAINING_EPOCHS=100
+AI_LEARNING_RATE=0.05
+AI_LOSS_FUNCTION=warp
+ENABLE_AI_TRAINING=true
+
+# =============================================================================
+# ENHANCED LOCALIZATION & CURRENCY
+# =============================================================================
+
+# Exchange Rate APIs (Multiple sources for redundancy)
+EXCHANGE_RATE_API_KEY=your_primary_exchange_rate_api_key
+EXCHANGE_RATE_BASE_URL=https://api.exchangerate-api.com/v4/latest
+FIXER_API_KEY=your_fixer_api_key
+CURRENCY_API_KEY=your_currency_api_key
+OPEN_EXCHANGE_RATES_API_KEY=your_open_exchange_rates_api_key
+CURRENCY_LAYER_API_KEY=your_currency_layer_api_key
+
+# Exchange Rate Configuration
+EXCHANGE_RATE_UPDATE_FREQUENCY=15
+EXCHANGE_RATE_CACHE_DURATION=15
+
+# Enhanced Localization
+GOOGLE_TRANSLATE_API_KEY=your_google_translate_api_key
+DEEPL_API_KEY=your_deepl_api_key
+AZURE_TRANSLATOR_KEY=your_azure_translator_key
+
+# Localization Defaults
+DEFAULT_LOCALE=en-AE
+DEFAULT_CURRENCY=AED
+
+# =============================================================================
+# CRYPTOCURRENCY INTEGRATION
+# =============================================================================
+
+# Cryptocurrency Wallet Addresses
+BTC_WALLET_ADDRESS=your_btc_wallet_address
+ETH_WALLET_ADDRESS=your_eth_wallet_address
+USDT_WALLET_ADDRESS=your_usdt_wallet_address
+BNB_WALLET_ADDRESS=your_bnb_wallet_address
+
+# Cryptocurrency API Keys
+COINGECKO_API_KEY=your_coingecko_api_key
+COINBASE_API_KEY=your_coinbase_api_key
+BINANCE_API_KEY=your_binance_api_key
+ETHERSCAN_API_KEY=your_etherscan_api_key
+BSCSCAN_API_KEY=your_bscscan_api_key
+
+# =============================================================================
+# SHIPPING & TRACKING
+# =============================================================================
+
+# Shipping API Keys
+DHL_API_KEY=your_dhl_api_key
+FEDEX_API_KEY=your_fedex_api_key
+UPS_API_KEY=your_ups_api_key
+ARAMEX_API_KEY=your_aramex_api_key
+TRACK17_API_KEY=your_track17_api_key
+
+# =============================================================================
+# REAL-TIME PRICE MONITORING
+# =============================================================================
+
+# Price Monitoring Configuration
+PRICE_ALERT_WEBHOOK_URL=your_webhook_url
+VOLATILITY_THRESHOLD=0.05
+PRICE_UPDATE_INTERVAL=300000
+
+# =============================================================================
+# ADVERTISING MODULE
+# =============================================================================
+
+# Social Media Advertising API Keys
+FACEBOOK_ADS_API_KEY=your_facebook_ads_api_key
+GOOGLE_ADS_API_KEY=your_google_ads_api_key
+INSTAGRAM_ADS_API_KEY=your_instagram_ads_api_key
+TIKTOK_ADS_API_KEY=your_tiktok_ads_api_key
+TWITTER_ADS_API_KEY=your_twitter_ads_api_key
+LINKEDIN_ADS_API_KEY=your_linkedin_ads_api_key
+YOUTUBE_ADS_API_KEY=your_youtube_ads_api_key
+
+# Advertising Configuration
+AD_CREDIT_INITIAL_AMOUNT=100
+AD_CREDIT_TOPUP_URL=https://your-payment-gateway.com/topup
+
+# =============================================================================
+# WEB3 & DECENTRALIZATION
+# =============================================================================
+
+# Web3 Configuration
+NEXT_PUBLIC_WEB3_ENABLED=true
+NEXT_PUBLIC_WEB3_NETWORK=polygon-mumbai
+NEXT_PUBLIC_WEB3_RPC_URL=https://rpc-mumbai.maticvigil.com
+
+# Smart Contract Addresses (Deploy contracts and update these)
+NEXT_PUBLIC_WEB3_CONTRACT_ADDRESS_TOKEN=0x0000000000000000000000000000000000000000
+NEXT_PUBLIC_WEB3_CONTRACT_ADDRESS_REWARDS=0x0000000000000000000000000000000000000000
+NEXT_PUBLIC_WEB3_CONTRACT_ADDRESS_P2P=0x0000000000000000000000000000000000000000
+NEXT_PUBLIC_WEB3_CONTRACT_ADDRESS_ESCROW=0x0000000000000000000000000000000000000000
+
+# Web3 API Keys
+WEB3_PRIVATE_KEY=your_private_key_for_contract_deployment
+WEB3_GAS_RELAY_URL=https://api.gelato.network
+WEB3_INFURA_API_KEY=your_infura_api_key
+WEB3_ALCHEMY_API_KEY=your_alchemy_api_key
+WEB3_ETHERSCAN_API_KEY=your_etherscan_api_key
+WEB3_POLYGONSCAN_API_KEY=your_polygonscan_api_key
+WEB3_COINBASE_API_KEY=your_coinbase_api_key
+WEB3_WALLETCONNECT_PROJECT_ID=your_walletconnect_project_id
+
+# =============================================================================
+# SCRAPING CONFIGURATION
+# =============================================================================
+
+# Scraping Configuration
+SCRAPING_DELAY_MS=2000
+MAX_CONCURRENT_SCRAPES=3
+SCRAPING_TIMEOUT_MS=30000
+
+# Scraping Sources (JSON array)
+SCRAPING_SOURCES=["alibaba", "aliexpress"]
+
+# Scraping Categories (JSON array)
+SCRAPING_CATEGORIES=["electronics", "clothing", "home", "beauty", "sports", "automotive", "toys", "jewelry"]
+
+# =============================================================================
+# PROFIT MARGINS & PRICING
+# =============================================================================
+
+# Default Profit Margin
+DEFAULT_PROFIT_MARGIN=25
+
+# Category Profit Margins (JSON object)
+CATEGORY_PROFIT_MARGINS={"electronics": 20, "clothing": 30, "home": 25, "beauty": 35, "sports": 25}
+
+# =============================================================================
+# SCHEDULED TASKS CONFIGURATION
+# =============================================================================
+
+# Task Intervals (Cron expressions)
+EXCHANGE_RATE_UPDATE_INTERVAL="*/15 * * * *"
+PRODUCT_PRICE_UPDATE_INTERVAL="0 * * * *"
+CACHE_CLEANUP_INTERVAL="*/30 * * * *"
+DAILY_MAINTENANCE_TIME="0 2 * * *"
+TASK_TIMEZONE=UTC
+
+# =============================================================================
+# ALIBABA/ALIEXPRESS API KEYS (Optional)
+# =============================================================================
+
+# Alibaba API (if available)
+ALIBABA_APP_KEY=your_alibaba_app_key
+ALIBABA_APP_SECRET=your_alibaba_app_secret
+ALIBABA_ACCESS_TOKEN=your_alibaba_access_token
+
+# AliExpress API (if available)
+ALIEXPRESS_APP_KEY=your_aliexpress_app_key
+ALIEXPRESS_APP_SECRET=your_aliexpress_app_secret
+ALIEXPRESS_ACCESS_TOKEN=your_aliexpress_access_token
+
+# =============================================================================
+# SUPPORTED LOCALES
+# =============================================================================
+
+# Supported Locales (JSON array)
+SUPPORTED_LOCALES=["en-AE", "ar-AE", "en-SA", "ar-SA", "en-KW", "ar-KW", "en-QA", "ar-QA", "en-BH", "ar-BH", "en-OM", "ar-OM"]
+
+# =============================================================================
+# DEVELOPMENT & PRODUCTION
+# =============================================================================
+
+# Environment
+NODE_ENV=development
+
+# Analytics
+NEXT_PUBLIC_SIMPLEANALYTICS_DOMAIN=your-domain.com
+
+# =============================================================================
+# STRIPE PAYMENT CONFIGURATION
+# =============================================================================
+
+# Stripe Configuration (for payments)
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key
+STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
+STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret
+EOF
+
+echo "✅ .env.local created successfully!"
+echo ""
+echo "📋 Next Steps:"
+echo "1. Edit .env.local and add your actual API keys and configuration values"
+echo "2. For Clerk authentication, run: ./scripts/setup-clerk.sh"
+echo "3. For AI functionality, add your OPENAI_API_KEY or ANTHROPIC_API_KEY"
+echo "4. For database, update the DATABASE_URL with your PostgreSQL connection string"
+echo ""
+echo "🔑 Important API Keys to Configure:"
+echo "   - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY (for authentication)"
+echo "   - CLERK_SECRET_KEY (for authentication)"
+echo "   - OPENAI_API_KEY (for AI agents and orchestrator)"
+echo "   - DATABASE_URL (for database connection)"
+echo ""
+echo "⚠️  Security Note:"
+echo "   - Never commit .env.local to version control"
+echo "   - Keep your API keys secure and rotate them regularly"
+echo "   - Use different keys for development and production"
+echo ""
+echo "🚀 To start the development server:"
+echo "   npm run dev"
+echo ""
+echo "📖 For more information, see:"
+echo "   - CLERK_SETUP_GUIDE.md"
+echo "   - DYNAMIC_SETUP_README.md"
+echo "   - CLERK_KEYLESS_MODE_README.md"
