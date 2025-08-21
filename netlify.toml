@@ -1,7 +1,6 @@
 [build]
   command = "npm run build:simple"
   publish = ".next"
-  functions = "netlify/functions-lightweight"
 
 [build.environment]
   NODE_VERSION = "22"
@@ -10,10 +9,10 @@
   NEXT_APP_DIR = "1"
   NEXT_PAGES_DIR = "0"
 
-# Redirects for API routes to Netlify functions
+# Redirects for API routes (no functions needed)
 [[redirects]]
   from = "/api/*"
-  to = "/.netlify/functions/:splat"
+  to = "/api/:splat"
   status = 200
 
 # Handle Next.js static files
@@ -54,46 +53,3 @@
   from = "/sign-up/sso-callback"
   to = "/sign-up/sso-callback"
   status = 200
-
-[functions]
-  node_bundler = "esbuild"
-  external_node_modules = [
-    # Heavy packages that should NEVER be bundled
-    "puppeteer",
-    "puppeteer-extra",
-    "puppeteer-extra-plugin-stealth",
-    "puppeteer-extra-plugin-adblocker",
-    "python-shell",
-    "xlsx",
-    "json2csv",
-
-    # Prisma and database
-    "@prisma/client",
-    "prisma",
-    "@prisma/engines",
-
-    # Image processing
-    "@img/sharp-linux-x64-gnu",
-    "@img/sharp-linux-x64-musl",
-    "@next/swc-linux-x64-gnu",
-    "lightningcss",
-    "@tailwindcss/node",
-
-    # Other heavy packages
-    "axios",
-    "crypto-js",
-    "currency.js",
-    "date-fns",
-    "date-fns-tz",
-    "lodash",
-    "node-cron",
-    "recharts",
-    "stripe",
-    "uuid",
-    "zod"
-  ]
-
-  # Only include essential files
-  included_files = [
-    "prisma/schema.prisma"
-  ]

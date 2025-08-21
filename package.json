@@ -16,6 +16,7 @@
     "netlify:deploy:optimized": "./scripts/deploy-netlify-optimized.sh",
     "netlify:deploy:simple": "./scripts/deploy-netlify-simple.sh",
     "netlify:deploy:ultra": "./scripts/deploy-netlify-ultra-lightweight.sh",
+    "netlify:deploy:static": "./scripts/deploy-netlify-no-functions.sh",
     "netlify:check": "node scripts/check-function-sizes.js",
     "netlify:prebuild": "npm run netlify:setup",
     "netlify:postbuild": "echo 'Post-build completed'",
