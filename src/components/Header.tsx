@@ -16,13 +16,22 @@ import ThemeToggle from './ThemeToggle';
 import LocalizationSelector from './LocalizationSelector';
 import SimpleUserProfile from './SimpleUserProfile';
 
-export default function Header() {
+export default function Header({ id }: { id?: string } = {}) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, loading: authLoading } = useSimpleAuth();
-  const { items: cartItems } = useCart();
+  const { cartItems } = useCart();
   const router = useRouter();
 
-  const cartItemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
+  // Add loading state to prevent rendering before cart is initialized
+  const [isCartLoaded, setIsCartLoaded] = useState(false);
+
+  useEffect(() => {
+    // Set cart as loaded after a brief delay to ensure context is ready
+    const timer = setTimeout(() => setIsCartLoaded(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const cartItemCount = cartItems?.reduce((total, item) => total + item.quantity, 0) || 0;
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -76,7 +85,7 @@ export default function Header() {
               className="relative p-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
             >
               <ShoppingBag className="w-6 h-6" />
-              {cartItemCount > 0 && (
+              {isCartLoaded && cartItemCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                   {cartItemCount}
                 </span>

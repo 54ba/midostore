@@ -21,7 +21,7 @@ import {
   Star
 } from 'lucide-react';
 
-export default function Footer() {
+export default function Footer({ id }: { id?: string } = {}) {
   const currentYear = new Date().getFullYear();
 
   const footerLinks = {

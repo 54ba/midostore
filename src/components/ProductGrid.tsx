@@ -153,18 +153,19 @@ export default function ProductGrid({
     const displayProducts = products.length > 0 ? products : mockProducts;
 
     const handleAddToCart = (product: Product) => {
-        addToCart({
-            id: product.id,
-            title: product.title,
+        const cartItem = {
+            product_id: product.id,
+            product_name: product.title,
             price: product.price,
-            currency: product.currency,
-            image: product.images[0],
-            quantity: 1
-        });
+            image_url: product.images[0],
+            category: product.category,
+            currency: 'USD'
+        };
+        addToCart(cartItem);
     };
 
     const isInCart = (productId: string) => {
-        return cartItems.some(item => item.id === productId);
+        return cartItems.some(item => item.product_id === productId);
     };
 
     if (loading) {
@@ -239,8 +240,8 @@ export default function ProductGrid({
                             <button
                                 onClick={() => setViewMode('grid')}
                                 className={`p-2 rounded-lg transition-colors ${viewMode === 'grid'
-                                        ? 'bg-blue-100 text-blue-600'
-                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                    ? 'bg-blue-100 text-blue-600'
+                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                     }`}
                             >
                                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -250,8 +251,8 @@ export default function ProductGrid({
                             <button
                                 onClick={() => setViewMode('list')}
                                 className={`p-2 rounded-lg transition-colors ${viewMode === 'list'
-                                        ? 'bg-blue-100 text-blue-600'
-                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                    ? 'bg-blue-100 text-blue-600'
+                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                     }`}
                             >
                                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -264,8 +265,8 @@ export default function ProductGrid({
 
                 {/* Products Grid */}
                 <div className={`grid gap-8 ${viewMode === 'grid'
-                        ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-                        : 'grid-cols-1'
+                    ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+                    : 'grid-cols-1'
                     }`}>
                     {displayProducts.map((product) => (
                         <div
@@ -359,8 +360,8 @@ export default function ProductGrid({
                                             <Star
                                                 key={i}
                                                 className={`w-4 h-4 ${i < Math.floor(product.rating || 0)
-                                                        ? 'text-yellow-400 fill-current'
-                                                        : 'text-gray-300'
+                                                    ? 'text-yellow-400 fill-current'
+                                                    : 'text-gray-300'
                                                     }`}
                                             />
                                         ))}
@@ -392,8 +393,8 @@ export default function ProductGrid({
                                     onClick={() => handleAddToCart(product)}
                                     disabled={isInCart(product.id)}
                                     className={`w-full font-semibold py-3 rounded-xl transition-all duration-300 transform hover:scale-105 ${isInCart(product.id)
-                                            ? 'bg-green-600 text-white cursor-not-allowed'
-                                            : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white'
+                                        ? 'bg-green-600 text-white cursor-not-allowed'
+                                        : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white'
                                         }`}
                                 >
                                     {isInCart(product.id) ? (

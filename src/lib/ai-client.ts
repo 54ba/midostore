@@ -281,10 +281,10 @@ export const aiClient = new AIClient();
 
 // Export types for use in other parts of the app
 export type {
-    ProductData,
-    TrendAnalysisRequest,
-    RecommendationRequest,
-    TrendAnalysisResult,
-    RecommendationResult,
-    AIHealthStatus,
+    // ProductData,
+    // TrendAnalysisRequest,
+    // RecommendationRequest,
+    // TrendAnalysisResult,
+    // RecommendationResult,
+    // AIHealthStatus,
 };

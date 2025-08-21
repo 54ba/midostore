@@ -4,7 +4,7 @@ import React from 'react';
 import { Loader2 } from 'lucide-react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'default' | 'outline' | 'ghost' | 'link' | 'gradient' | 'success' | 'warning' | 'danger';
+  variant?: 'default' | 'outline' | 'ghost' | 'link' | 'gradient' | 'success' | 'warning' | 'danger' | 'primary' | 'secondary' | 'outline' | 'ghost' | 'link' | 'gradient' | 'success' | 'warning' | 'danger';
   size?: 'sm' | 'md' | 'lg' | 'xl';
   loading?: boolean;
   leftIcon?: React.ReactNode;
@@ -33,15 +33,17 @@ export default function Button({
     xl: 'px-8 py-4 text-lg'
   };
 
-  const variantClasses = {
-    default: 'bg-gray-900 text-white hover:bg-gray-800 focus:ring-gray-500 shadow-lg hover:shadow-xl',
-    outline: 'border-2 border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 focus:ring-gray-500',
-    ghost: 'text-gray-700 hover:bg-gray-100 focus:ring-gray-500',
-    link: 'text-blue-600 hover:text-blue-800 underline-offset-4 hover:underline focus:ring-blue-500',
-    gradient: 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 focus:ring-blue-500 shadow-lg hover:shadow-xl',
-    success: 'bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 shadow-lg hover:shadow-xl',
-    warning: 'bg-yellow-500 text-white hover:bg-yellow-600 focus:ring-yellow-500 shadow-lg hover:shadow-xl',
-    danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-blue-500 shadow-lg hover:shadow-xl'
+  const variantClasses: { [key: string]: string } = {
+    default: 'bg-blue-600 hover:bg-blue-700 text-white',
+    outline: 'border border-gray-300 hover:bg-gray-50 text-gray-700',
+    ghost: 'hover:bg-gray-100 text-gray-700',
+    link: 'text-blue-600 hover:text-blue-800 underline',
+    gradient: 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white',
+    success: 'bg-green-600 hover:bg-green-700 text-white',
+    warning: 'bg-yellow-600 hover:bg-yellow-700 text-white',
+    danger: 'bg-red-600 hover:bg-red-700 text-white',
+    primary: 'bg-blue-600 hover:bg-blue-700 text-white',
+    secondary: 'bg-gray-600 hover:bg-gray-700 text-white'
   };
 
   const classes = [

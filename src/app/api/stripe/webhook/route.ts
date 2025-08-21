@@ -7,6 +7,40 @@ const USER_UUID = "b3f753f4-ee49-4263-a1ec-1b798c8d5948"
 const FUNCTION_UUID = "e5c8cf65-ab03-4943-a18c-42f77dd99e8f"
 const SPREADSHEET_ID = '18EGqQ8F7mBO08nqDin9mwfLt_R-lB1xSDmlgI_BNyXw'
 
+export async function GET(request: NextRequest) {
+  try {
+    // Return webhook information for testing
+    return NextResponse.json({
+      success: true,
+      data: {
+        service: 'Stripe Webhook Handler',
+        description: 'Handles Stripe webhook events for payment processing',
+        method: 'POST',
+        requiredHeaders: ['stripe-signature'],
+        supportedEvents: [
+          'checkout.session.completed',
+          'payment_intent.succeeded',
+          'payment_intent.payment_failed',
+          'customer.subscription.created',
+          'customer.subscription.updated',
+          'customer.subscription.deleted'
+        ],
+        configuration: {
+          stripeConfigured: !!process.env.STRIPE_SECRET_KEY,
+          webhookConfigured: !!process.env.STRIPE_WEBHOOK_SECRET
+        }
+      },
+      message: 'Stripe webhook endpoint is ready to receive events'
+    })
+  } catch (error) {
+    console.error('Error in Stripe webhook GET:', error)
+    return NextResponse.json(
+      { success: false, error: 'Failed to get webhook information' },
+      { status: 500 }
+    )
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Check if Stripe keys are available

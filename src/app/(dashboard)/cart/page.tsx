@@ -15,12 +15,15 @@ export default function CartPage() {
   const { cartItems, cartTotal, updateQuantity, removeFromCart, clearCart } = useCart();
   const router = useRouter();
 
+  // Ensure cartItems is always an array
+  const safeCartItems = cartItems || [];
+
   const calculateSubtotal = () => {
-    return cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    return safeCartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   };
 
   const calculateShipping = () => {
-    return cartItems.length > 0 ? 15.00 : 0;
+    return safeCartItems.length > 0 ? 15.00 : 0;
   };
 
   const calculateTax = () => {
@@ -32,7 +35,7 @@ export default function CartPage() {
   };
 
   const handleCheckout = () => {
-    if (cartItems.length === 0) {
+    if (safeCartItems.length === 0) {
       return;
     }
     router.push('/checkout');
@@ -42,7 +45,7 @@ export default function CartPage() {
     router.push('/products');
   };
 
-  if (cartItems.length === 0) {
+  if (safeCartItems.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Header />
@@ -89,7 +92,7 @@ export default function CartPage() {
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Shopping Cart</h1>
             <p className="text-gray-600 mt-1">
-              {cartItems.length} {cartItems.length === 1 ? 'item' : 'items'} in your cart
+              {safeCartItems.length} {safeCartItems.length === 1 ? 'item' : 'items'} in your cart
             </p>
           </div>
           <Button
@@ -105,7 +108,7 @@ export default function CartPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
-            {cartItems.map((item) => (
+            {safeCartItems.map((item) => (
               <CartItem
                 key={item.product_id}
                 item={item}
@@ -115,7 +118,7 @@ export default function CartPage() {
             ))}
 
             {/* Clear Cart Button */}
-            {cartItems.length > 0 && (
+            {safeCartItems.length > 0 && (
               <div className="pt-4 border-t border-gray-200">
                 <Button
                   onClick={clearCart}
@@ -135,7 +138,7 @@ export default function CartPage() {
 
               <div className="space-y-3 mb-6">
                 <div className="flex justify-between text-gray-600">
-                  <span>Subtotal ({cartItems.length} items)</span>
+                  <span>Subtotal ({safeCartItems.length} items)</span>
                   <span>${calculateSubtotal().toFixed(2)}</span>
                 </div>
 

@@ -241,11 +241,11 @@ export async function POST(request: NextRequest) {
                 const { optimizationType } = data;
 
                 // Simulate system optimization
-                const optimizations = {
-                    performance: 'Performance optimization initiated - focusing on response times and throughput',
-                    cost: 'Cost optimization initiated - analyzing resource usage and scaling decisions',
-                    reliability: 'Reliability optimization initiated - improving error rates and uptime',
-                    security: 'Security optimization initiated - updating security policies and access controls'
+                const optimizations: { [key: string]: string } = {
+                    performance: 'Optimizing system performance and resource allocation',
+                    cost: 'Analyzing cost optimization opportunities',
+                    reliability: 'Enhancing system reliability and fault tolerance',
+                    security: 'Strengthening security measures and compliance'
                 };
 
                 const message = optimizations[optimizationType] || 'General system optimization initiated';
@@ -343,7 +343,7 @@ export async function POST(request: NextRequest) {
     } catch (error) {
         console.error('Error in AI Orchestrator POST:', error);
         return NextResponse.json(
-            { error: error.message || 'Failed to process request' },
+            { error: (error as Error).message || 'Failed to process request' },
             { status: 500 }
         );
     }
@@ -382,34 +382,33 @@ function generatePerformanceRecommendations(metrics: any): string[] {
 
 // Generate system recommendations
 function generateSystemRecommendations(status: any, analytics: any): any {
-    const recommendations = {
+    const recommendations: {
+        immediate: string[];
+        shortTerm: string[];
+        longTerm: string[];
+    } = {
         immediate: [],
         shortTerm: [],
-        longTerm: [],
-        priority: 'medium'
+        longTerm: []
     };
 
-    // Immediate recommendations
-    if (analytics.serviceHealth.critical > 0) {
+    // Add recommendations based on system status
+    if (status.overallHealth < 80) {
         recommendations.immediate.push('Address critical service issues immediately');
-        recommendations.priority = 'critical';
     }
 
-    if (analytics.decisionMetrics.failed > analytics.decisionMetrics.completed) {
+    if (status.decisions.failedCount > 0) {
         recommendations.immediate.push('Review and fix failed decision execution logic');
-        recommendations.priority = 'high';
     }
 
-    // Short-term recommendations
-    if (analytics.trendAnalysis.rising > analytics.trendAnalysis.declining * 2) {
+    if (status.trends.positiveCount > status.trends.negativeCount) {
         recommendations.shortTerm.push('Capitalize on rising trends with increased marketing spend');
     }
 
-    if (analytics.automationMetrics.averageSuccessRate < 85) {
+    if (status.automation.successRate < 90) {
         recommendations.shortTerm.push('Optimize automation rules to improve success rates');
     }
 
-    // Long-term recommendations
     recommendations.longTerm.push('Implement predictive scaling based on historical patterns');
     recommendations.longTerm.push('Develop advanced AI models for better trend prediction');
     recommendations.longTerm.push('Create automated A/B testing framework for decisions');

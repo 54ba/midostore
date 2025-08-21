@@ -35,7 +35,7 @@ export default function DashboardPage() {
           <div className="space-y-3">
             <Button
               onClick={() => router.push('/sign-in')}
-              variant="primary"
+              variant="default"
               className="w-full"
             >
               Sign In
@@ -49,7 +49,7 @@ export default function DashboardPage() {
             </Button>
             <Button
               onClick={() => router.push('/products')}
-              variant="secondary"
+              variant="default"
               className="w-full"
             >
               Browse Products
@@ -77,7 +77,7 @@ export default function DashboardPage() {
             <div className="flex items-center gap-4">
               <Button
                 onClick={() => router.push('/products')}
-                variant="primary"
+                variant="default"
               >
                 Browse Products
               </Button>
@@ -144,7 +144,7 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Button
               onClick={() => router.push('/products')}
-              variant="primary"
+              variant="default"
               className="h-20 flex flex-col items-center justify-center"
             >
               <ShoppingCart className="w-6 h-6 mb-2" />
@@ -152,7 +152,7 @@ export default function DashboardPage() {
             </Button>
             <Button
               onClick={() => router.push('/scraping')}
-              variant="secondary"
+              variant="default"
               className="h-20 flex flex-col items-center justify-center"
             >
               <Package className="w-6 h-6 mb-2" />
@@ -189,7 +189,7 @@ export default function DashboardPage() {
           <div className="mt-6">
             <Button
               onClick={() => router.push('/products')}
-              variant="primary"
+              variant="default"
             >
               Start Exploring Products
             </Button>

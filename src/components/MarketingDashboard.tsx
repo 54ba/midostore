@@ -212,7 +212,7 @@ export default function MarketingDashboard({ userId, className = '' }: Marketing
       Twitter: <Twitter className="w-5 h-5" />,
       LinkedIn: <Linkedin className="w-5 h-5" />,
     };
-    return icons[platform] || <Share2 className="w-5 h-5" />;
+    return (icons as any)[platform] || <Share2 className="w-5 h-5" />;
   };
 
   const getPlatformColor = (platform: string) => {
@@ -222,7 +222,7 @@ export default function MarketingDashboard({ userId, className = '' }: Marketing
       Twitter: '#1DA1F2',
       LinkedIn: '#0A66C2',
     };
-    return colors[platform] || '#6B7280';
+    return (colors as any)[platform] || '#6B7280';
   };
 
   if (loading) {

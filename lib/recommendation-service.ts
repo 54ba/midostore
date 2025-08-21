@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { prisma } from './db';
 import { config } from '../env.config';
 

@@ -16,7 +16,7 @@ export default function AdvertisingPage() {
     );
   }
 
-  const userId = user?.id || 'anonymous';
+  const userId = (user as any)?.id || (user as any)?.userId || (user as any)?.user_id || (user as any)?.userId || (user as any)?.user_id || "anonymous" || 'anonymous';
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -131,4 +131,4 @@ export default function AdvertisingPage() {
 }
 
 // Import CheckCircle icon
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle , Database, Flame, Target, TrendingUp, Zap, AlertCircle} from 'lucide-react';

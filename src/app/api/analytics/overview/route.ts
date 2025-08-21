@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
 
         // Get top products with names
         const topProductsWithNames = await Promise.all(
-            topProducts.map(async (item) => {
+            topProducts.map(async (item: any) => {
                 const product = await prisma.product.findUnique({
                     where: { id: item.productId },
                     select: { title: true, image: true, category: true }
@@ -133,7 +133,7 @@ export async function GET(request: NextRequest) {
         });
 
         // Calculate daily revenue for trend analysis
-        const dailyRevenue = recentOrders.reduce((acc, order) => {
+        const dailyRevenue = recentOrders.reduce((acc: any, order: any) => {
             const date = order.createdAt.toISOString().split('T')[0];
             acc[date] = (acc[date] || 0) + (order.totalAmount || 0);
             return acc;
@@ -157,7 +157,7 @@ export async function GET(request: NextRequest) {
             topProducts: topProductsWithNames,
 
             // Category breakdown
-            categories: categoryStats.map(stat => ({
+            categories: categoryStats.map((stat: any) => ({
                 name: stat.category,
                 productCount: stat._count.id,
                 avgPrice: Math.round((stat._avg.price || 0) * 100) / 100,
@@ -167,11 +167,11 @@ export async function GET(request: NextRequest) {
             // Recent trends
             dailyRevenue,
             recentOrderCount: recentOrders.length,
-            recentRevenue: recentOrders.reduce((sum, order) => sum + (order.totalAmount || 0), 0),
+            recentRevenue: recentOrders.reduce((sum: number, order: any) => sum + (order.totalAmount || 0), 0),
 
             // Performance indicators
             orderGrowth: totalOrders > 0 ? ((recentOrders.length / totalOrders) * 100) : 0,
-            revenueGrowth: totalRevenue?._sum?.totalAmount ? ((recentOrders.reduce((sum, order) => sum + (order.totalAmount || 0), 0) / totalRevenue?._sum?.totalAmount) * 100) : 0,
+            revenueGrowth: totalRevenue?._sum?.totalAmount ? ((recentOrders.reduce((sum: number, order: any) => sum + (order.totalAmount || 0), 0) / totalRevenue?._sum?.totalAmount) * 100) : 0,
 
             // Timestamp
             lastUpdated: new Date().toISOString()

@@ -17,7 +17,7 @@ export default function EnhancedDashboardPage() {
         );
     }
 
-    const userId = user?.id || 'anonymous';
+    const userId = (user as any)?.id || (user as any)?.userId || (user as any)?.user_id || (user as any)?.userId || (user as any)?.user_id || "anonymous" || 'anonymous';
 
     return (
         <div className="min-h-screen bg-gray-50">

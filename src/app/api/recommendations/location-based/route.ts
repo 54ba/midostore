@@ -1,6 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../../lib/db';
 
+export async function GET(request: NextRequest) {
+    try {
+        // Return information about the location-based recommendations service
+        return NextResponse.json({
+            success: true,
+            data: {
+                service: 'Location-Based Recommendations',
+                description: 'Get personalized product recommendations based on geographic location',
+                method: 'POST',
+                requiredFields: ['location'],
+                optionalFields: ['userContext', 'searchQuery', 'limit', 'includeTrending', 'includeSeasonal'],
+                exampleRequest: {
+                    location: { country: 'United States', city: 'New York', latitude: 40.7128, longitude: -74.0060 },
+                    userContext: { preferences: { categories: ['Electronics'] } },
+                    searchQuery: 'smartphone',
+                    limit: 20,
+                    includeTrending: true,
+                    includeSeasonal: true
+                }
+            },
+            message: 'Use POST method to get location-based recommendations'
+        });
+    } catch (error) {
+        console.error('Error in location-based recommendations GET:', error);
+        return NextResponse.json(
+            { error: 'Failed to get service information' },
+            { status: 500 }
+        );
+    }
+}
+
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();

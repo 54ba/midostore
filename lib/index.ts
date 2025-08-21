@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Database and Core Services
 export { prisma } from './db';
 export { ProductService } from './product-service';

@@ -613,7 +613,7 @@ export class AdvertisingService {
                     return { success: true }; // Mock success for other platforms
             }
         } catch (error) {
-            return { success: false, error: error.message };
+            return { success: false, error: (error as Error).message };
         }
     }
 

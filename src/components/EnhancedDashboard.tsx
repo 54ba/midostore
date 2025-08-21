@@ -189,7 +189,7 @@ export default function EnhancedDashboard({ userId, className = '' }: EnhancedDa
       pending: 'text-yellow-600',
       exception: 'text-red-600',
     };
-    return colors[status] || 'text-gray-600';
+    return (colors as any)[status] || 'text-gray-600';
   };
 
   if (loading) {

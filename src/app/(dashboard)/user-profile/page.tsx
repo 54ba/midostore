@@ -10,7 +10,7 @@ export default function UserProfilePage() {
     const [formData, setFormData] = useState({
         username: user?.username || '',
         email: user?.email || '',
-        bio: user?.bio || ''
+        bio: (user as any)?.bio || ''
     });
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -73,7 +73,7 @@ export default function UserProfilePage() {
                         <div className="flex-1">
                             <h2 className="text-2xl font-bold text-gray-900">{user.username}</h2>
                             <p className="text-gray-600">{user.email}</p>
-                            {user.isPremium && (
+                            {(user as any)?.isPremium && (
                                 <div className="flex items-center mt-2">
                                     <Crown className="w-5 h-5 text-yellow-500 mr-2" />
                                     <span className="text-sm text-yellow-600 font-medium">Premium User</span>

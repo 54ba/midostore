@@ -231,7 +231,7 @@ export async function GET(request: NextRequest) {
             // If we have database reviews, return them
             if (reviews.length > 0) {
                 // Transform data for frontend consumption
-                const transformedReviews = reviews.map(review => ({
+                const transformedReviews = reviews.map((review: any) => ({
                     id: review.id,
                     productId: review.productId,
                     productTitle: review.product?.title || 'Product',
@@ -269,7 +269,7 @@ export async function GET(request: NextRequest) {
                 });
             }
         } catch (dbError) {
-            console.log('Database not accessible, using fallback data:', dbError.message);
+            console.log('Database not accessible, using fallback data:', (dbError as Error).message);
         }
 
         // If no database reviews or database error, return fallback data
@@ -363,7 +363,7 @@ export async function POST(request: NextRequest) {
                 message: 'Review created successfully in database'
             });
         } catch (dbError) {
-            console.log('Database not accessible, storing in memory:', dbError.message);
+            console.log('Database not accessible, storing in memory:', (dbError as Error).message);
 
             // Create in-memory review
             const inMemoryReview = {
@@ -390,7 +390,7 @@ export async function POST(request: NextRequest) {
             {
                 success: false,
                 error: 'Failed to create review',
-                message: error instanceof Error ? error.message : 'Unknown error'
+                message: error instanceof Error ? (error as Error).message : 'Unknown error'
             },
             { status: 500 }
         );

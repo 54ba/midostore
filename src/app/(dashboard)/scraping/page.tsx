@@ -19,7 +19,7 @@ import {
     Clock,
     Eye,
     Trash2
-} from 'lucide-react';
+, Database, Flame, Target, TrendingUp, Zap, AlertCircle} from 'lucide-react';
 
 interface ScrapingJob {
     id: string;

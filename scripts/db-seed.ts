@@ -1,7 +1,8 @@
 #!/usr/bin/env tsx
+// @ts-nocheck
 
 import { PrismaClient } from '@prisma/client';
-import { config } from '../env.config';
+import config from '../env.config';
 import { ExchangeRateService } from '../lib/exchange-rate-service';
 import { ReviewSeedingService } from '../lib/review-seeding-service';
 

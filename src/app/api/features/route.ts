@@ -107,7 +107,7 @@ export async function GET(request: NextRequest) {
         }
 
         // Transform database features to frontend format
-        const transformedFeatures = features.map(feature => ({
+        const transformedFeatures = features.map((feature: any) => ({
             id: feature.id,
             title: feature.title,
             description: feature.description,

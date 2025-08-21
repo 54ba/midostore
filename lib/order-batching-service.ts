@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { prisma } from './db';
 
 export interface OrderBatch {

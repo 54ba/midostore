@@ -398,7 +398,7 @@ export async function POST(request: NextRequest) {
     } catch (error) {
         console.error('Error in role management POST:', error);
         return NextResponse.json(
-            { error: error.message || 'Failed to process request' },
+            { error: (error as Error).message || 'Failed to process request' },
             { status: 500 }
         );
     }

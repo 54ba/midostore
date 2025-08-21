@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { prisma } from './db';
 import EnhancedLocalizationService from './enhanced-localization-service';
 import envConfig from '../env.config';

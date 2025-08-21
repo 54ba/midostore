@@ -160,7 +160,7 @@ export default function ProfilePage() {
           <div id="profile-error-actions" className="space-y-3">
             <Button
               id="profile-retry-button"
-              variant="primary"
+              variant="default"
               onClick={fetchUserProfile}
               disabled={loading}
             >

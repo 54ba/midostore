@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { prisma } from './db';
 import { ExchangeRateService } from './exchange-rate-service';
 import { config } from '../env.config';

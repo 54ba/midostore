@@ -14,10 +14,9 @@ export async function GET(request: NextRequest) {
 
         switch (action) {
             case 'analytics':
-                const analytics = await sharingService.getShareAnalytics(
-                    productId || undefined,
-                    platform || undefined
-                );
+                const analytics = await sharingService.getShareAnalytics({
+                    platform: platform || undefined
+                });
                 return NextResponse.json({
                     success: true,
                     data: analytics,

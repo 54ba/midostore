@@ -2,7 +2,7 @@
 
 import { ScrapingService } from '../lib/scraping-service';
 import { ProductService } from '../lib/product-service';
-import { config } from '../env.config';
+import config from '../env.config';
 
 async function main() {
     console.log('🚀 Starting product scraping...');

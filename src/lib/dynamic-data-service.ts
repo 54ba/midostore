@@ -330,12 +330,12 @@ export class DynamicDataService {
                 });
 
                 if (userInteractions.length > 0) {
-                    const userCategories = [...new Set(userInteractions.map(i => i.product.category))];
+                    const userCategories = [...new Set(userInteractions.map((i: any) => i.product.category))];
                     personalizedProducts = await prisma.product.findMany({
                         where: {
                             category: { in: userCategories },
                             isActive: true,
-                            id: { notIn: userInteractions.map(i => i.productId) },
+                            id: { notIn: userInteractions.map((i: any) => i.productId) },
                         },
                         take: Math.ceil(limit / 2),
                     });
@@ -391,7 +391,7 @@ export class DynamicDataService {
 
             // Create live updates
             const updates = [
-                ...recentProducts.map(product => ({
+                ...recentProducts.map((product: any) => ({
                     id: `product_update_${product.id}`,
                     type: 'product' as const,
                     message: 'Product updated:',
@@ -400,7 +400,7 @@ export class DynamicDataService {
                     color: 'text-blue-500',
                     timestamp: product.updatedAt,
                 })),
-                ...recentReviews.map(review => ({
+                ...recentReviews.map((review: any) => ({
                     id: `review_${review.id}`,
                     type: 'review' as const,
                     message: 'New review for:',

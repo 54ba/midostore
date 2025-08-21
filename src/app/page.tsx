@@ -45,70 +45,15 @@ import DynamicPricingDeals from '@/components/DynamicPricingDeals';
 import OrderBatchingSystem from '@/components/OrderBatchingSystem';
 import LiveUpdates from '@/components/LiveUpdates';
 
-// Types for dynamic data
-interface ProductReview {
-  id: string;
-  productId: string;
-  productTitle: string;
-  productImage: string;
-  productPrice: number;
-  productOriginalPrice: number;
-  productCategory: string;
-  userId: string;
-  userName: string;
-  userAvatar: string;
-  rating: number;
-  comment: string;
-  reviewDate: Date;
-  isVerified: boolean;
-  isPremium: boolean;
-  helpfulCount: number;
-  unhelpfulCount: number;
-  purchaseDate: Date;
-  productRating: number;
-  productReviewCount: number;
-  productSoldCount: number;
-  productDiscount: number;
-  isHotDeal: boolean;
-  isLimitedTime: boolean;
-  timeRemaining?: string;
-}
-
-interface AnalyticsData {
-  conversionRate: number;
-  avgOrderValue: number;
-  customerLifetime: number;
-  totalOrders: number;
-  totalRevenue: number;
-  activeUsers: number;
-  topProducts: Array<{
-    id: string;
-    name: string;
-    sales: number;
-    revenue: number;
-  }>;
-}
-
-interface FeatureData {
-  id: string;
-  title: string;
-  description: string;
-  icon: string;
-  category: string;
-  isActive: boolean;
-  usageCount: number;
-  rating: number;
-}
-
 export default function LandingPage() {
   const router = useRouter();
   const { user, loading: authLoading, isGuest, isAuthenticated } = useSimpleAuth();
   const { t, currentLocale, isRTL, formatPrice } = useLocalization();
 
   // State for dynamic data
-  const [productReviews, setProductReviews] = useState<ProductReview[]>([]);
-  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
-  const [featureData, setFeatureData] = useState<FeatureData[]>([]);
+  const [productReviews, setProductReviews] = useState<any[]>([]);
+  const [analyticsData, setAnalyticsData] = useState<any>(null);
+  const [featureData, setFeatureData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -189,7 +134,7 @@ export default function LandingPage() {
           {
             id: 'fallback-1',
             productId: 'prod-1',
-            productTitle: t('wirelessHeadphonesPro'),
+            productTitle: 'Wireless Noise-Canceling Headphones Pro',
             productImage: '/api/placeholder/40/40?text=Headphones',
             productPrice: 89.99,
             productOriginalPrice: 149.99,
@@ -198,7 +143,7 @@ export default function LandingPage() {
             userName: 'Ahmed Hassan',
             userAvatar: '/api/placeholder/40/40?text=AH',
             rating: 5,
-            comment: t('headphonesReviewComment'),
+            comment: 'Excellent quality and amazing sound!',
             reviewDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2),
             isVerified: true,
             isPremium: true,
@@ -211,7 +156,7 @@ export default function LandingPage() {
             productDiscount: 40,
             isHotDeal: true,
             isLimitedTime: true,
-            timeRemaining: t('twoDaysLeft')
+            timeRemaining: '2 days left'
           }
         ]);
 
@@ -297,17 +242,17 @@ export default function LandingPage() {
           <div className="text-center mb-16">
             <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-purple-100 to-indigo-100 dark:from-purple-900/20 dark:to-indigo-900/20 text-purple-800 dark:text-purple-400 mb-4">
               <Brain className="w-4 h-4 mr-2" />
-              <span className="font-semibold">{t('aiPowered')}</span>
+              <span className="font-semibold">AI Powered</span>
             </div>
             <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
               {isAuthenticated
-                ? t('intelligentProductRecommendations')
+                ? 'Intelligent Product Recommendations'
                 : 'Discover AI-Powered Dropshipping Success'
               }
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               {isAuthenticated
-                ? t('aiRecommendationsDescription')
+                ? 'Get personalized product recommendations based on your business performance and market trends.'
                 : 'Join thousands of successful entrepreneurs using AI to identify trending products, optimize pricing, and maximize profits in the Gulf region.'
               }
             </p>
@@ -318,24 +263,24 @@ export default function LandingPage() {
               <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center mb-4">
                 <TargetIcon className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{t('smartTargeting')}</h3>
-              <p className="text-gray-600 dark:text-gray-300">{t('smartTargetingDescription')}</p>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Smart Targeting</h3>
+              <p className="text-gray-600 dark:text-gray-300">AI-powered market analysis to identify the most profitable product opportunities.</p>
             </div>
 
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-100 dark:border-gray-700">
               <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center mb-4">
                 <TrendingUp className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{t('trendAnalysis')}</h3>
-              <p className="text-gray-600 dark:text-gray-300">{t('trendAnalysisDescription')}</p>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Trend Analysis</h3>
+              <p className="text-gray-600 dark:text-gray-300">Real-time trend monitoring to stay ahead of market changes and consumer preferences.</p>
             </div>
 
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-100 dark:border-gray-700">
               <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mb-4">
                 <Lightbulb className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{t('insightGeneration')}</h3>
-              <p className="text-gray-600 dark:text-gray-300">{t('insightGenerationDescription')}</p>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Insight Generation</h3>
+              <p className="text-gray-600 dark:text-gray-300">Automated insights and recommendations to optimize your product strategy.</p>
             </div>
           </div>
         </div>
@@ -350,17 +295,17 @@ export default function LandingPage() {
           <div className="text-center mb-16">
             <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-100 to-cyan-100 dark:from-blue-900/20 dark:to-cyan-900/20 text-blue-800 dark:text-blue-400 mb-4">
               <BarChart className="w-4 h-4 mr-2" />
-              <span className="font-semibold">{t('analyticsInsights')}</span>
+              <span className="font-semibold">Analytics & Insights</span>
             </div>
             <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
               {isAuthenticated
-                ? t('comprehensiveBusinessIntelligence')
+                ? 'Comprehensive Business Intelligence'
                 : 'Real-Time Business Intelligence'
               }
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               {isAuthenticated
-                ? t('businessIntelligenceDescription')
+                ? 'Monitor your business performance with advanced analytics and actionable insights.'
                 : 'Get instant insights into market trends, competitor analysis, and performance metrics to make data-driven decisions.'
               }
             </p>
@@ -373,8 +318,8 @@ export default function LandingPage() {
                   <Eye className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{t('realTimeMonitoring')}</h3>
-                  <p className="text-gray-600 dark:text-gray-300">{t('realTimeMonitoringDescription')}</p>
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Real-Time Monitoring</h3>
+                  <p className="text-gray-600 dark:text-gray-300">Track your business metrics and performance indicators in real-time.</p>
                 </div>
               </div>
 
@@ -383,8 +328,8 @@ export default function LandingPage() {
                   <BarChart3 className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{t('advancedReporting')}</h3>
-                  <p className="text-gray-600 dark:text-gray-300">{t('advancedReportingDescription')}</p>
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Advanced Reporting</h3>
+                  <p className="text-gray-600 dark:text-gray-300">Generate comprehensive reports and analytics to understand your business better.</p>
                 </div>
               </div>
 
@@ -393,8 +338,8 @@ export default function LandingPage() {
                   <Target className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{t('performanceTracking')}</h3>
-                  <p className="text-gray-600 dark:text-gray-300">{t('performanceTrackingDescription')}</p>
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Performance Tracking</h3>
+                  <p className="text-gray-600 dark:text-gray-300">Monitor key performance indicators and track progress towards your business goals.</p>
                 </div>
               </div>
             </div>
@@ -402,26 +347,26 @@ export default function LandingPage() {
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl border border-gray-100 dark:border-gray-700">
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('conversionRate')}</span>
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Conversion Rate</span>
                   <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
                     {analyticsData?.conversionRate?.toFixed(1) || '3.2'}%
                   </span>
                 </div>
                 <div className="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('avgOrderValue')}</span>
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Avg Order Value</span>
                   <span className="text-lg font-bold text-green-600 dark:text-green-400">
-                    {formatPrice(analyticsData?.avgOrderValue || 89.45)}
+                    ${analyticsData?.avgOrderValue?.toFixed(2) || '89.45'}
                   </span>
                 </div>
                 <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('customerLifetime')}</span>
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Customer Lifetime</span>
                   <span className="text-lg font-bold text-purple-600 dark:text-purple-400">
-                    {formatPrice(analyticsData?.customerLifetime || 1247)}
+                    ${analyticsData?.customerLifetime?.toFixed(0) || '1247'}
                   </span>
                 </div>
                 {analyticsData?.totalOrders && (
                   <div className="flex items-center justify-between p-4 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-lg">
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('totalOrders')}</span>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Total Orders</span>
                     <span className="text-lg font-bold text-yellow-600 dark:text-yellow-400">
                       {analyticsData.totalOrders.toLocaleString()}
                     </span>
@@ -439,17 +384,17 @@ export default function LandingPage() {
           <div className="text-center mb-16">
             <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-orange-100 to-red-100 dark:from-orange-900/20 dark:to-red-900/20 text-orange-800 dark:text-orange-400 mb-4">
               <Cpu className="w-4 h-4 mr-2" />
-              <span className="font-semibold">{t('aiOrchestrator')}</span>
+              <span className="font-semibold">AI Orchestrator</span>
             </div>
             <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
               {isAuthenticated
-                ? t('centralizedAiCommandCenter')
+                ? 'Centralized AI Command Center'
                 : 'AI-Powered Business Orchestration'
               }
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               {isAuthenticated
-                ? t('aiOrchestratorDescription')
+                ? 'Manage all your AI-powered tools and automation from a single, intuitive dashboard.'
                 : 'Experience the future of business automation with our AI orchestrator that manages every aspect of your dropshipping operation.'
               }
             </p>
@@ -460,32 +405,32 @@ export default function LandingPage() {
               <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <Network className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{t('workflowManagement')}</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-300">{t('workflowManagementDescription')}</p>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Workflow Management</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Streamline your business processes with intelligent workflow automation.</p>
             </div>
 
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-100 dark:border-gray-700 text-center">
               <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <Rocket className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{t('automationEngine')}</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-300">{t('automationEngineDescription')}</p>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Automation Engine</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Automate repetitive tasks and focus on growing your business.</p>
             </div>
 
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-100 dark:border-gray-700 text-center">
               <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <Shield className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{t('securityCompliance')}</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-300">{t('securityComplianceDescription')}</p>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Security & Compliance</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Enterprise-grade security with compliance monitoring and audit trails.</p>
             </div>
 
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-100 dark:border-gray-700 text-center">
               <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <GlobeIcon className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{t('globalIntegration')}</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-300">{t('globalIntegrationDescription')}</p>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Global Integration</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Connect with suppliers and partners worldwide through our platform.</p>
             </div>
           </div>
         </div>
@@ -507,17 +452,17 @@ export default function LandingPage() {
           <div className="text-center mb-16">
             <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20 text-blue-800 dark:text-blue-400 mb-4">
               <BarChart3 className="w-4 h-4 mr-2" />
-              <span className="font-semibold">{t('realTimeAnalytics')}</span>
+              <span className="font-semibold">Real-Time Analytics</span>
             </div>
             <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
               {isAuthenticated
-                ? t('comprehensiveProductAnalytics')
+                ? 'Comprehensive Product Analytics'
                 : 'Product Performance Analytics'
               }
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               {isAuthenticated
-                ? t('productAnalyticsDescription')
+                ? 'Track your product performance and optimize your inventory with advanced analytics.'
                 : 'Discover which products are trending, analyze market performance, and identify opportunities for growth.'
               }
             </p>
@@ -533,17 +478,17 @@ export default function LandingPage() {
           <div className="text-center mb-16">
             <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-green-100 to-blue-100 dark:from-green-900/20 dark:to-blue-900/20 text-green-800 dark:text-green-400 mb-4">
               <Star className="w-4 h-4 mr-2" />
-              <span className="font-semibold">{t('realCustomerReviews')}</span>
+              <span className="font-semibold">Real Customer Reviews</span>
             </div>
             <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
               {isAuthenticated
-                ? t('whatOurCustomersSay')
+                ? 'What Our Customers Say'
                 : 'See What Our Customers Are Saying'
               }
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               {isAuthenticated
-                ? t('customerReviewsDescription')
+                ? 'Read authentic feedback from our verified customers and learn from their experiences.'
                 : 'Real feedback from verified customers who have experienced our platform firsthand.'
               }
             </p>
@@ -579,13 +524,13 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <h2 className="text-4xl font-bold text-white mb-4">
             {isAuthenticated
-              ? t('readyToStartYourDropshippingEmpire')
+              ? 'Ready to Start Your Dropshipping Empire?'
               : 'Ready to Start Your Dropshipping Empire?'
             }
           </h2>
           <p className="text-xl text-blue-100 mb-8">
             {isAuthenticated
-              ? t('ctaDescription')
+              ? 'Take your business to the next level with our advanced tools and AI-powered insights.'
               : 'Join thousands of successful entrepreneurs and start building your business today with AI-powered insights and tools.'
             }
           </p>
@@ -598,7 +543,7 @@ export default function LandingPage() {
                 className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-gray-900 px-8 py-4 text-lg font-bold rounded-xl shadow-2xl hover:shadow-yellow-500/25 transition-all duration-300 transform hover:scale-105"
               >
                 <Crown className="w-5 h-5 mr-2" />
-                {t('startYourEmpireNow')}
+                Start Your Empire Now
               </Button>
             ) : (
               // Guest user - show sign-in/sign-up options
@@ -626,7 +571,7 @@ export default function LandingPage() {
               className="border-2 border-white/30 text-white hover:bg-white hover:text-blue-600 px-8 py-4 text-lg font-semibold rounded-xl backdrop-blur-sm transition-all duration-300"
             >
               <ArrowRight className="w-5 h-5 mr-2" />
-              {t('learnMore')}
+              Learn More
             </Button>
           </div>
 

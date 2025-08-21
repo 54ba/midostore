@@ -46,6 +46,8 @@ export function CartProvider({ children }: CartProviderProps) {
       }
     } catch (error) {
       console.error('Failed to load cart from localStorage:', error);
+      // Ensure we always have a valid array
+      setCartItems([]);
     } finally {
       setIsLoaded(true);
     }
@@ -62,17 +64,21 @@ export function CartProvider({ children }: CartProviderProps) {
     }
   }, [cartItems, isLoaded]);
 
+  // Ensure cartItems is always an array (safety check)
+  const safeCartItems = Array.isArray(cartItems) ? cartItems : [];
+
   // Calculate cart metrics
-  const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
-  const cartTotal = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+  const cartCount = safeCartItems.reduce((total, item) => total + item.quantity, 0);
+  const cartTotal = safeCartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
 
   const addToCart = (product: Omit<CartItem, 'quantity'>, quantity: number = 1) => {
     setCartItems(prevItems => {
-      const existingItemIndex = prevItems.findIndex(item => item.product_id === product.product_id);
+      const currentItems = Array.isArray(prevItems) ? prevItems : [];
+      const existingItemIndex = currentItems.findIndex(item => item.product_id === product.product_id);
 
       if (existingItemIndex >= 0) {
         // Update existing item quantity
-        const updatedItems = [...prevItems];
+        const updatedItems = [...currentItems];
         updatedItems[existingItemIndex] = {
           ...updatedItems[existingItemIndex],
           quantity: updatedItems[existingItemIndex].quantity + quantity
@@ -80,13 +86,16 @@ export function CartProvider({ children }: CartProviderProps) {
         return updatedItems;
       } else {
         // Add new item to cart
-        return [...prevItems, { ...product, quantity }];
+        return [...currentItems, { ...product, quantity }];
       }
     });
   };
 
   const removeFromCart = (productId: string) => {
-    setCartItems(prevItems => prevItems.filter(item => item.product_id !== productId));
+    setCartItems(prevItems => {
+      const currentItems = Array.isArray(prevItems) ? prevItems : [];
+      return currentItems.filter(item => item.product_id !== productId);
+    });
   };
 
   const updateQuantity = (productId: string, quantity: number) => {
@@ -95,13 +104,14 @@ export function CartProvider({ children }: CartProviderProps) {
       return;
     }
 
-    setCartItems(prevItems =>
-      prevItems.map(item =>
+    setCartItems(prevItems => {
+      const currentItems = Array.isArray(prevItems) ? prevItems : [];
+      return currentItems.map(item =>
         item.product_id === productId
           ? { ...item, quantity }
           : item
-      )
-    );
+      );
+    });
   };
 
   const clearCart = () => {
@@ -109,15 +119,15 @@ export function CartProvider({ children }: CartProviderProps) {
   };
 
   const isInCart = (productId: string) => {
-    return cartItems.some(item => item.product_id === productId);
+    return safeCartItems.some(item => item.product_id === productId);
   };
 
   const getCartItem = (productId: string) => {
-    return cartItems.find(item => item.product_id === productId);
+    return safeCartItems.find(item => item.product_id === productId);
   };
 
   const value: CartContextType = {
-    cartItems,
+    cartItems: safeCartItems,
     cartCount,
     cartTotal,
     addToCart,

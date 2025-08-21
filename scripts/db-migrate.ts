@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 
 import { execSync } from 'child_process';
-import { config } from '../env.config';
+import config from '../env.config';
 
 async function main() {
     console.log('🚀 Starting database migration...');

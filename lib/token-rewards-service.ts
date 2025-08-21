@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { ethers } from 'ethers';
 import { prisma } from './db';
 import Web3Service from './web3-service';

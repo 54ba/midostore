@@ -72,8 +72,8 @@ export async function GET(request: NextRequest) {
         });
 
         // Transform data for ticker
-        const liveSales = recentOrders.map(order => {
-            const totalAmount = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const liveSales = recentOrders.map((order: any) => {
+            const totalAmount = order.items.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0);
             const paymentMethod = order.payment?.method || 'traditional';
 
             return {
