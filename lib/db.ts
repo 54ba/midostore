@@ -29,6 +29,9 @@ class MockPrismaClient {
     $use: any;
     $extends: any;
 
+    // Add index signature for symbol type to satisfy PrismaClient requirements
+    [key: symbol]: any;
+
     constructor(options?: any) {
         this.log = options?.log || [];
 
