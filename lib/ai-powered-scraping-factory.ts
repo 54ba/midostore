@@ -107,7 +107,7 @@ export interface IAIScrapingService {
  * Factory function to create AI-powered scraping service
  * This avoids importing problematic modules during build time
  */
-export async function createAIScrapingService(prisma?: PrismaClient): Promise<IAIScrapingService> {
+export async function createAIScrapingService(prisma?: PrismaClientType): Promise<IAIScrapingService> {
     // Dynamic import to avoid webpack issues
     const { AIPoweredScrapingService } = await import('./ai-powered-scraping-service');
     return new AIPoweredScrapingService(prisma);
