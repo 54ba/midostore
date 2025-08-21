@@ -251,7 +251,7 @@ export class RecommendationService {
         return Math.min(score, 1);
     }
 
-    private async exportTrainingData(): Promise<void> {
+    async exportTrainingData(): Promise<void> {
         try {
             console.log('📊 Exporting training data...');
 

@@ -87,11 +87,10 @@ export async function POST(request: NextRequest) {
                     );
                 }
 
-                await recommendationService.recordUserInteraction({
+                await recommendationService.addInteraction({
                     user_id,
                     product_id,
                     type,
-                    timestamp: new Date(),
                     metadata
                 });
 

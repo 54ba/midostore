@@ -10,15 +10,20 @@ export async function GET(request: NextRequest) {
 
         switch (action) {
             case 'status':
-                const modelStatus = await recommendationService.getModelStatus();
+                const stats = await recommendationService.getRecommendationStats();
                 return NextResponse.json({
                     success: true,
-                    data: modelStatus,
+                    data: {
+                        isReady: stats.modelStatus === 'ready',
+                        modelStatus: stats.modelStatus,
+                        totalInteractions: stats.totalInteractions,
+                        totalProducts: stats.totalProducts
+                    },
                     timestamp: new Date().toISOString()
                 });
 
             case 'analytics':
-                const analytics = await recommendationService.getRecommendationAnalytics();
+                const analytics = await recommendationService.getRecommendationStats();
                 return NextResponse.json({
                     success: true,
                     data: analytics,
@@ -27,16 +32,16 @@ export async function GET(request: NextRequest) {
 
             default:
                 // Return both status and analytics by default
-                const [defaultModelStatus, defaultAnalytics] = await Promise.all([
-                    recommendationService.getModelStatus(),
-                    recommendationService.getRecommendationAnalytics()
-                ]);
+                const defaultStats = await recommendationService.getRecommendationStats();
 
                 return NextResponse.json({
                     success: true,
                     data: {
-                        model: defaultModelStatus,
-                        analytics: defaultAnalytics
+                        model: {
+                            isReady: defaultStats.modelStatus === 'ready',
+                            modelStatus: defaultStats.modelStatus
+                        },
+                        analytics: defaultStats
                     },
                     timestamp: new Date().toISOString()
                 });

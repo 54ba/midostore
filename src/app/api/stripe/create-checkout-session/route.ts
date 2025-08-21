@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
-
 interface UserSession {
   user_id: string
   email: string
@@ -18,6 +16,9 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       )
     }
+
+    // Initialize Stripe only when needed
+    const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
 
     // Check authentication
     const cookieStore = await cookies()
