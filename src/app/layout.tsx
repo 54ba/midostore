@@ -43,12 +43,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </LocalizationProvider>
 
       {/* SimpleAnalytics Tracker */}
-      <SimpleAnalyticsTracker
-        domain={process.env.NEXT_PUBLIC_SIMPLEANALYTICS_DOMAIN}
-        autoTrack={true}
-        respectDnt={true}
-        customEvents={true}
-      />
+      <Suspense fallback={null}>
+        <SimpleAnalyticsTracker
+          domain={process.env.NEXT_PUBLIC_SIMPLEANALYTICS_DOMAIN}
+          autoTrack={true}
+          respectDnt={true}
+          customEvents={true}
+        />
+      </Suspense>
 
       <Script id="edit-config" strategy="beforeInteractive" dangerouslySetInnerHTML={{
         __html: `

@@ -1,7 +1,7 @@
 import { AnalyticsService, AnalyticsData } from './analytics-service';
 import { SimpleAnalyticsService, EnhancedAnalyticsData, SimpleAnalyticsData } from './simpleanalytics-service';
 import { Parser } from 'json2csv';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from './db';
 
 // Extend the AnalyticsData interface to include cross-platform insights
 interface ExtendedAnalyticsData extends AnalyticsData {
@@ -19,10 +19,10 @@ interface ExtendedAnalyticsData extends AnalyticsData {
 export class EnhancedAnalyticsService {
     private analyticsService: AnalyticsService;
     private simpleAnalyticsService: SimpleAnalyticsService;
-    private prisma: PrismaClient;
+    private prisma: any;
 
-    constructor(prisma?: PrismaClient) {
-        this.prisma = prisma || new PrismaClient();
+    constructor(prisma?: any) {
+        this.prisma = prisma || prisma;
         this.analyticsService = new AnalyticsService(this.prisma);
         this.simpleAnalyticsService = new SimpleAnalyticsService();
     }

@@ -10,6 +10,8 @@ class MockPrismaClient {
     supplier: any;
     userInteraction: any;
     user: any;
+    order: any;
+    review: any;
 
     constructor(options?: any) {
         this.log = options?.log || [];
@@ -44,6 +46,15 @@ class MockPrismaClient {
         };
         this.user = {
             findMany: async (options: any) => [],
+            count: async (options: any) => 0,
+        };
+        this.order = {
+            findMany: async (options: any) => [],
+            count: async (options: any) => 0,
+        };
+        this.review = {
+            findMany: async (options: any) => [],
+            count: async (options: any) => 0,
         };
     }
 }
