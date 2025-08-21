@@ -227,13 +227,13 @@ export class Web3Service {
                 this.tokenContract.balanceOf(address)
             ]);
 
-            return {
-                name,
-                symbol,
-                decimals,
-                totalSupply: ethers.utils.formatUnits(totalSupply, decimals),
-                balance: ethers.utils.formatUnits(balance, decimals)
-            };
+                    return {
+            name,
+            symbol,
+            decimals,
+            totalSupply: ethers.formatUnits(totalSupply, decimals),
+            balance: ethers.formatUnits(balance, decimals)
+        };
         } catch (error) {
             console.error('Failed to get token info:', error);
             return null;
@@ -246,7 +246,7 @@ export class Web3Service {
             if (!this.tokenContract || !this.signer) return false;
 
             const decimals = await this.tokenContract.decimals();
-            const amountWei = ethers.utils.parseUnits(amount, decimals);
+            const amountWei = ethers.parseUnits(amount, decimals);
 
             const tx = await this.tokenContract.transfer(to, amountWei);
             await tx.wait();
@@ -271,10 +271,10 @@ export class Web3Service {
             ]);
 
             return {
-                totalRewards: ethers.utils.formatEther(totalRewards),
-                claimableRewards: ethers.utils.formatEther(claimableRewards),
+                totalRewards: ethers.formatEther(totalRewards),
+                claimableRewards: ethers.formatEther(claimableRewards),
                 rewardHistory: rewardHistory.map((reward: any) => ({
-                    amount: ethers.utils.formatEther(reward.amount),
+                    amount: ethers.formatEther(reward.amount),
                     timestamp: reward.timestamp.toNumber()
                 }))
             };
@@ -305,7 +305,7 @@ export class Web3Service {
         try {
             if (!this.p2pMarketplaceContract || !this.signer) return false;
 
-            const priceWei = ethers.utils.parseEther(price);
+            const priceWei = ethers.parseEther(price);
             const tx = await this.p2pMarketplaceContract.createListing(productId, priceWei, quantity);
             await tx.wait();
 
@@ -391,7 +391,7 @@ export class Web3Service {
     // Verify message signature
     verifyMessage(message: string, signature: string, address: string): boolean {
         try {
-            const recoveredAddress = ethers.utils.verifyMessage(message, signature);
+            const recoveredAddress = ethers.verifyMessage(message, signature);
             return recoveredAddress.toLowerCase() === address.toLowerCase();
         } catch (error) {
             console.error('Failed to verify message:', error);

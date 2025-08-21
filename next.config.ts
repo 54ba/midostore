@@ -4,8 +4,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
     /* config options here */
 
-    // Disable telemetry to prevent mkdir errors
-    telemetry: false,
+
 
     // Set the output file tracing root to silence workspace root warning
     outputFileTracingRoot: __dirname,

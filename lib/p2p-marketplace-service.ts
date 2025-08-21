@@ -268,7 +268,7 @@ export class P2PMarketplaceService {
         try {
             // In a real implementation, this would deploy or interact with a smart contract
             const escrowAddress = ethers.Wallet.createRandom().address; // Mock address
-            const transactionHash = ethers.utils.randomBytes(32).toString('hex'); // Mock hash
+            const transactionHash = ethers.randomBytes(32).toString('hex'); // Mock hash
 
             const escrow = await prisma.p2PEscrow.create({
                 data: {

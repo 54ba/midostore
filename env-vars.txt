@@ -9,13 +9,8 @@ NPM_VERSION=9
 NEXT_PUBLIC_APP_URL=https://midostore.netlify.app
 NEXT_TELEMETRY_DISABLED=1
 
-# Clerk Authentication Configuration
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key_here
-CLERK_SECRET_KEY=your_clerk_secret_key_here
-NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
-NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
-NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard
-NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/dashboard
+# Authentication Configuration
+# SimpleAuth is used for authentication (no external dependencies)
 
 # Netlify Analytics and Debug
 BASELINE_ANALYTICS=true

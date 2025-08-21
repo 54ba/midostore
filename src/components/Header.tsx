@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/app/contexts/AuthContext';
+import { useSimpleAuth } from '@/app/contexts/SimpleAuthContext';
 import { useCart } from '@/app/contexts/CartContext';
 import {
   ShoppingBag,
@@ -12,12 +12,13 @@ import {
   Menu,
   X
 } from 'lucide-react';
-import AuthNavigation from './AuthNavigation';
 import ThemeToggle from './ThemeToggle';
+import LocalizationSelector from './LocalizationSelector';
+import SimpleUserProfile from './SimpleUserProfile';
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useSimpleAuth();
   const { items: cartItems } = useCart();
   const router = useRouter();
 
@@ -63,6 +64,9 @@ export default function Header() {
 
           {/* Right side items */}
           <div className="flex items-center space-x-4">
+            {/* Localization Selector */}
+            <LocalizationSelector />
+
             {/* Theme Toggle */}
             <ThemeToggle />
 
@@ -79,8 +83,8 @@ export default function Header() {
               )}
             </Link>
 
-            {/* Auth Navigation */}
-            <AuthNavigation />
+            {/* Simple User Profile */}
+            <SimpleUserProfile />
 
             {/* Mobile menu button */}
             <button
@@ -121,6 +125,11 @@ export default function Header() {
               >
                 Contact
               </Link>
+
+              {/* Mobile Localization */}
+              <div className="px-3 py-2">
+                <LocalizationSelector />
+              </div>
             </div>
           </div>
         )}

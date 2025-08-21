@@ -15,6 +15,7 @@ class MockPrismaClient {
     trendData: any;
     gulfCountry: any;
     productVariant: any;
+    feature: any;
 
     // Add required PrismaClient methods
     $on: any;
@@ -62,7 +63,18 @@ class MockPrismaClient {
         };
         this.product = {
             create: async (data: any) => ({ id: 'mock-product-id', ...data.data }),
-            findMany: async (options: any) => [],
+            findMany: async (options: any) => [
+                {
+                    id: 'mock-product-1',
+                    title: 'Wireless Headphones Pro',
+                    updatedAt: new Date()
+                },
+                {
+                    id: 'mock-product-2',
+                    title: 'Smart Fitness Watch',
+                    updatedAt: new Date()
+                }
+            ],
             findUnique: async (options: any) => null,
             findFirst: async (options: any) => null,
             update: async (data: any) => ({ id: data.where.id, ...data.data }),
@@ -154,10 +166,50 @@ class MockPrismaClient {
             update: async (data: any) => ({ id: data.where.id, ...data.data }),
             delete: async (options: any) => ({ id: options.where.id }),
             count: async (options: any) => 0,
+            groupBy: async (options: any) => {
+                // Mock groupBy response for analytics
+                return [
+                    {
+                        productId: 'mock-product-1',
+                        _sum: { quantity: 10, price: 299.99 },
+                        _count: { _all: 5 }
+                    },
+                    {
+                        productId: 'mock-product-2',
+                        _sum: { quantity: 8, price: 199.99 },
+                        _count: { _all: 3 }
+                    }
+                ];
+            },
             upsert: async (data: any) => ({ id: data.where?.id || 'mock-order-item-id', ...data.create }),
         };
         this.review = {
-            findMany: async (options: any) => [],
+            findMany: async (options: any) => {
+                // Handle include option for mock data
+                if (options?.include?.product) {
+                    return [
+                        {
+                            id: 'mock-review-1',
+                            product: {
+                                id: 'mock-product-1',
+                                title: 'Wireless Headphones Pro',
+                                updatedAt: new Date()
+                            },
+                            createdAt: new Date()
+                        },
+                        {
+                            id: 'mock-review-2',
+                            product: {
+                                id: 'mock-product-2',
+                                title: 'Smart Fitness Watch',
+                                updatedAt: new Date()
+                            },
+                            createdAt: new Date()
+                        }
+                    ];
+                }
+                return [];
+            },
             findFirst: async (options: any) => null,
             findUnique: async (options: any) => null,
             create: async (data: any) => ({ id: 'mock-review-id', ...data.data }),
@@ -166,7 +218,7 @@ class MockPrismaClient {
             delete: async (options: any) => ({ id: options.where.id }),
             count: async (options: any) => 0,
             createMany: async (data: any) => ({ count: data.data.length }),
-            upsert: async (data: any) => ({ id: data.where?.id || 'mock-review-id', ...data.create }),
+            upsert: async (options: any) => ({ id: options.where?.id || 'mock-review-id', ...options.create }),
         };
         this.trendData = {
             upsert: async (data: any) => ({ id: data.where?.id || 'mock-trend-id', ...data.create }),

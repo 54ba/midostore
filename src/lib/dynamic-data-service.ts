@@ -1,7 +1,5 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/db';
 import { useThemeStyles } from '@/hooks/useThemeStyles';
-
-const prisma = new PrismaClient();
 
 export interface DynamicProduct {
     id: string;

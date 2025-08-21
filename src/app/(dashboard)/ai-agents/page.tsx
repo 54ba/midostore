@@ -1,12 +1,12 @@
 "use client";
 
 import React from 'react';
-import { useAuth } from '@/app/contexts/AuthContext';
+import { useSimpleAuth } from '@/app/contexts/SimpleAuthContext';
 import AIAgentDashboard from '@/components/AIAgentDashboard';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function AIAgentsPage() {
-    const { user, loading } = useAuth();
+    const { user, loading } = useSimpleAuth();
 
     if (loading) {
         return (

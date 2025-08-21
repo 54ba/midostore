@@ -1,51 +1,16 @@
 "use client";
 
-import { useAuth } from '@/app/contexts/AuthContext';
+import { useSimpleAuth } from '@/app/contexts/SimpleAuthContext';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
 
 export default function AuthNavigation() {
-    const { user, isClerkUser, logout } = useAuth();
-    const [isClerkAvailable, setIsClerkAvailable] = useState(false);
-    const [clerkComponents, setClerkComponents] = useState<any>({});
+    const { user, signOut } = useSimpleAuth();
 
-    // Check if Clerk is available and load components
-    useEffect(() => {
-        const checkClerk = async () => {
-            // Check if Clerk is properly configured
-            const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
-            const frontendApi = process.env.NEXT_PUBLIC_CLERK_FRONTEND_API;
-
-            const isClerkConfigured = (publishableKey || frontendApi) &&
-                publishableKey !== 'your_clerk_publishable_key_here' &&
-                publishableKey !== 'pk_test_your_clerk_publishable_key_here' &&
-                publishableKey !== 'pk_test_your_actual_publishable_key_here' &&
-                frontendApi !== 'https://handy-cow-68.clerk.accounts.dev';
-
-            if (isClerkConfigured) {
-                try {
-                    const { UserButton, SignInButton, SignUpButton } = await import('@clerk/nextjs');
-                    setClerkComponents({ UserButton, SignInButton, SignUpButton });
-                    setIsClerkAvailable(true);
-                } catch (error) {
-                    console.error('Failed to load Clerk components:', error);
-                    setIsClerkAvailable(false);
-                }
-            } else {
-                setIsClerkAvailable(false);
-            }
-        };
-
-        checkClerk();
-    }, []);
-
-    const { UserButton, SignInButton, SignUpButton } = clerkComponents;
-
-    const handleLogout = async () => {
+    const handleSignOut = async () => {
         try {
-            await logout();
+            signOut();
         } catch (error) {
-            console.error('Error during logout:', error);
+            console.error('Error during sign out:', error);
         }
     };
 
@@ -55,56 +20,32 @@ export default function AuthNavigation() {
             {user ? (
                 <div className="flex items-center space-x-2">
                     <span className="text-xs text-gray-700 hidden sm:block">
-                        Welcome, {user.full_name}
+                        Welcome, {user.username}
                     </span>
-                    {isClerkUser && isClerkAvailable && UserButton ? (
-                        <UserButton
-                            appearance={{
-                                elements: {
-                                    userButtonAvatarBox: 'w-6 h-6',
-                                }
-                            }}
-                        />
-                    ) : (
-                        <button
-                            onClick={handleLogout}
-                            className="text-gray-700 hover:text-gray-900 px-2 py-1 rounded-md text-xs font-medium"
-                        >
-                            Logout
-                        </button>
-                    )}
+                    <Link
+                        href="/dashboard/user-profile"
+                        className="text-gray-700 hover:text-gray-900 px-2 py-1 rounded-md text-xs font-medium"
+                    >
+                        Profile
+                    </Link>
+                    <button
+                        onClick={handleSignOut}
+                        className="text-gray-700 hover:text-gray-900 px-2 py-1 rounded-md text-xs font-medium"
+                    >
+                        Sign Out
+                    </button>
                 </div>
             ) : (
                 <div className="flex items-center space-x-1">
-                    {isClerkAvailable && SignInButton ? (
-                        <SignInButton mode="modal">
-                            <button className="text-gray-700 hover:text-gray-900 px-2 py-1 rounded-md text-xs font-medium">
-                                Sign In
-                            </button>
-                        </SignInButton>
-                    ) : (
-                        <Link
-                            href={isClerkUser ? "/sign-in" : "/dashboard"}
-                            className="text-gray-700 hover:text-gray-900 px-2 py-1 rounded-md text-xs font-medium"
-                        >
-                            {isClerkUser ? "Sign In" : "Dashboard"}
-                        </Link>
-                    )}
-
-                    {isClerkAvailable && SignUpButton ? (
-                        <SignUpButton mode="modal">
-                            <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-xs font-medium">
-                                Sign Up
-                            </button>
-                        </SignUpButton>
-                    ) : (
-                        <Link
-                            href={isClerkUser ? "/sign-up" : "/dashboard"}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md text-xs font-medium"
-                        >
-                            {isClerkUser ? "Sign Up" : "Get Started"}
-                        </Link>
-                    )}
+                    <Link
+                        href="/dashboard"
+                        className="text-gray-700 hover:text-gray-900 px-2 py-1 rounded-md text-xs font-medium"
+                    >
+                        Dashboard
+                    </Link>
+                    <span className="text-xs text-gray-500">
+                        (Guest Mode)
+                    </span>
                 </div>
             )}
         </div>

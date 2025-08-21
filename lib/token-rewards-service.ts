@@ -381,7 +381,7 @@ export class TokenRewardsService {
             console.log(`Minting ${amount} tokens to ${userAddress}`);
 
             // Simulate blockchain transaction
-            const transactionHash = ethers.utils.randomBytes(32).toString('hex');
+            const transactionHash = ethers.randomBytes(32).toString('hex');
 
             return true;
         } catch (error) {

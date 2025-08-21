@@ -1,108 +1,90 @@
-import type { Metadata, Viewport } from 'next'
-import './globals.css'
-import Script from 'next/script'
-import { Suspense } from 'react'
-import NavigationLogger from '@/components/NavigationLogger'
-import { AuthProvider } from '@/app/contexts/AuthContext'
-import { CartProvider } from '@/app/contexts/CartContext'
-import LiveSalesTicker from '@/components/LiveSalesTicker'
 import { LocalizationProvider } from '@/app/contexts/LocalizationContext'
 import { ThemeProvider } from '@/app/contexts/ThemeContext'
-import ClerkProviderWrapper from '@/components/ClerkProviderWrapper'
-import ClerkAuthWrapper from '@/components/ClerkAuthWrapper'
-import SimpleAnalyticsTracker from '@/components/SimpleAnalyticsTracker'
+import { SimpleAuthProvider } from '@/app/contexts/SimpleAuthContext'
+import { CartProvider } from '@/app/contexts/CartContext'
 
-export const viewport: Viewport = {
-  width: 'device-width',
-  initialScale: 1,
-}
+import { LocalizationProvider as LocalizationProviderType } from '@/app/contexts/LocalizationContext'
+import { ThemeProvider as ThemeProviderType } from '@/app/contexts/ThemeContext'
+import { SimpleAuthProvider as SimpleAuthProviderType } from '@/app/contexts/SimpleAuthContext'
+import { CartProvider as CartProviderType } from '@/app/contexts/CartContext'
+import LiveSalesTicker from '@/components/LiveSalesTicker'
+import SimpleAnalyticsTracker from '@/components/SimpleAnalyticsTracker'
+import type { Metadata } from 'next'
+import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'MidoHub - Premium Dropshipping Platform',
-  description: 'Connect to affordable toys and cosmetics from Alibaba with MidoHub. Your trusted dropshipping partner in the Gulf region.',
-  keywords: 'dropshipping, toys, cosmetics, alibaba, gulf, middleeast, affordable products',
-  authors: [{ name: 'MidoHub' }],
-  robots: 'index, follow',
+  title: 'MidoHub - Your Trusted Dropshipping Partner in the Gulf Region',
+  description: 'Discover amazing products from Alibaba and AliExpress with AI-powered recommendations, real-time analytics, and comprehensive business intelligence.',
+  keywords: 'dropshipping, alibaba, aliexpress, gulf region, UAE, Saudi Arabia, Kuwait, Qatar, Bahrain, Oman, AI recommendations, business analytics',
+  authors: [{ name: 'MidoHub Team' }],
+  creator: 'MidoHub',
+  publisher: 'MidoHub',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL('https://midohub.com'),
   openGraph: {
-    title: 'MidoHub - Premium Dropshipping Platform',
-    description: 'Connect to affordable toys and cosmetics from Alibaba with MidoHub',
+    title: 'MidoHub - Your Trusted Dropshipping Partner',
+    description: 'AI-powered dropshipping platform for the Gulf region',
+    url: 'https://midohub.com',
+    siteName: 'MidoHub',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'MidoHub Platform',
+      },
+    ],
+    locale: 'en_AE',
     type: 'website',
-    locale: 'en_US',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'MidoHub - Your Trusted Dropshipping Partner',
+    description: 'AI-powered dropshipping platform for the Gulf region',
+    images: ['/og-image.jpg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: 'your-google-verification-code',
+    yandex: 'your-yandex-verification-code',
+    yahoo: 'your-yahoo-verification-code',
   },
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  // Check if Clerk is properly configured
-  const isClerkConfigured = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY &&
-    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY !== 'your_clerk_publishable_key_here' &&
-    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY !== 'pk_test_your_clerk_publishable_key_here' &&
-    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY !== 'pk_test_your_actual_publishable_key_here';
-
-  const content = (
-    <>
-      <Suspense fallback={null}>
-        <NavigationLogger />
-      </Suspense>
-
-      {/* Live Sales Ticker */}
-      <Suspense fallback={null}>
-        <LiveSalesTicker />
-      </Suspense>
-
-      <ThemeProvider>
-        <LocalizationProvider>
-          <AuthProvider>
-            <CartProvider>
-              {isClerkConfigured ? (
-                <ClerkAuthWrapper>
-                  {children}
-                </ClerkAuthWrapper>
-              ) : (
-                // Keyless mode - render children directly
-                children
-              )}
-            </CartProvider>
-          </AuthProvider>
-        </LocalizationProvider>
-      </ThemeProvider>
-
-      {/* SimpleAnalytics Tracker */}
-      <Suspense fallback={null}>
-        <SimpleAnalyticsTracker
-          domain={process.env.NEXT_PUBLIC_SIMPLEANALYTICS_DOMAIN}
-          autoTrack={true}
-          respectDnt={true}
-          customEvents={true}
-        />
-      </Suspense>
-
-      {/* Removed Edit Elements Service scripts */}
-      {/*
-      <Script id="edit-config" strategy="beforeInteractive" dangerouslySetInnerHTML={{
-        __html: `
-        window.APP_ID = "f0d77951-6589-4855-889a-e574b12631d5";
-        window.EDIT_CALLBACK_URL = "/api/edit-webhook";
-        window.EDIT_TOKEN = "4bd1e072-750b-43b6-a116-3f94dc658e65:1755685474917";
-        window.TASK_UUID = "f0d77951-6589-4855-889a-e574b12631d5";
-        window.EDIT_BASE_URL = "https://api.internal.tasker.ai";
-      `,
-      }} />
-      <Script src="https://cdn.tasker.ai/EditModeLoader.js" strategy="afterInteractive" />
-      */}
-    </>
-  )
-
   return (
     <html lang="en" className="h-full">
       <body className="h-full font-sans">
-        {isClerkConfigured ? (
-          <ClerkProviderWrapper>
-            {content}
-          </ClerkProviderWrapper>
-        ) : (
-          // Keyless mode - render content directly
-          content
-        )}
+        <ThemeProvider>
+          <SimpleAuthProvider>
+            <LocalizationProvider>
+              <CartProvider>
+                {/* Live Sales Ticker */}
+                <LiveSalesTicker />
+
+                {/* Main Content */}
+                {children}
+
+                {/* Analytics Tracker */}
+                <SimpleAnalyticsTracker />
+              </CartProvider>
+            </LocalizationProvider>
+          </SimpleAuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   )
