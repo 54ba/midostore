@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '@/app/contexts/AuthContext'
+import { useAuthBridge } from '@/app/contexts/AuthContext'
 import ProfileForm from '@/components/ProfileForm'
 import LoadingSpinner from '@/components/LoadingSpinner'
 import Button from '@/components/Button'
@@ -22,7 +22,7 @@ interface UpdateUserData {
 }
 
 export default function ProfilePage() {
-  const { user: authUser, loading: authLoading } = useAuth()
+  const { user: authUser, loading: authLoading } = useAuthBridge()
   const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)

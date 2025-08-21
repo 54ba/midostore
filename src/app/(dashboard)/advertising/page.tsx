@@ -1,12 +1,12 @@
 "use client";
 
 import React from 'react';
-import { useAuth } from '@/app/contexts/AuthContext';
+import { useAuthBridge } from '@/app/contexts/AuthContext';
 import AdvertisingDashboard from '@/components/AdvertisingDashboard';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function AdvertisingPage() {
-  const { user, loading } = useAuth();
+  const { user, loading } = useAuthBridge();
 
   if (loading) {
     return (
@@ -131,4 +131,4 @@ export default function AdvertisingPage() {
 }
 
 // Import CheckCircle icon
-import { CheckCircle , Database, Flame, Target, TrendingUp, Zap, AlertCircle} from 'lucide-react';
+import { CheckCircle, Database, Flame, Target, TrendingUp, Zap, AlertCircle } from 'lucide-react';

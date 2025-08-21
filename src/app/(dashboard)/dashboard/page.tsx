@@ -1,13 +1,13 @@
 "use client";
 
 import React from 'react';
-import { useAuth } from '@/app/contexts/AuthContext';
+import { useAuthBridge } from '@/app/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import Button from '@/components/Button';
 import { ShoppingCart, Package, TrendingUp, User, Settings } from 'lucide-react';
 
 export default function DashboardPage() {
-  const { user, loading } = useAuth();
+  const { user, loading } = useAuthBridge();
   const router = useRouter();
 
   if (loading) {

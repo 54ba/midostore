@@ -31,7 +31,10 @@ export default function Header({ id }: { id?: string } = {}) {
     return () => clearTimeout(timer);
   }, []);
 
-  const cartItemCount = cartItems?.reduce((total, item) => total + item.quantity, 0) || 0;
+  // Safe cart item count calculation with null checks
+  const cartItemCount = cartItems && Array.isArray(cartItems)
+    ? cartItems.reduce((total, item) => total + (item?.quantity || 0), 0)
+    : 0;
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);

@@ -1,8 +1,8 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/app/contexts/AuthContext';
+import { useAuthBridge } from '@/app/contexts/AuthContext';
 import { useCart } from '@/app/contexts/CartContext';
 import Header from '@/components/Header';
 import CartItem from '@/components/CartItem';
@@ -11,7 +11,7 @@ import Button from '@/components/Button';
 import { ShoppingCart, ArrowLeft, CreditCard } from 'lucide-react';
 
 export default function CartPage() {
-  const { user } = useAuth();
+  const { user } = useAuthBridge();
   const { cartItems, cartTotal, updateQuantity, removeFromCart, clearCart } = useCart();
   const router = useRouter();
 

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '@/app/contexts/AuthContext'
+import { useAuthBridge } from '@/app/contexts/AuthContext'
 import OrderConfirmationCard from '@/components/OrderConfirmationCard'
 import LoadingSpinner from '@/components/LoadingSpinner'
 
@@ -26,7 +26,7 @@ interface Payment {
 
 export default function OrderConfirmationPage() {
   const router = useRouter()
-  const { user, loading: authLoading } = useAuth()
+  const { user, loading: authLoading } = useAuthBridge()
   const [order, setOrder] = useState<Order | null>(null)
   const [payment, setPayment] = useState<Payment | null>(null)
   const [loading, setLoading] = useState(true)

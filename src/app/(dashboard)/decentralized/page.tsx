@@ -1,12 +1,12 @@
 "use client";
 
 import React from 'react';
-import { useAuth } from '@/app/contexts/AuthContext';
+import { useAuthBridge } from '@/app/contexts/AuthContext';
 import DecentralizedDashboard from '@/components/DecentralizedDashboard';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function DecentralizedPage() {
-    const { user, loading } = useAuth();
+    const { user, loading } = useAuthBridge();
 
     if (loading) {
         return (

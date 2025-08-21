@@ -2,13 +2,13 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '@/app/contexts/AuthContext';
+import { useAuthBridge } from '@/app/contexts/AuthContext';
 import ManagerDashboard from '@/components/ManagerDashboard';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { useRouter } from 'next/navigation';
 
 export default function ManagerPage() {
-    const { user, loading } = useAuth();
+    const { user, loading } = useAuthBridge();
     const router = useRouter();
     const [isManager, setIsManager] = useState(false);
     const [checkingRole, setCheckingRole] = useState(true);

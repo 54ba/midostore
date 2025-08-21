@@ -1,13 +1,13 @@
 "use client";
 
 import React from 'react';
-import { useAuth } from '@/app/contexts/AuthContext';
+import { useAuthBridge } from '@/app/contexts/AuthContext';
 import EnhancedDashboard from '@/components/EnhancedDashboard';
 import MarketingDashboard from '@/components/MarketingDashboard';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function EnhancedDashboardPage() {
-    const { user, loading } = useAuth();
+    const { user, loading } = useAuthBridge();
 
     if (loading) {
         return (

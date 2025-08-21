@@ -1,13 +1,14 @@
 'use client'
 
-import { useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation'
-import { useAuth } from '@/app/contexts/AuthContext'
-import LoadingSpinner from '@/components/LoadingSpinner'
+import { useAuthBridge } from '@/app/contexts/AuthContext'
+import CheckoutForm from '@/components/CheckoutForm';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function CheckoutPage() {
   const router = useRouter()
-  const { user, loading } = useAuth()
+  const { user, loading } = useAuthBridge()
 
   // Immediately redirect if not authenticated
   useEffect(() => {

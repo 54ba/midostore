@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/app/contexts/AuthContext';
+import { useAuthBridge } from '@/app/contexts/AuthContext';
 import envConfig from '../../../../env.config';
 import {
     Search,
@@ -19,7 +19,8 @@ import {
     Clock,
     Eye,
     Trash2
-, Database, Flame, Target, TrendingUp, Zap, AlertCircle} from 'lucide-react';
+    , Database, Flame, Target, TrendingUp, Zap, AlertCircle
+} from 'lucide-react';
 
 interface ScrapingJob {
     id: string;

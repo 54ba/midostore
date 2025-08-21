@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '@/app/contexts/AuthContext'
+import { useAuthBridge } from '@/app/contexts/AuthContext'
 import OrderHistoryTable from '@/components/OrderHistoryTable'
 import LoadingSpinner from '@/components/LoadingSpinner'
 
@@ -39,7 +39,7 @@ interface PaymentStatus {
 }
 
 export default function OrderHistoryPage() {
-  const { user, loading: authLoading } = useAuth()
+  const { user, loading: authLoading } = useAuthBridge()
   const router = useRouter()
   const [orders, setOrders] = useState<OrderWithPayment[]>([])
   const [payments, setPayments] = useState<PaymentStatus[]>([])
