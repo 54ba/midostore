@@ -19,7 +19,7 @@ const tokenRewardsService = new TokenRewardsService(web3Service);
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
-        const action = searchParams.get('action');
+        const action = searchParams.get('action') || 'reward-tiers';
         const userId = searchParams.get('userId');
 
         switch (action) {

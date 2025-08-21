@@ -68,30 +68,49 @@ export function SimpleAuthProvider({ children }: { children: React.ReactNode }) 
     // Initialize user from local storage
     useEffect(() => {
         const initializeUser = () => {
+            console.log('SimpleAuth: Initializing user...');
             try {
+                // Ensure we're on the client side
+                if (typeof window === 'undefined') {
+                    console.log('SimpleAuth: Window undefined, setting loading false');
+                    setLoading(false);
+                    return;
+                }
+
+                console.log('SimpleAuth: Window available, checking localStorage');
                 // Try to load existing user
                 const storedUser = localStorage.getItem(STORAGE_KEYS.USER);
                 if (storedUser) {
+                    console.log('SimpleAuth: Found stored user, parsing...');
                     const parsedUser = JSON.parse(storedUser);
                     // Update last seen
                     parsedUser.lastSeen = new Date();
                     setUser(parsedUser);
+                    console.log('SimpleAuth: Stored user loaded:', parsedUser.username);
                 } else {
+                    console.log('SimpleAuth: No stored user, creating guest...');
                     // Create or load guest user
                     const guestUser = getOrCreateGuest();
                     setUser(guestUser);
+                    console.log('SimpleAuth: Guest user created:', guestUser.username);
                 }
             } catch (error) {
-                console.error('Error initializing user:', error);
+                console.error('SimpleAuth: Error initializing user:', error);
                 // Fallback to guest user
-                const guestUser = getOrCreateGuest();
-                setUser(guestUser);
+                if (typeof window !== 'undefined') {
+                    console.log('SimpleAuth: Creating fallback guest user...');
+                    const guestUser = getOrCreateGuest();
+                    setUser(guestUser);
+                }
             } finally {
+                console.log('SimpleAuth: Setting loading to false');
                 setLoading(false);
             }
         };
 
-        initializeUser();
+        // Small delay to ensure hydration is complete
+        const timer = setTimeout(initializeUser, 500);
+        return () => clearTimeout(timer);
     }, []);
 
     // Save user to local storage whenever it changes
@@ -108,6 +127,29 @@ export function SimpleAuthProvider({ children }: { children: React.ReactNode }) 
     // Get or create a guest user
     const getOrCreateGuest = (): SimpleUser => {
         try {
+            // Ensure we're on the client side
+            if (typeof window === 'undefined') {
+                return {
+                    id: generateVisitorId(),
+                    username: 'Guest',
+                    isGuest: true,
+                    createdAt: new Date(),
+                    lastSeen: new Date(),
+                    preferences: {
+                        language: 'en-AE',
+                        currency: 'AED',
+                        theme: 'system',
+                        notifications: false
+                    },
+                    sessionData: {
+                        cartItems: [],
+                        wishlist: [],
+                        recentlyViewed: [],
+                        searchHistory: []
+                    }
+                };
+            }
+
             // Try to load existing guest ID
             let guestId = localStorage.getItem(STORAGE_KEYS.GUEST_ID);
 

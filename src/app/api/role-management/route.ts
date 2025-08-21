@@ -15,7 +15,7 @@ function getRoleManager(): RoleManagementService {
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
-        const action = searchParams.get('action');
+        const action = searchParams.get('action') || 'all-roles';
         const userId = searchParams.get('userId');
 
         const roleManager = getRoleManager();

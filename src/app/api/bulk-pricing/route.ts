@@ -6,7 +6,7 @@ const bulkPricingService = new BulkPricingService();
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
-        const action = searchParams.get('action');
+        const action = searchParams.get('action') || 'active-pricing';
         const productId = searchParams.get('productId');
         const limit = parseInt(searchParams.get('limit') || '10');
 

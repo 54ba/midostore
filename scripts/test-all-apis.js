@@ -1,146 +1,353 @@
 #!/usr/bin/env node
 
-/**
- * Test All API Endpoints
- * This script tests all available API endpoints to ensure they're working correctly
- */
+const http = require('http');
+const https = require('https');
 
 const BASE_URL = 'http://localhost:3000';
 
+// All API endpoints to test
 const API_ENDPOINTS = [
     // Core Product APIs
-    { path: '/api/products', method: 'GET', description: 'Get products' },
-    { path: '/api/products?category=electronics', method: 'GET', description: 'Get products by category' },
-    { path: '/api/products?search=headphones', method: 'GET', description: 'Search products' },
-
-    // Analytics APIs
-    { path: '/api/analytics?action=live-sales&limit=5', method: 'GET', description: 'Live sales data' },
-    { path: '/api/analytics?action=price-updates&limit=5', method: 'GET', description: 'Price updates' },
-    { path: '/api/analytics?action=inventory-updates&limit=5', method: 'GET', description: 'Inventory updates' },
-
-    // Localization APIs
-    { path: '/api/localization?action=price-updates&limit=5', method: 'GET', description: 'Localization price updates' },
-    { path: '/api/exchange-rates', method: 'GET', description: 'Exchange rates' },
-
-    // Recommendation APIs
-    { path: '/api/recommendations?type=popular&category=electronics&nItems=4', method: 'GET', description: 'Product recommendations' },
+    '/api/products',
+    '/api/recommendations',
+    '/api/reviews',
 
     // User and Order APIs
-    { path: '/api/users', method: 'GET', description: 'Users endpoint' },
-    { path: '/api/orders', method: 'GET', description: 'Orders endpoint' },
+    '/api/users',
+    '/api/orders',
+    '/api/payments',
+
+    // Authentication and Payment
+    '/api/stripe/create-checkout-session',
+
+    // Analytics and AI
+    '/api/analytics/overview',
+    '/api/analytics/enhanced',
+    '/api/analytics/live-sales',
+    '/api/ai-orchestrator',
+    '/api/ai-agent-supervisor',
+    '/api/role-management',
+
+    // Localization and Currency
+    '/api/localization',
+    '/api/exchange-rates',
+    '/api/exchange-rates/update',
+
+    // E-commerce Features
+    '/api/bulk-pricing',
+    '/api/advertising',
+    '/api/sharing',
+
+    // Crypto and Web3
+    '/api/crypto',
+    '/api/web3',
+    '/api/p2p-marketplace',
+    '/api/token-rewards',
+
+    // Shipping and Logistics
+    '/api/shipping',
+
+    // Social and Marketing
+    '/api/social-trends/analyze',
 
     // Utility APIs
-    { path: '/api/placeholder/400/300?text=Test', method: 'GET', description: 'Placeholder image' },
-
-    // Dashboard Routes
-    { path: '/dashboard', method: 'GET', description: 'Dashboard page' },
-    { path: '/dashboard/products', method: 'GET', description: 'Products page' },
-    { path: '/dashboard/cart', method: 'GET', description: 'Cart page' },
-    { path: '/dashboard/checkout', method: 'GET', description: 'Checkout page' },
-
-    // Authentication Routes
-    { path: '/sign-in', method: 'GET', description: 'Sign-in page' },
-    { path: '/sign-up', method: 'GET', description: 'Sign-up page' }
+    '/api/placeholder/40/40?text=Test',
+    '/api/features'
 ];
 
-async function testEndpoint(endpoint) {
-    try {
-        const startTime = Date.now();
-        const response = await fetch(`${BASE_URL}${endpoint.path}`, {
-            method: endpoint.method,
+// Test results storage
+const testResults = {
+    passed: [],
+    failed: [],
+    errors: []
+};
+
+// Helper function to make HTTP requests
+function makeRequest(url, method = 'GET', data = null) {
+    return new Promise((resolve, reject) => {
+        const urlObj = new URL(url, BASE_URL);
+        const options = {
+            hostname: urlObj.hostname,
+            port: urlObj.port || 3000,
+            path: urlObj.pathname + urlObj.search,
+            method: method,
             headers: {
                 'Content-Type': 'application/json',
+                'User-Agent': 'API-Test-Script/1.0'
             }
-        });
-        const endTime = Date.now();
-        const responseTime = endTime - startTime;
-
-        const status = response.status;
-        const statusText = response.statusText;
-
-        let result = {
-            success: status >= 200 && status < 300,
-            status,
-            statusText,
-            responseTime: `${responseTime}ms`,
-            description: endpoint.description
         };
 
-        // Try to get response body for successful requests
-        if (status >= 200 && status < 300) {
-            try {
-                const text = await response.text();
-                if (text.length > 100) {
-                    result.body = `${text.substring(0, 100)}... (truncated)`;
-                } else {
-                    result.body = text;
+        const req = http.request(options, (res) => {
+            let body = '';
+
+            res.on('data', (chunk) => {
+                body += chunk;
+            });
+
+            res.on('end', () => {
+                try {
+                    const responseData = body ? JSON.parse(body) : {};
+                    resolve({
+                        statusCode: res.statusCode,
+                        headers: res.headers,
+                        data: responseData,
+                        url: url
+                    });
+                } catch (error) {
+                    resolve({
+                        statusCode: res.statusCode,
+                        headers: res.headers,
+                        data: body,
+                        url: url,
+                        parseError: error.message
+                    });
                 }
-            } catch (e) {
-                result.body = 'Could not read response body';
-            }
-        }
-
-        return result;
-    } catch (error) {
-        return {
-            success: false,
-            error: error.message,
-            description: endpoint.description
-        };
-    }
-}
-
-async function testAllEndpoints() {
-    console.log('🚀 Testing All API Endpoints...\n');
-    console.log(`Base URL: ${BASE_URL}\n`);
-
-    const results = [];
-
-    for (const endpoint of API_ENDPOINTS) {
-        console.log(`Testing: ${endpoint.description}`);
-        const result = await testEndpoint(endpoint);
-        results.push(result);
-
-        if (result.success) {
-            console.log(`✅ ${result.status} (${result.responseTime})`);
-        } else {
-            console.log(`❌ ${result.status || 'ERROR'}: ${result.error || result.statusText}`);
-        }
-        console.log('');
-
-        // Small delay between requests
-        await new Promise(resolve => setTimeout(resolve, 100));
-    }
-
-    // Summary
-    console.log('📊 Test Results Summary:');
-    console.log('='.repeat(50));
-
-    const successful = results.filter(r => r.success).length;
-    const failed = results.filter(r => !r.success).length;
-    const total = results.length;
-
-    console.log(`Total Endpoints: ${total}`);
-    console.log(`✅ Successful: ${successful}`);
-    console.log(`❌ Failed: ${failed}`);
-    console.log(`Success Rate: ${((successful / total) * 100).toFixed(1)}%`);
-
-    if (failed > 0) {
-        console.log('\n❌ Failed Endpoints:');
-        results.filter(r => !r.success).forEach(result => {
-            console.log(`  - ${result.description}: ${result.error || result.statusText}`);
+            });
         });
-    }
 
-    console.log('\n✅ Successful Endpoints:');
-    results.filter(r => r.success).forEach(result => {
-        console.log(`  - ${result.description}: ${result.status} (${result.responseTime})`);
+        req.on('error', (error) => {
+            reject({
+                error: error.message,
+                url: url
+            });
+        });
+
+        if (data) {
+            req.write(JSON.stringify(data));
+        }
+
+        req.end();
     });
 }
 
-// Run the tests
-if (require.main === module) {
-    testAllEndpoints().catch(console.error);
+// Test a single endpoint
+async function testEndpoint(endpoint) {
+    console.log(`\n🔍 Testing: ${endpoint}`);
+
+    try {
+        const startTime = Date.now();
+        const response = await makeRequest(endpoint);
+        const responseTime = Date.now() - startTime;
+
+        console.log(`   Status: ${response.statusCode}`);
+        console.log(`   Time: ${responseTime}ms`);
+
+        if (response.statusCode >= 200 && response.statusCode < 300) {
+            console.log(`   ✅ PASSED`);
+            testResults.passed.push({
+                endpoint,
+                statusCode: response.statusCode,
+                responseTime,
+                data: response.data
+            });
+        } else if (response.statusCode >= 400 && response.statusCode < 500) {
+            console.log(`   ⚠️  CLIENT ERROR (${response.statusCode})`);
+            testResults.failed.push({
+                endpoint,
+                statusCode: response.statusCode,
+                responseTime,
+                error: `HTTP ${response.statusCode}`,
+                data: response.data
+            });
+        } else if (response.statusCode >= 500) {
+            console.log(`   ❌ SERVER ERROR (${response.statusCode})`);
+            testResults.failed.push({
+                endpoint,
+                statusCode: response.statusCode,
+                responseTime,
+                error: `HTTP ${response.statusCode}`,
+                data: response.data
+            });
+        }
+
+        // Check for runtime errors in response
+        if (response.data && response.data.error) {
+            console.log(`   🚨 Runtime Error: ${response.data.error}`);
+            testResults.errors.push({
+                endpoint,
+                error: response.data.error,
+                data: response.data
+            });
+        }
+
+        // Check for unexpected data structure
+        if (response.data && typeof response.data === 'object') {
+            if (response.data.success === false && response.data.error) {
+                console.log(`   ⚠️  API Error: ${response.data.error}`);
+            }
+        }
+
+    } catch (error) {
+        console.log(`   ❌ FAILED: ${error.error || error.message}`);
+        testResults.failed.push({
+            endpoint,
+            error: error.error || error.message,
+            data: null
+        });
+    }
 }
 
-module.exports = { testAllEndpoints, API_ENDPOINTS };
+// Test POST endpoints with sample data
+async function testPostEndpoints() {
+    console.log('\n📝 Testing POST endpoints with sample data...');
+
+    const postTests = [
+        {
+            endpoint: '/api/orders',
+            data: {
+                product_id: 'test-product-123',
+                product_name: 'Test Product',
+                quantity: 1,
+                total_amount: 29.99
+            }
+        },
+        {
+            endpoint: '/api/reviews',
+            data: {
+                userId: 'test-user-123',
+                productId: 'test-product-123',
+                rating: 5,
+                comment: 'Test review from API test script'
+            }
+        },
+        {
+            endpoint: '/api/users',
+            data: {
+                email: 'test@example.com',
+                full_name: 'Test User',
+                role: 'customer'
+            }
+        }
+    ];
+
+    for (const test of postTests) {
+        try {
+            console.log(`\n🔍 Testing POST: ${test.endpoint}`);
+            const response = await makeRequest(test.endpoint, 'POST', test.data);
+            console.log(`   Status: ${response.statusCode}`);
+
+            if (response.statusCode >= 200 && response.statusCode < 300) {
+                console.log(`   ✅ POST PASSED`);
+                testResults.passed.push({
+                    endpoint: test.endpoint,
+                    method: 'POST',
+                    statusCode: response.statusCode,
+                    data: response.data
+                });
+            } else {
+                console.log(`   ❌ POST FAILED: ${response.statusCode}`);
+                testResults.failed.push({
+                    endpoint: test.endpoint,
+                    method: 'POST',
+                    statusCode: response.statusCode,
+                    error: `HTTP ${response.statusCode}`,
+                    data: response.data
+                });
+            }
+        } catch (error) {
+            console.log(`   ❌ POST ERROR: ${error.error || error.message}`);
+            testResults.failed.push({
+                endpoint: test.endpoint,
+                method: 'POST',
+                error: error.error || error.message
+            });
+        }
+    }
+}
+
+// Main test execution
+async function runAllTests() {
+    console.log('🚀 Starting comprehensive API endpoint testing...');
+    console.log(`📍 Base URL: ${BASE_URL}`);
+    console.log(`📊 Total endpoints to test: ${API_ENDPOINTS.length}`);
+
+    const startTime = Date.now();
+
+    // Test all GET endpoints
+    for (const endpoint of API_ENDPOINTS) {
+        await testEndpoint(endpoint);
+        // Small delay to avoid overwhelming the server
+        await new Promise(resolve => setTimeout(resolve, 100));
+    }
+
+    // Test POST endpoints
+    await testPostEndpoints();
+
+    const totalTime = Date.now() - startTime;
+
+    // Print summary
+    console.log('\n' + '='.repeat(60));
+    console.log('📊 TEST SUMMARY');
+    console.log('='.repeat(60));
+    console.log(`✅ Passed: ${testResults.passed.length}`);
+    console.log(`❌ Failed: ${testResults.failed.length}`);
+    console.log(`🚨 Runtime Errors: ${testResults.errors.length}`);
+    console.log(`⏱️  Total Time: ${totalTime}ms`);
+
+    if (testResults.failed.length > 0) {
+        console.log('\n❌ FAILED ENDPOINTS:');
+        testResults.failed.forEach(fail => {
+            console.log(`   ${fail.endpoint} - ${fail.error || `HTTP ${fail.statusCode}`}`);
+        });
+    }
+
+    if (testResults.errors.length > 0) {
+        console.log('\n🚨 RUNTIME ERRORS:');
+        testResults.errors.forEach(error => {
+            console.log(`   ${error.endpoint}: ${error.error}`);
+        });
+    }
+
+    if (testResults.passed.length > 0) {
+        console.log('\n✅ SUCCESSFUL ENDPOINTS:');
+        testResults.passed.forEach(pass => {
+            console.log(`   ${pass.endpoint} (${pass.responseTime}ms)`);
+        });
+    }
+
+    console.log('\n' + '='.repeat(60));
+
+    // Exit with appropriate code
+    if (testResults.failed.length === 0 && testResults.errors.length === 0) {
+        console.log('🎉 All tests passed!');
+        process.exit(0);
+    } else {
+        console.log('⚠️  Some tests failed or had runtime errors');
+        process.exit(1);
+    }
+}
+
+// Check if server is running
+async function checkServerHealth() {
+    try {
+        const response = await makeRequest('/');
+        console.log('✅ Server is running and responding');
+        return true;
+    } catch (error) {
+        console.log('❌ Server is not running or not accessible');
+        console.log('Please start the development server with: npm run dev');
+        return false;
+    }
+}
+
+// Main execution
+async function main() {
+    try {
+        const serverHealthy = await checkServerHealth();
+        if (!serverHealthy) {
+            process.exit(1);
+        }
+
+        await runAllTests();
+    } catch (error) {
+        console.error('💥 Test execution failed:', error);
+        process.exit(1);
+    }
+}
+
+// Run if called directly
+if (require.main === module) {
+    main();
+}
+
+module.exports = { testEndpoint, makeRequest, API_ENDPOINTS };

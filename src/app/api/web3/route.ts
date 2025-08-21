@@ -17,7 +17,7 @@ const web3Service = new Web3Service(web3Config);
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
-        const action = searchParams.get('action');
+        const action = searchParams.get('action') || 'status';
         const address = searchParams.get('address');
 
         switch (action) {

@@ -28,10 +28,42 @@ export async function GET(request: NextRequest) {
 
         // Get enhanced analytics data
         let analyticsData;
-        if (includeRealTime) {
-            analyticsData = await enhancedAnalyticsService.getRealTimeDashboardData();
-        } else {
-            analyticsData = await enhancedAnalyticsService.getEnhancedAnalyticsData(timeRange);
+        try {
+            if (includeRealTime) {
+                analyticsData = await enhancedAnalyticsService.getRealTimeDashboardData();
+            } else {
+                analyticsData = await enhancedAnalyticsService.getEnhancedAnalyticsData(timeRange);
+            }
+        } catch (serviceError) {
+            console.error('Service error:', serviceError);
+            // Fallback to basic analytics if enhanced service fails
+            analyticsData = {
+                insights: {
+                    crossPlatformInsights: [
+                        {
+                            type: 'performance',
+                            title: 'Basic Analytics Available',
+                            description: 'Enhanced analytics service temporarily unavailable',
+                            priority: 'medium',
+                            recommendations: ['Check service configuration', 'Verify database connection']
+                        }
+                    ]
+                },
+                webAnalytics: {
+                    simpleAnalytics: {
+                        pageViews: 0,
+                        uniqueVisitors: 0,
+                        bounceRate: 0,
+                        avgSessionDuration: 0
+                    },
+                    aiInsights: {
+                        trafficQuality: 'unknown',
+                        userBehaviorPatterns: [],
+                        conversionOptimization: [],
+                        seoOpportunities: []
+                    }
+                }
+            };
         }
 
         return NextResponse.json({

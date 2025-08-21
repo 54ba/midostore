@@ -6,7 +6,7 @@ const localizationService = new EnhancedLocalizationService();
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
-        const action = searchParams.get('action');
+        const action = searchParams.get('action') || 'languages';
         const productId = searchParams.get('productId');
         const currency = searchParams.get('currency') || 'USD';
         const language = searchParams.get('language') || 'en';

@@ -6,7 +6,7 @@ const shippingService = new ShippingTrackingService();
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
-        const action = searchParams.get('action');
+        const action = searchParams.get('action') || 'carriers';
         const trackingNumber = searchParams.get('trackingNumber');
         const carrier = searchParams.get('carrier');
 

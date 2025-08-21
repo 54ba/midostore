@@ -252,6 +252,44 @@ class MockPrismaClient {
             delete: async (options: any) => ({ id: options.where.id }),
             count: async (options: any) => 0,
         };
+        this.feature = {
+            findMany: async (options: any) => {
+                // Mock features data
+                return [
+                    {
+                        id: 'feature-1',
+                        name: 'AI Recommendations',
+                        description: 'Intelligent product recommendations powered by AI',
+                        isActive: true,
+                        createdAt: new Date(),
+                        updatedAt: new Date()
+                    },
+                    {
+                        id: 'feature-2',
+                        name: 'Real-time Analytics',
+                        description: 'Live analytics and business intelligence',
+                        isActive: true,
+                        createdAt: new Date(),
+                        updatedAt: new Date()
+                    },
+                    {
+                        id: 'feature-3',
+                        name: 'Multi-language Support',
+                        description: 'Support for Arabic and English languages',
+                        isActive: true,
+                        createdAt: new Date(),
+                        updatedAt: new Date()
+                    }
+                ];
+            },
+            findFirst: async (options: any) => null,
+            findUnique: async (options: any) => null,
+            create: async (data: any) => ({ id: 'mock-feature-id', ...data.data }),
+            update: async (data: any) => ({ id: data.where.id, ...data.data }),
+            delete: async (options: any) => ({ id: options.where.id }),
+            count: async (options: any) => 3,
+            upsert: async (data: any) => ({ id: data.where?.id || 'mock-feature-id', ...data.create }),
+        };
     }
 }
 

@@ -7,7 +7,7 @@ const sharingService = new SharingService();
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
-        const action = searchParams.get('action');
+        const action = searchParams.get('action') || 'insights';
         const productId = searchParams.get('productId');
         const platform = searchParams.get('platform');
         const userId = searchParams.get('userId') || 'anonymous';

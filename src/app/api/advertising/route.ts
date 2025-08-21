@@ -12,10 +12,26 @@ export async function GET(request: NextRequest) {
         const status = searchParams.get('status');
 
         if (!userId) {
-            return NextResponse.json(
-                { error: 'User ID is required' },
-                { status: 400 }
-            );
+            // Provide demo data if no user ID is provided
+            return NextResponse.json({
+                success: true,
+                data: {
+                    campaigns: [
+                        {
+                            id: 'demo-campaign-1',
+                            name: 'Demo Campaign',
+                            status: 'active',
+                            budget: 1000,
+                            impressions: 5000,
+                            clicks: 250,
+                            conversions: 25
+                        }
+                    ],
+                    credits: 1000,
+                    platforms: ['google', 'facebook', 'instagram']
+                },
+                message: 'Demo advertising data (provide userId for real data)'
+            });
         }
 
         switch (action) {

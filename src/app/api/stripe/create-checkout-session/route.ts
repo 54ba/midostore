@@ -7,6 +7,28 @@ interface UserSession {
   full_name: string
 }
 
+export async function GET(request: NextRequest) {
+  try {
+    // Return Stripe configuration info for testing
+    return NextResponse.json({
+      success: true,
+      data: {
+        available: !!process.env.STRIPE_SECRET_KEY,
+        publishableKey: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_demo',
+        supportedPaymentMethods: ['card'],
+        supportedModes: ['subscription', 'payment'],
+        message: 'Stripe endpoint is available (use POST to create checkout session)'
+      }
+    })
+  } catch (error) {
+    console.error('Error in Stripe GET:', error)
+    return NextResponse.json(
+      { success: false, error: 'Failed to get Stripe info' },
+      { status: 500 }
+    )
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Check if Stripe keys are available

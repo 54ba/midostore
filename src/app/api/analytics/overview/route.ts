@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
         const conversionRate = totalUsers > 0 ? (totalOrders / totalUsers) * 100 : 3.2;
 
         // Calculate customer lifetime value (simplified - total revenue / total users)
-        const customerLifetime = totalUsers > 0 ? (totalRevenue._sum.totalAmount || 0) / totalUsers : 1247;
+        const customerLifetime = totalUsers > 0 ? ((totalRevenue?._sum?.totalAmount || 0) / totalUsers) : 1247;
 
         // Get top products with names
         const topProductsWithNames = await Promise.all(
@@ -142,7 +142,7 @@ export async function GET(request: NextRequest) {
         const analyticsData = {
             // Core metrics
             totalOrders,
-            totalRevenue: totalRevenue._sum.totalAmount || 0,
+            totalRevenue: totalRevenue?._sum?.totalAmount || 0,
             totalProducts,
             totalUsers,
             totalReviews,
@@ -150,7 +150,7 @@ export async function GET(request: NextRequest) {
 
             // Calculated metrics
             conversionRate: Math.min(conversionRate, 100), // Cap at 100%
-            avgOrderValue: Math.round((totalRevenue._sum.totalAmount || 0) / Math.max(totalOrders, 1) * 100) / 100,
+            avgOrderValue: Math.round((totalRevenue?._sum?.totalAmount || 0) / Math.max(totalOrders, 1) * 100) / 100,
             customerLifetime: Math.round(customerLifetime * 100) / 100,
 
             // Top products
@@ -171,7 +171,7 @@ export async function GET(request: NextRequest) {
 
             // Performance indicators
             orderGrowth: totalOrders > 0 ? ((recentOrders.length / totalOrders) * 100) : 0,
-            revenueGrowth: totalRevenue._sum.totalAmount ? ((recentOrders.reduce((sum, order) => sum + (order.totalAmount || 0), 0) / totalRevenue._sum.totalAmount) * 100) : 0,
+            revenueGrowth: totalRevenue?._sum?.totalAmount ? ((recentOrders.reduce((sum, order) => sum + (order.totalAmount || 0), 0) / totalRevenue?._sum?.totalAmount) * 100) : 0,
 
             // Timestamp
             lastUpdated: new Date().toISOString()

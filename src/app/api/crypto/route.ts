@@ -6,7 +6,7 @@ const cryptoService = new CryptoPaymentService();
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
-        const action = searchParams.get('action');
+        const action = searchParams.get('action') || 'supported-cryptos';
         const paymentId = searchParams.get('paymentId');
         const currency = searchParams.get('currency');
 
