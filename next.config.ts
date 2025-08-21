@@ -17,11 +17,18 @@ const nextConfig: NextConfig = {
     // Optimize for Netlify deployment
     trailingSlash: false,
 
-    // Enable experimental features for better Netlify compatibility
+    // Explicitly disable Pages Router and ensure App Router only
     experimental: {
         // Remove appDir as it's not valid in Next.js 15
         // appDir: true,
     },
+
+    // Disable static export to prevent Pages Router generation
+    output: undefined,
+
+    // Force App Router only by disabling Pages Router features
+    // This should prevent the generation of _document.js, _app.js, and _error.js
+    // by ensuring all routing goes through the App Router
 
     images: {
         remotePatterns: [
