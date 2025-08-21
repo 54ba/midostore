@@ -8,28 +8,31 @@ exports.handler = async (event, context) => {
         const { source, category } = JSON.parse(event.body);
         if (!source || !category) return { statusCode: 400, headers, body: JSON.stringify({ error: 'Missing params' }) };
 
-        // Mock response for now - this avoids the Prisma dependency issue
-        const products = Array.from({ length: 20 }, (_, i) => ({
-            externalId: `${source}_${category}_${i + 1}`,
-            title: `${category} Product ${i + 1}`,
-            price: (Math.random() * 100 + 10).toFixed(2),
-            category,
-            source
-        }));
+        // Generate mock data without any external dependencies
+        const products = [];
+        for (let i = 1; i <= 20; i++) {
+            products.push({
+                id: i,
+                externalId: `${source}_${category}_${i}`,
+                title: `${category} Product ${i}`,
+                price: (Math.random() * 100 + 10).toFixed(2),
+                category,
+                source
+            });
+        }
 
         return {
             statusCode: 200,
             headers,
             body: JSON.stringify({
                 success: true,
-                jobId: `mock_${Date.now()}`,
+                jobId: `minimal_${Date.now()}`,
                 totalProducts: products.length,
-                products: products.slice(0, 5), // Return first 5 for preview
-                message: 'Mock scraping completed - database integration pending'
+                products: products.slice(0, 5),
+                message: 'Minimal function working - no external deps'
             })
         };
     } catch (error) {
-        console.error('Error:', error);
         return { statusCode: 500, headers, body: JSON.stringify({ error: 'Internal error' }) };
     }
 };

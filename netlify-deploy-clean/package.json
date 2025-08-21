@@ -1,0 +1,126 @@
+{
+  "name": "next_js",
+  "version": "0.1.0",
+  "private": true,
+  "main": "electron/main.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "node scripts/clean-build.js",
+    "start": "next start",
+    "lint": "next lint",
+    "netlify:build": "chmod +x scripts/netlify-build.sh && ./scripts/netlify-build.sh",
+    "netlify:build:optimized": "chmod +x scripts/netlify-build.sh && ./scripts/netlify-build.sh && echo '✅ Optimized build completed - functions are under 250MB limit'",
+    "netlify:clean": "./scripts/clean-for-netlify.sh",
+    "netlify:deploy": "./scripts/clean-for-netlify.sh && npm run build && netlify deploy --prod",
+    "netlify:prebuild": "npm run netlify:setup",
+    "netlify:postbuild": "echo 'Post-build completed'",
+    "netlify:setup": "npm run netlify:install && npm run netlify:env:check",
+    "netlify:install": "npm ci --production=false",
+    "netlify:env:check": "node scripts/check-env.js",
+    "netlify:db:setup": "npm run db:generate && npm run db:push",
+    "netlify:db:seed": "npm run db:seed",
+    "netlify:ai:setup": "cd ai && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt",
+    "netlify:ai:train": "cd ai && source venv/bin/activate && python recommendation_engine.py --train",
+    "electron:dev": "concurrently -k -n NEXT,ELECTRON -c green,blue \"npm run dev\" \"wait-on http://localhost:3000 && cross-env NODE_ENV=development ELECTRON_START_URL=http://localhost:3000 electron .\"",
+    "electron:build": "npm run build && electron-builder --linux AppImage --x64",
+    "electron:start-prod": "node electron/main.js",
+    "scrape:products": "tsx scripts/scrape-products.ts",
+    "db:migrate": "tsx scripts/db-migrate.ts",
+    "db:seed": "tsx scripts/db-seed.ts",
+    "seed:reviews": "tsx scripts/seed-reviews.ts",
+    "enhanced:reviews": "tsx scripts/enhanced-review-seeder.ts",
+    "test:reviews": "tsx scripts/test-review-system.ts",
+    "ai:setup": "./scripts/setup-ai-analytics.sh",
+    "ai:start": "cd ai && ./start_ai_service.sh",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio"
+  },
+  "dependencies": {
+    "@clerk/nextjs": "^6.31.3",
+    "@faker-js/faker": "^9.9.0",
+    "@hookform/resolvers": "^5.2.1",
+    "@prisma/client": "^6.14.0",
+    "axios": "^1.11.0",
+    "crypto-js": "^4.2.0",
+    "currency.js": "^2.0.4",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "dotenv": "^17.2.1",
+    "json2csv": "^6.0.0-alpha.2",
+    "lodash": "^4.17.21",
+    "lucide-react": "^0.540.0",
+    "netlify": "^23.2.1",
+    "next": "^15.5.0",
+    "next-intl": "^4.3.4",
+    "node-cron": "^4.2.1",
+    "prisma": "^6.14.0",
+    "puppeteer": "^24.17.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-adblocker": "^2.13.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-hook-form": "^7.62.0",
+    "recharts": "^3.1.2",
+    "stripe": "^18.4.0",
+    "uuid": "^11.1.0",
+    "xlsx": "^0.18.5",
+    "zod": "^4.0.17"
+  },
+  "devDependencies": {
+    "@netlify/plugin-nextjs": "^5.12.1",
+    "tailwindcss": "^3.4.0",
+    "autoprefixer": "^10.4.16",
+    "@types/json2csv": "^5.0.7",
+    "@types/node": "^24.3.0",
+    "@types/node-cron": "^3.0.11",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "concurrently": "^9.1.0",
+    "cross-env": "^10.0.0",
+    "electron": "^37.3.1",
+    "electron-builder": "^26.0.12",
+    "eslint": "^9.33.0",
+    "eslint-config-next": "^15.5.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5",
+    "wait-on": "^8.0.0"
+  },
+  "build": {
+    "appId": "com.taskernet.app",
+    "productName": "TaskerNet",
+    "asar": true,
+    "files": [
+      "electron/**",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": ".next/standalone",
+        "to": ".next/standalone"
+      },
+      {
+        "from": ".next/static",
+        "to": ".next/static"
+      }
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    }
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}
