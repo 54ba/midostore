@@ -28,6 +28,17 @@ export default function Button({
   const defaultId = useId()
   const buttonId = id || defaultId
 
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+    if (onClick && !disabled && !loading) {
+      try {
+        onClick()
+      } catch (error) {
+        console.error('Button click error:', error)
+      }
+    }
+  }
+
   const getVariantClasses = () => {
     switch (variant) {
       case 'primary':
@@ -56,7 +67,7 @@ export default function Button({
     }
   }
 
-  const baseClasses = 'inline-flex items-center justify-center whitespace-nowrap rounded-[var(--radius)] font-medium ring-offset-[rgb(var(--background))] transition-all duration-200 transform'
+  const baseClasses = 'inline-flex items-center justify-center whitespace-nowrap rounded-[var(--radius)] font-medium ring-offset-[rgb(var(--background))] transition-all duration-200 transform cursor-pointer'
   const focusClasses = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--ring))] focus-visible:ring-offset-2'
   const disabledClasses = 'disabled:pointer-events-none disabled:opacity-50'
   const hoverClasses = 'hover:scale-[1.02] active:scale-[0.98]'
@@ -68,7 +79,7 @@ export default function Button({
     <button
       id={buttonId}
       type={type}
-      onClick={onClick}
+      onClick={handleClick}
       disabled={disabled || loading}
       className={`${baseClasses} ${variantClasses} ${sizeClasses} ${focusClasses} ${disabledClasses} ${!disabled && !loading ? hoverClasses : ''} ${className}`}
     >

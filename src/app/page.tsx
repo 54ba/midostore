@@ -102,6 +102,36 @@ export default function LandingPage() {
     }
   }
 
+  const handleCategoryExplore = (category: string) => {
+    router.push(`/products?category=${category}`)
+  }
+
+  const handleViewAllProducts = () => {
+    router.push('/products')
+  }
+
+  const handleAddToCart = (productId: string) => {
+    if (user) {
+      // Add to cart logic for authenticated users
+      console.log('Adding to cart:', productId)
+      // You can implement actual cart functionality here
+    } else {
+      // Redirect to sign-in for visitors
+      router.push('/sign-in')
+    }
+  }
+
+  const handleBrowseAllProducts = () => {
+    router.push('/products')
+  }
+
+  const handleLearnMoreCTA = () => {
+    const featuresSection = document.getElementById('features-section')
+    if (featuresSection) {
+      featuresSection.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
+
   return (
     <div id="landing-page" className="min-h-screen bg-[rgb(var(--background))] flex flex-col">
       <AuthNavigation />
@@ -153,7 +183,10 @@ export default function LandingPage() {
                   </div>
                   <span className="text-sm font-medium text-blue-600">Starting from $29</span>
                 </div>
-                <button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl hover-lift">
+                <button
+                  onClick={() => handleCategoryExplore('electronics')}
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl hover-lift"
+                >
                   Explore Electronics
                 </button>
               </div>
@@ -184,7 +217,10 @@ export default function LandingPage() {
                   </div>
                   <span className="text-sm font-medium text-green-600">Starting from $15</span>
                 </div>
-                <button className="w-full bg-gradient-to-r from-green-600 to-blue-600 text-white py-3 px-6 rounded-xl font-semibold hover:from-green-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl hover-lift">
+                <button
+                  onClick={() => handleCategoryExplore('toys')}
+                  className="w-full bg-gradient-to-r from-green-600 to-blue-600 text-white py-3 px-6 rounded-xl font-semibold hover:from-green-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl hover-lift"
+                >
                   Explore Toys
                 </button>
               </div>
@@ -215,7 +251,10 @@ export default function LandingPage() {
                   </div>
                   <span className="text-sm font-medium text-pink-600">Starting from $12</span>
                 </div>
-                <button className="w-full bg-gradient-to-r from-pink-600 to-purple-600 text-white py-3 px-6 rounded-xl font-semibold hover:from-pink-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl hover-lift">
+                <button
+                  onClick={() => handleCategoryExplore('beauty')}
+                  className="w-full bg-gradient-to-r from-pink-600 to-purple-600 text-white py-3 px-6 rounded-xl font-semibold hover:from-pink-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl hover-lift"
+                >
                   Explore Beauty
                 </button>
               </div>
@@ -274,7 +313,10 @@ export default function LandingPage() {
                       <span className="text-sm">Win Margin: $50 (20%)</span>
                     </div>
                   </div>
-                  <button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 hover-lift">
+                  <button
+                    onClick={() => handleAddToCart('premium-smartphone')}
+                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 hover-lift"
+                  >
                     Add to Cart
                   </button>
                 </div>
@@ -332,7 +374,10 @@ export default function LandingPage() {
                     </div>
                   </div>
 
-                  <button className="w-full bg-gradient-to-r from-green-600 to-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:from-green-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105">
+                  <button
+                    onClick={() => handleAddToCart('gaming-console-set')}
+                    className="w-full bg-gradient-to-r from-green-600 to-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:from-green-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105"
+                  >
                     Add to Cart
                   </button>
 
@@ -418,7 +463,10 @@ export default function LandingPage() {
                     </div>
                   </div>
 
-                  <button className="w-full bg-gradient-to-r from-pink-600 to-purple-600 text-white py-2 px-4 rounded-lg font-medium hover:from-pink-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105">
+                  <button
+                    onClick={() => handleAddToCart('luxury-makeup-kit')}
+                    className="w-full bg-gradient-to-r from-pink-600 to-purple-600 text-white py-2 px-4 rounded-lg font-medium hover:from-pink-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105"
+                  >
                     Add to Cart
                   </button>
 
@@ -504,7 +552,10 @@ export default function LandingPage() {
                     </div>
                   </div>
 
-                  <button className="w-full bg-gradient-to-r from-orange-600 to-yellow-600 text-white py-2 px-4 rounded-lg font-medium hover:from-orange-700 hover:to-yellow-700 transition-all duration-300 transform hover:scale-105">
+                  <button
+                    onClick={() => handleAddToCart('smart-home-hub')}
+                    className="w-full bg-gradient-to-r from-orange-600 to-yellow-600 text-white py-2 px-4 rounded-lg font-medium hover:from-orange-700 hover:to-yellow-700 transition-all duration-300 transform hover:scale-105"
+                  >
                     Add to Cart
                   </button>
 
@@ -548,10 +599,16 @@ export default function LandingPage() {
                 Join thousands of satisfied customers who trust MidoHub for quality products and exceptional service.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button className="px-8 py-3 bg-white text-blue-600 font-semibold rounded-xl hover:bg-gray-100 transition-colors transform hover:scale-105">
+                <button
+                  onClick={handleBrowseAllProducts}
+                  className="px-8 py-3 bg-white text-blue-600 font-semibold rounded-xl hover:bg-gray-100 transition-colors transform hover:scale-105"
+                >
                   Browse All Products
                 </button>
-                <button className="px-8 py-3 border-2 border-white text-white font-semibold rounded-xl hover:bg-white hover:text-blue-600 transition-colors transform hover:scale-105">
+                <button
+                  onClick={handleLearnMoreCTA}
+                  className="px-8 py-3 border-2 border-white text-white font-semibold rounded-xl hover:bg-white hover:text-blue-600 transition-colors transform hover:scale-105"
+                >
                   Learn More
                 </button>
               </div>

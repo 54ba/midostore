@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { ArrowRight, ShoppingBag, Home, Zap, Heart, BookOpen, Dumbbell, Sparkles } from 'lucide-react'
 import ImageGallery from './ImageGallery'
 
@@ -22,6 +23,7 @@ interface CategoryShowcaseProps {
 
 export default function CategoryShowcase({ className = '' }: CategoryShowcaseProps) {
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null)
+  const router = useRouter()
 
   const categories: Category[] = [
     {
@@ -122,6 +124,17 @@ export default function CategoryShowcase({ className = '' }: CategoryShowcasePro
     }
   ]
 
+  const handleCategoryClick = (categoryId: string) => {
+    try {
+      // Navigate to products page with category filter
+      router.push(`/products?category=${categoryId}`)
+    } catch (error) {
+      console.error('Error navigating to category:', error)
+      // Fallback: try to navigate to products page without category
+      router.push('/products')
+    }
+  }
+
   return (
     <section className={`py-16 bg-gray-50 ${className}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -140,9 +153,10 @@ export default function CategoryShowcase({ className = '' }: CategoryShowcasePro
           {categories.map((category) => (
             <div
               key={category.id}
-              className="group relative overflow-hidden bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2"
+              className="group relative overflow-hidden bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer"
               onMouseEnter={() => setHoveredCategory(category.id)}
               onMouseLeave={() => setHoveredCategory(null)}
+              onClick={() => handleCategoryClick(category.id)}
             >
               {/* Image Gallery */}
               <div className="relative">
@@ -180,36 +194,31 @@ export default function CategoryShowcase({ className = '' }: CategoryShowcasePro
                   {category.description}
                 </p>
 
-                {/* CTA Button */}
-                <Link
-                  href={`/products?category=${category.id}`}
-                  className="flex items-center justify-between w-full p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors group-hover:bg-blue-50 group-hover:hover:bg-blue-100"
-                >
-                  <span className="text-sm text-gray-600 group-hover:text-blue-600 transition-colors">
-                    Explore category
+                {/* View Products Button */}
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-500">
+                    {category.productCount} products available
                   </span>
-                  <div className={`w-8 h-8 rounded-full bg-gradient-to-r ${category.color} flex items-center justify-center transform group-hover:scale-110 transition-transform duration-200`}>
-                    <ArrowRight className="w-4 h-4 text-white" />
+                  <div className="flex items-center text-blue-500 group-hover:text-blue-600 transition-colors">
+                    <span className="text-sm font-medium mr-2">View Products</span>
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </div>
-                </Link>
+                </div>
               </div>
-
-              {/* Hover Effect Border */}
-              <div className={`absolute inset-0 rounded-2xl border-2 border-transparent bg-gradient-to-r ${category.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} style={{ mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)', maskComposite: 'exclude' }} />
             </div>
           ))}
         </div>
 
-        {/* View All Categories CTA */}
+        {/* View All Categories Button */}
         <div className="text-center">
-          <Link
-            href="/products"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-blue-500 text-white font-semibold rounded-xl hover:bg-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 hover:scale-105"
+          <button
+            onClick={() => router.push('/products')}
+            className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200"
           >
-            <ShoppingBag className="w-5 h-5" />
+            <ShoppingBag className="w-5 h-5 mr-2" />
             View All Products
-            <ArrowRight className="w-4 h-4" />
-          </Link>
+            <ArrowRight className="w-5 h-5 ml-2" />
+          </button>
         </div>
       </div>
     </section>

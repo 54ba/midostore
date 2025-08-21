@@ -1,37 +1,28 @@
-# Clerk Authentication Setup Guide for MidoStore
+# Clerk Authentication Setup Guide for MidoHub
 
-## Overview
-This guide will help you set up Clerk authentication for your MidoStore application to resolve the "Access Denied" and authentication issues.
+This guide will help you set up Clerk authentication for your MidoHub application.
 
-## Prerequisites
-1. A Clerk account at [https://clerk.com/](https://clerk.com/)
-2. A Netlify account for deployment
-3. Access to your MidoStore project
+## Step 1: Create a Clerk Account
 
-## Step 1: Create a Clerk Application
+1. Go to [clerk.com](https://clerk.com) and sign up for a free account
+2. Create a new application
+3. Choose "Next.js" as your framework
+4. Select "App Router" as your Next.js version
 
-1. Go to [https://clerk.com/](https://clerk.com/) and sign up/sign in
-2. Click "Add Application"
-3. Choose "Web Application"
-4. Name your application (e.g., "MidoStore")
-5. Select your preferred authentication methods (Email, Google, etc.)
-
-## Step 2: Get Your Clerk Keys
+## Step 2: Get Your API Keys
 
 1. In your Clerk dashboard, go to "API Keys"
-2. Copy the following keys:
-   - **Publishable Key** (starts with `pk_test_` or `pk_live_`)
-   - **Secret Key** (starts with `sk_test_` or `sk_live_`)
+2. Copy your **Publishable Key** (starts with `pk_test_` or `pk_live_`)
+3. Copy your **Secret Key** (starts with `sk_test_` or `sk_live_`)
 
-## Step 3: Configure Environment Variables
+## Step 3: Update Environment Variables
 
-### Option A: Local Development (.env.local)
-Create a `.env.local` file in your project root with:
+Create or update your `.env.local` file with the following:
 
 ```bash
 # Clerk Authentication Configuration
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_your_actual_key_here
-CLERK_SECRET_KEY=sk_test_your_actual_key_here
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_your_actual_publishable_key_here
+CLERK_SECRET_KEY=sk_test_your_actual_secret_key_here
 
 # Clerk URLs
 NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
@@ -41,82 +32,98 @@ NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/dashboard
 NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/
 NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/
 
-# Netlify Configuration
+# Other configurations...
 NEXT_PUBLIC_NETLIFY_SITE_URL=https://midostore.netlify.app
-NEXT_PUBLIC_APP_URL=https://midostore.netlify.app
 ```
 
-### Option B: Netlify Environment Variables
-1. Go to your Netlify dashboard
-2. Navigate to Site settings > Environment variables
-3. Add the same variables as above
+## Step 4: Install Clerk Dependencies
 
-## Step 4: Configure Clerk Application Settings
+Make sure you have the Clerk Next.js package installed:
 
-1. In your Clerk dashboard, go to "User & Authentication"
-2. Set the following URLs:
-   - **Sign-in URL**: `https://midostore.netlify.app/sign-in`
-   - **Sign-up URL**: `https://midostore.netlify.app/sign-up`
-   - **After sign-in URL**: `https://midostore.netlify.app/dashboard`
-   - **After sign-up URL**: `https://midostore.netlify.app/dashboard`
+```bash
+npm install @clerk/nextjs
+```
 
-## Step 5: Test the Setup
+## Step 5: Configure Clerk in Your App
+
+The application is already configured to use Clerk. The key components are:
+
+- `ClerkProviderWrapper` - Wraps your app with Clerk context
+- `ClerkAuthWrapper` - Handles authentication state
+- `AuthContext` - Provides authentication context throughout the app
+
+## Step 6: Test Authentication
 
 1. Restart your development server
-2. Navigate to `/sign-in` - you should see the Clerk sign-in form
-3. Create a test account
-4. Try accessing `/dashboard` - you should be redirected to sign-in if not authenticated
-5. After signing in, you should be able to access the dashboard
+2. Navigate to `/sign-in` or `/sign-up`
+3. You should see the Clerk authentication forms
+4. Test creating an account and signing in
+
+## Step 7: Customize Authentication (Optional)
+
+You can customize the Clerk appearance and behavior in the `ClerkProviderWrapper` component:
+
+```tsx
+<ClerkProvider
+  publishableKey={publishableKey}
+  signInUrl="/sign-in"
+  signUpUrl="/sign-up"
+  afterSignInUrl="/dashboard"
+  afterSignUpUrl="/dashboard"
+  appearance={{
+    elements: {
+      formButtonPrimary: 'bg-blue-600 hover:bg-blue-700',
+      card: 'shadow-lg',
+      headerTitle: 'text-gray-900',
+      headerSubtitle: 'text-gray-600',
+    }
+  }}
+>
+  {children}
+</ClerkProvider>
+```
 
 ## Troubleshooting
 
-### Common Issues
+### Common Issues:
 
-1. **"Clerk is not configured" error**
+1. **"Clerk is not configured" warning**
    - Check that your environment variables are set correctly
-   - Ensure the `.env.local` file is in the project root
-   - Restart your development server
+   - Make sure you're using the correct publishable key format
 
-2. **"Access Denied" when trying to access dashboard**
-   - Verify that Clerk is properly configured
-   - Check that the user is authenticated
-   - Ensure the Clerk keys are valid
+2. **Authentication forms not showing**
+   - Verify your Clerk application is active
+   - Check browser console for errors
+   - Ensure environment variables are loaded
 
-3. **404 errors on sign-in/sign-up routes**
-   - Verify that the Clerk component is properly imported
-   - Check that the routes are correctly configured in your Next.js app
+3. **Redirect issues**
+   - Verify the sign-in/sign-up URLs are correct
+   - Check that the after-sign-in/after-sign-up URLs exist
 
-4. **Clerk development keys warning**
-   - This is normal in development
-   - For production, use live keys from Clerk
+### Environment Variable Check:
 
-### Environment Variable Checklist
-
-- [ ] `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` is set
-- [ ] `CLERK_SECRET_KEY` is set
-- [ ] Clerk URLs are configured correctly
-- [ ] Netlify environment variables are set (if deploying)
+You can verify your environment variables are loaded by checking the browser console. Look for:
+- Clerk configuration warnings
+- Environment variable values (in development)
 
 ## Security Notes
 
-1. **Never commit `.env.local` to version control**
-2. **Use test keys for development, live keys for production**
-3. **Keep your secret key secure and private**
-4. **Regularly rotate your API keys**
+- Never commit your `.env.local` file to version control
+- Use environment variables for all sensitive configuration
+- Clerk handles password hashing and security automatically
+- The secret key should only be used on the server side
 
 ## Next Steps
 
-After setting up Clerk:
-1. Test the authentication flow
-2. Customize the Clerk appearance if needed
-3. Set up additional authentication methods
-4. Configure user roles and permissions
-5. Deploy to production with live keys
+Once Clerk is configured:
+
+1. Users can sign up and sign in
+2. Authentication state is managed automatically
+3. Protected routes will work properly
+4. User data is available throughout the application
 
 ## Support
 
-If you encounter issues:
-1. Check the [Clerk documentation](https://clerk.com/docs)
-2. Verify your environment variables
-3. Check the browser console for errors
-4. Ensure your Clerk application is properly configured
+- [Clerk Documentation](https://clerk.com/docs)
+- [Clerk Community](https://community.clerk.com)
+- [Clerk Support](https://clerk.com/support)

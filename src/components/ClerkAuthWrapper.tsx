@@ -2,17 +2,20 @@
 
 import { useUser, useAuth as useClerkAuth } from '@clerk/nextjs';
 import { useEffect } from 'react';
+import { ReactNode } from 'react';
 import { useAuth } from '@/app/contexts/AuthContext';
 
 interface ClerkAuthWrapperProps {
-    children: React.ReactNode;
+    children: ReactNode;
 }
 
 export default function ClerkAuthWrapper({ children }: ClerkAuthWrapperProps) {
     // Check if Clerk is available
     const isClerkAvailable = typeof window !== 'undefined' &&
-        process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY &&
-        process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY !== 'your_clerk_publishable_key_here';
+        (process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_CLERK_FRONTEND_API) &&
+        process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY !== 'your_clerk_publishable_key_here' &&
+        process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY !== 'pk_test_your_clerk_publishable_key_here' &&
+        process.env.NEXT_PUBLIC_CLERK_FRONTEND_API !== 'https://handy-cow-68.clerk.accounts.dev';
 
     // Only use Clerk hooks if available
     const clerkUser = isClerkAvailable ? useUser() : { user: null, isLoaded: true };
