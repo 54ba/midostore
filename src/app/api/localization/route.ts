@@ -24,12 +24,6 @@ export async function GET(request: NextRequest) {
                     data: localizationService.getSupportedCurrencies(),
                 });
 
-            case 'crypto-currencies':
-                return NextResponse.json({
-                    success: true,
-                    data: localizationService.getCryptoCurrencies(),
-                });
-
             case 'shipping-zones':
                 return NextResponse.json({
                     success: true,
@@ -86,6 +80,20 @@ export async function GET(request: NextRequest) {
                 return NextResponse.json({
                     success: true,
                     data: priceUpdates,
+                });
+
+            case 'currency-rates':
+                const currencyRates = await localizationService.getCurrencyRates();
+                return NextResponse.json({
+                    success: true,
+                    data: currencyRates,
+                });
+
+            case 'language-support':
+                const languageSupport = await localizationService.getSupportedLanguages();
+                return NextResponse.json({
+                    success: true,
+                    data: languageSupport,
                 });
 
             default:

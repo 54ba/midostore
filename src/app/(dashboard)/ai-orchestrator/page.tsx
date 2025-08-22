@@ -32,7 +32,8 @@ import {
   TrendingDown,
   Minus,
   Plus
-, Flame, AlertCircle} from 'lucide-react';
+  , Flame, AlertCircle
+} from 'lucide-react';
 
 interface ServiceStatus {
   serviceName: string;
@@ -196,7 +197,7 @@ export default function AIOrchestratorDashboard() {
     fetchStatus();
 
     if (autoRefresh) {
-      const interval = setInterval(fetchStatus, 10000); // Refresh every 10 seconds
+      const interval = setInterval(fetchStatus, 120000); // Refresh every 2 minutes
       return () => clearInterval(interval);
     }
   }, [autoRefresh]);
@@ -288,11 +289,10 @@ export default function AIOrchestratorDashboard() {
             <div className="flex items-center space-x-3">
               <Brain className="w-8 h-8 text-blue-600 dark:text-blue-400" />
               <h1 className="text-2xl font-bold">AI Orchestrator Dashboard</h1>
-              <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-                status.isRunning
+              <div className={`px-3 py-1 rounded-full text-sm font-medium ${status.isRunning
                   ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
                   : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
-              }`}>
+                }`}>
                 {status.isRunning ? 'RUNNING' : 'STOPPED'}
               </div>
             </div>
@@ -436,11 +436,10 @@ export default function AIOrchestratorDashboard() {
               {Object.entries(status.services).map(([name, service]) => (
                 <div
                   key={name}
-                  className={`p-4 rounded-lg border ${
-                    service.status === 'critical' ? 'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20' :
-                    service.status === 'degraded' ? 'border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-900/20' :
-                    'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20'
-                  }`}
+                  className={`p-4 rounded-lg border ${service.status === 'critical' ? 'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20' :
+                      service.status === 'degraded' ? 'border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-900/20' :
+                        'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20'
+                    }`}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center space-x-2">
@@ -510,11 +509,10 @@ export default function AIOrchestratorDashboard() {
                       {getTrendIcon(trend.trend)}
                       <span className="font-medium capitalize">{category}</span>
                     </div>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      trend.trend === 'rising' ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400' :
-                      trend.trend === 'stable' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400' :
-                      'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
-                    }`}>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${trend.trend === 'rising' ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400' :
+                        trend.trend === 'stable' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400' :
+                          'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+                      }`}>
                       {trend.trend}
                     </span>
                   </div>

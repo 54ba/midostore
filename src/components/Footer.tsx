@@ -36,10 +36,10 @@ export default function Footer({ id }: { id?: string } = {}) {
     platform: [
       { name: 'Dashboard', href: '/dashboard' },
       { name: 'AI Recommendations', href: '/ai-recommendations' },
-      { name: 'Bulk Pricing', href: '/bulk-deals' },
-      { name: 'Advertising', href: '/advertising' },
-      { name: 'Scraping Tools', href: '/scraping' },
-      { name: 'Analytics', href: '/enhanced-dashboard' }
+      { name: 'Bulk Pricing', href: '/dashboard/bulk-deals' },
+      { name: 'Advertising', href: '/dashboard/advertising' },
+      { name: 'Scraping Tools', href: '/dashboard/scraping' },
+      { name: 'Analytics', href: '/dashboard/enhanced-dashboard' }
     ],
     support: [
       { name: 'Help Center', href: '/help' },

@@ -7,7 +7,6 @@ import {
   TrendingUp,
   Package,
   Truck,
-  Bitcoin,
   Eye,
   AlertTriangle,
   Clock,
@@ -26,25 +25,46 @@ import {
   Filter,
   Download,
   RefreshCw,
-  Settings
+  Settings,
+  ShoppingCart
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
 import LiveSalesTicker from './LiveSalesTicker';
 
 interface EnhancedDashboardProps {
-  userId: string;
   className?: string;
 }
 
 interface DashboardMetrics {
   totalRevenue: number;
   totalOrders: number;
-  cryptoRevenue: number;
-  volatileProductsCount: number;
-  activeShipments: number;
-  conversionRate: number;
   averageOrderValue: number;
-  supportedCurrencies: number;
+  conversionRate: number;
+  customerSatisfaction: number;
+  inventoryTurnover: number;
+  shippingEfficiency: number;
+  localizationCoverage: number;
+}
+
+interface WebAnalyticsData {
+  pageviews: number;
+  uniqueVisitors: number;
+  bounceRate: number;
+  avgTimeOnSite: number;
+  referrers: Array<{ source: string; count: number }>;
+  devices: Array<{ device: string; count: number }>;
+  topPages: Array<{ page: string; views: number }>;
+}
+
+interface DashboardData {
+  metrics: DashboardMetrics;
+  webAnalytics: {
+    googleAnalytics: WebAnalyticsData;
+    simpleAnalytics: WebAnalyticsData;
+  };
+  recentOrders: Array<any>;
+  topProducts: Array<any>;
+  salesTrends: Array<any>;
 }
 
 interface PriceAlert {
@@ -67,17 +87,17 @@ interface ShippingUpdate {
   carrier: string;
 }
 
-export default function EnhancedDashboard({ userId, className = '' }: EnhancedDashboardProps) {
+export default function EnhancedDashboard({ className = '' }: EnhancedDashboardProps) {
   const [activeTab, setActiveTab] = useState('overview');
   const [metrics, setMetrics] = useState<DashboardMetrics>({
     totalRevenue: 0,
     totalOrders: 0,
-    cryptoRevenue: 0,
-    volatileProductsCount: 0,
-    activeShipments: 0,
-    conversionRate: 0,
     averageOrderValue: 0,
-    supportedCurrencies: 0,
+    conversionRate: 0,
+    customerSatisfaction: 0,
+    inventoryTurnover: 0,
+    shippingEfficiency: 0,
+    localizationCoverage: 0,
   });
 
   const [priceAlerts, setPriceAlerts] = useState<PriceAlert[]>([]);
@@ -92,9 +112,9 @@ export default function EnhancedDashboard({ userId, className = '' }: EnhancedDa
 
   useEffect(() => {
     fetchDashboardData();
-    const interval = setInterval(fetchDashboardData, 60000); // Update every minute
+    const interval = setInterval(fetchDashboardData, 300000); // Update every 5 minutes
     return () => clearInterval(interval);
-  }, [userId, selectedCurrency, timeRange]);
+  }, [selectedCurrency, timeRange]);
 
   const fetchDashboardData = async () => {
     try {
@@ -106,13 +126,11 @@ export default function EnhancedDashboard({ userId, className = '' }: EnhancedDa
         alertsResponse,
         shippingResponse,
         revenueResponse,
-        cryptoResponse,
       ] = await Promise.all([
-        fetch(`/api/analytics?action=dashboard-metrics&userId=${userId}&currency=${selectedCurrency}&timeRange=${timeRange}`),
+        fetch(`/api/analytics?action=dashboard-metrics&currency=${selectedCurrency}&timeRange=${timeRange}`),
         fetch(`/api/localization?action=price-alerts&currency=${selectedCurrency}`),
-        fetch(`/api/shipping?action=active-shipments&userId=${userId}`),
-        fetch(`/api/analytics?action=revenue-chart&userId=${userId}&currency=${selectedCurrency}&timeRange=${timeRange}`),
-        fetch(`/api/crypto?action=portfolio-summary&userId=${userId}`),
+        fetch(`/api/shipping?action=active-shipments&currency=${selectedCurrency}`),
+        fetch(`/api/analytics?action=revenue-chart&currency=${selectedCurrency}&timeRange=${timeRange}`),
       ]);
 
       // Process responses
@@ -141,13 +159,6 @@ export default function EnhancedDashboard({ userId, className = '' }: EnhancedDa
         const data = await revenueResponse.json();
         if (data.success) {
           setRevenueData(data.data);
-        }
-      }
-
-      if (cryptoResponse.ok) {
-        const data = await cryptoResponse.json();
-        if (data.success) {
-          setCryptoData(data.data);
         }
       }
 
@@ -217,9 +228,9 @@ export default function EnhancedDashboard({ userId, className = '' }: EnhancedDa
               <Activity className="w-8 h-8 text-blue-600" />
               Enhanced Analytics Dashboard
             </h1>
-            <p className="text-gray-600 mt-2">
-              Real-time insights with crypto, localization, and shipping analytics
-            </p>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+              Real-time insights with localization, shipping, and analytics
+            </h2>
           </div>
 
           <div className="flex items-center gap-4">
@@ -233,8 +244,6 @@ export default function EnhancedDashboard({ userId, className = '' }: EnhancedDa
               <option value="EUR">🇪🇺 EUR</option>
               <option value="AED">🇦🇪 AED</option>
               <option value="SAR">🇸🇦 SAR</option>
-              <option value="BTC">₿ BTC</option>
-              <option value="ETH">Ξ ETH</option>
             </select>
 
             {/* Time Range Selector */}
@@ -263,7 +272,6 @@ export default function EnhancedDashboard({ userId, className = '' }: EnhancedDa
         <div className="flex space-x-1 mt-6">
           {[
             { id: 'overview', label: 'Overview', icon: BarChart3 },
-            { id: 'crypto', label: 'Crypto Analytics', icon: Bitcoin },
             { id: 'localization', label: 'Localization', icon: Globe },
             { id: 'shipping', label: 'Shipping & Tracking', icon: Truck },
             { id: 'pricing', label: 'Price Intelligence', icon: TrendingUp },
@@ -273,8 +281,8 @@ export default function EnhancedDashboard({ userId, className = '' }: EnhancedDa
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${activeTab === tab.id
-                  ? 'bg-blue-100 text-blue-700'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                ? 'bg-blue-100 text-blue-700'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                 }`}
             >
               <tab.icon className="w-4 h-4" />
@@ -300,52 +308,60 @@ export default function EnhancedDashboard({ userId, className = '' }: EnhancedDa
         {activeTab === 'overview' && (
           <div className="space-y-6">
             {/* Key Metrics */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-lg">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-blue-600 text-sm font-medium">Total Revenue</p>
-                    <p className="text-2xl font-bold text-blue-900">
+                    <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">Total Revenue</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
                       {formatCurrency(metrics.totalRevenue)}
                     </p>
-                    <p className="text-blue-600 text-xs mt-1">+12.5% from last period</p>
                   </div>
-                  <DollarSign className="w-8 h-8 text-blue-600" />
+                  <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
+                    <DollarSign className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                  </div>
                 </div>
               </div>
 
-              <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-lg">
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-green-600 text-sm font-medium">Crypto Revenue</p>
-                    <p className="text-2xl font-bold text-green-900">
-                      {formatCurrency(metrics.cryptoRevenue)}
+                    <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">Total Orders</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                      {metrics.totalOrders.toLocaleString()}
                     </p>
-                    <p className="text-green-600 text-xs mt-1">₿ {(metrics.cryptoRevenue / 43000).toFixed(4)} BTC</p>
                   </div>
-                  <Bitcoin className="w-8 h-8 text-green-600" />
+                  <div className="w-12 h-12 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center">
+                    <ShoppingCart className="w-6 h-6 text-green-600 dark:text-green-400" />
+                  </div>
                 </div>
               </div>
 
-              <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-6 rounded-lg">
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-purple-600 text-sm font-medium">Active Shipments</p>
-                    <p className="text-2xl font-bold text-purple-900">{metrics.activeShipments}</p>
-                    <p className="text-purple-600 text-xs mt-1">Across {currencyData.length} countries</p>
+                    <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">Average Order Value</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                      {formatCurrency(metrics.averageOrderValue)}
+                    </p>
                   </div>
-                  <Package className="w-8 h-8 text-purple-600" />
+                  <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/20 rounded-lg flex items-center justify-center">
+                    <TrendingUp className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                  </div>
                 </div>
               </div>
 
-              <div className="bg-gradient-to-r from-orange-50 to-orange-100 p-6 rounded-lg">
+              <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-orange-600 text-sm font-medium">Volatile Products</p>
-                    <p className="text-2xl font-bold text-orange-900">{metrics.volatileProductsCount}</p>
-                    <p className="text-orange-600 text-xs mt-1">Require monitoring</p>
+                    <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">Conversion Rate</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                      {metrics.conversionRate.toFixed(1)}%
+                    </p>
                   </div>
-                  <AlertTriangle className="w-8 h-8 text-orange-600" />
+                  <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/20 rounded-lg flex items-center justify-center">
+                    <Target className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+                  </div>
                 </div>
               </div>
             </div>
@@ -354,13 +370,12 @@ export default function EnhancedDashboard({ userId, className = '' }: EnhancedDa
             <div className="bg-gray-50 rounded-lg p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Revenue Trends</h3>
               <ResponsiveContainer width="100%" height={300}>
-                <AreaChart data={revenueData}>
+                <AreaChart data={revenueData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="date" />
                   <YAxis />
-                  <Tooltip />
-                  <Area type="monotone" dataKey="traditional" stackId="1" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.6} />
-                  <Area type="monotone" dataKey="crypto" stackId="1" stroke="#10B981" fill="#10B981" fillOpacity={0.6} />
+                  <Tooltip formatter={(value) => [formatCurrency(Number(value)), 'Revenue']} />
+                  <Area type="monotone" dataKey="revenue" stackId="1" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.6} />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -425,41 +440,6 @@ export default function EnhancedDashboard({ userId, className = '' }: EnhancedDa
           </div>
         )}
 
-        {activeTab === 'crypto' && (
-          <div className="space-y-6">
-            <div className="text-center py-8">
-              <Bitcoin className="w-16 h-16 text-orange-500 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Cryptocurrency Analytics</h3>
-              <p className="text-gray-600 mb-6">Monitor crypto payments, portfolio performance, and market trends</p>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-                <div className="bg-gradient-to-r from-orange-50 to-yellow-50 p-6 rounded-lg">
-                  <Bitcoin className="w-8 h-8 text-orange-600 mx-auto mb-3" />
-                  <h4 className="font-semibold text-gray-900 mb-2">Bitcoin Payments</h4>
-                  <p className="text-2xl font-bold text-orange-900">₿ 2.45</p>
-                  <p className="text-orange-600 text-sm">$105,420</p>
-                </div>
-
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg">
-                  <div className="w-8 h-8 bg-blue-600 rounded mx-auto mb-3 flex items-center justify-center">
-                    <span className="text-white font-bold text-sm">Ξ</span>
-                  </div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Ethereum Payments</h4>
-                  <p className="text-2xl font-bold text-blue-900">Ξ 45.2</p>
-                  <p className="text-blue-600 text-sm">$89,340</p>
-                </div>
-
-                <div className="bg-gradient-to-r from-green-50 to-teal-50 p-6 rounded-lg">
-                  <Coins className="w-8 h-8 text-green-600 mx-auto mb-3" />
-                  <h4 className="font-semibold text-gray-900 mb-2">Stablecoin Payments</h4>
-                  <p className="text-2xl font-bold text-green-900">₮ 25,680</p>
-                  <p className="text-green-600 text-sm">USDT</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
         {activeTab === 'localization' && (
           <div className="space-y-6">
             <div className="text-center py-8">
@@ -479,7 +459,7 @@ export default function EnhancedDashboard({ userId, className = '' }: EnhancedDa
                   <Coins className="w-8 h-8 text-green-600 mx-auto mb-3" />
                   <h4 className="font-semibold text-gray-900 mb-2">Supported Currencies</h4>
                   <p className="text-2xl font-bold text-green-900">{metrics.supportedCurrencies}</p>
-                  <p className="text-green-600 text-sm">Including 8 cryptocurrencies</p>
+                  <p className="text-green-600 text-sm">Including 25+ traditional currencies</p>
                 </div>
               </div>
             </div>
@@ -547,19 +527,21 @@ export default function EnhancedDashboard({ userId, className = '' }: EnhancedDa
               <p className="text-gray-600 mb-6">Intelligent analysis of your business performance</p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-                <div className="bg-gradient-to-r from-purple-50 to-indigo-50 p-6 rounded-lg text-left">
-                  <h4 className="font-semibold text-gray-900 mb-3">📈 Revenue Predictions</h4>
-                  <ul className="space-y-2 text-sm text-gray-700">
-                    <li>• Expected 23% growth in crypto payments next month</li>
-                    <li>• Gulf region showing 18% increase in orders</li>
-                    <li>• Electronics category performing above average</li>
+                <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Key Insights</h3>
+                  <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                    <li>• Revenue increased by 23% compared to last month</li>
+                    <li>• Top performing category: Electronics (34% of sales)</li>
+                    <li>• Average order value trending upward</li>
+                    <li>• Customer satisfaction score: 4.8/5</li>
+                    <li>• Mobile conversion rate improved by 15%</li>
                   </ul>
                 </div>
 
                 <div className="bg-gradient-to-r from-green-50 to-teal-50 p-6 rounded-lg text-left">
                   <h4 className="font-semibold text-gray-900 mb-3">💡 Optimization Tips</h4>
                   <ul className="space-y-2 text-sm text-gray-700">
-                    <li>• Consider adding more crypto payment options</li>
+                    <li>• Consider adding more payment options</li>
                     <li>• Optimize shipping rates for European customers</li>
                     <li>• Monitor volatile products more frequently</li>
                   </ul>

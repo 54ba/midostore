@@ -27,7 +27,7 @@ export default function LiveUpdates() {
         const updateInterval = setInterval(() => {
             loadLiveUpdates();
             loadAnalytics();
-        }, 10000); // Update every 10 seconds
+        }, 120000); // Update every 2 minutes
 
         return () => clearInterval(updateInterval);
     }, []);

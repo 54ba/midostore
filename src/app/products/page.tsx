@@ -63,11 +63,16 @@ export default function ProductsPage() {
             const data: ProductResponse = await response.json();
 
             if (data.success) {
-                setProducts(data.data.products);
+                setProducts(data.data.products || []);
                 setPagination(data.data.pagination);
+            } else {
+                setProducts([]);
+                setPagination(null);
             }
         } catch (error) {
             console.error('Error fetching products:', error);
+            setProducts([]);
+            setPagination(null);
         } finally {
             setLoading(false);
         }
@@ -132,8 +137,8 @@ export default function ProductsPage() {
                         <button
                             onClick={() => handleCategoryChange('')}
                             className={`px-4 py-2 rounded-lg transition-colors ${selectedCategory === ''
-                                    ? 'bg-blue-600 text-white'
-                                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
                                 }`}
                         >
                             All
@@ -143,8 +148,8 @@ export default function ProductsPage() {
                                 key={category}
                                 onClick={() => handleCategoryChange(category)}
                                 className={`px-4 py-2 rounded-lg transition-colors ${selectedCategory === category
-                                        ? 'bg-blue-600 text-white'
-                                        : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
                                     }`}
                             >
                                 {category}
@@ -159,9 +164,17 @@ export default function ProductsPage() {
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                         <span className="ml-2 text-gray-600">Loading products...</span>
                     </div>
+                ) : (products || []).length === 0 ? (
+                    <div className="text-center py-12">
+                        <div className="text-gray-400 mb-4">
+                            <ShoppingCart className="w-16 h-16 mx-auto" />
+                        </div>
+                        <h3 className="text-lg font-medium text-gray-900 mb-2">No products found</h3>
+                        <p className="text-gray-600">Try adjusting your search or category filters.</p>
+                    </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {products.map((product) => (
+                        {(products || []).map((product) => (
                             <div
                                 key={product.id}
                                 className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow cursor-pointer"

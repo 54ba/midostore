@@ -6,7 +6,7 @@
 # =============================================================================
 
 # Database Configuration
-DATABASE_URL=postgresql://username:password@host:port/database_name
+DATABASE_URL="file:./dev.db"
 
 # Clerk Authentication (Configure these for authentication)
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_your_clerk_publishable_key

@@ -91,23 +91,23 @@ export default function FeatureGrid({
           },
           {
             id: 'fallback-3',
-            title: 'Crypto Payment Processing',
-            description: 'Accept Bitcoin, Ethereum, and other cryptocurrencies',
-            icon: 'Zap',
-            category: 'Payments',
+            title: 'Secure Payment Processing',
+            description: 'Multiple payment methods with bank-level security and fraud protection',
+            icon: 'Shield',
+            category: 'Security',
             isActive: true,
-            usageCount: 9870,
-            rating: 4.6
+            usageCount: 10000,
+            rating: 4.9
           },
           {
             id: 'fallback-4',
-            title: 'P2P Marketplace',
-            description: 'Decentralized peer-to-peer trading platform',
-            icon: 'Users',
-            category: 'Trading',
+            title: 'Global Market Access',
+            description: 'Connect with suppliers and customers worldwide with multi-language support',
+            icon: 'Globe',
+            category: 'International',
             isActive: true,
-            usageCount: 7560,
-            rating: 4.5
+            usageCount: 8000,
+            rating: 4.6
           }
         ]);
       } finally {
@@ -156,7 +156,8 @@ export default function FeatureGrid({
       'Localization': 'from-indigo-500 to-purple-500',
       'Loyalty': 'from-teal-500 to-cyan-500',
       'Security': 'from-red-500 to-pink-500',
-      'Performance': 'from-blue-500 to-purple-500'
+      'Performance': 'from-blue-500 to-purple-500',
+      'International': 'from-blue-500 to-cyan-500'
     };
 
     return gradients[category] || 'from-gray-500 to-gray-600';
@@ -210,8 +211,8 @@ export default function FeatureGrid({
               <div
                 key={feature.id}
                 className={`group relative p-8 rounded-2xl transition-all duration-500 transform hover:scale-105 ${isHighlighted
-                    ? 'bg-gradient-to-br from-gray-50 to-blue-50 border-2 border-blue-200 shadow-xl'
-                    : 'bg-gradient-to-br from-gray-50 to-white border border-gray-100 hover:border-gray-200'
+                  ? 'bg-gradient-to-br from-gray-50 to-blue-50 border-2 border-blue-200 shadow-xl'
+                  : 'bg-gradient-to-br from-gray-50 to-white border border-gray-100 hover:border-gray-200'
                   } hover:shadow-2xl`}
               >
                 {/* Background Pattern */}
@@ -261,8 +262,8 @@ export default function FeatureGrid({
                   {/* Category Badge */}
                   <div className="mt-4">
                     <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${isHighlighted
-                        ? 'bg-blue-100 text-blue-800'
-                        : 'bg-gray-100 text-gray-800'
+                      ? 'bg-blue-100 text-blue-800'
+                      : 'bg-gray-100 text-gray-800'
                       }`}>
                       {feature.category}
                     </span>

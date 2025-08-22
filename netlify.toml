@@ -1,55 +1,16 @@
 [build]
-  command = "npm run build:simple"
+  command = "npm run build"
   publish = ".next"
 
 [build.environment]
   NODE_VERSION = "22"
   NPM_VERSION = "10"
   NEXT_TELEMETRY_DISABLED = "1"
-  NEXT_APP_DIR = "1"
-  NEXT_PAGES_DIR = "0"
+  DATABASE_URL = "file:./dev.db"
+  PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING = "1"
 
-# Redirects for API routes (no functions needed)
+# Handle Next.js dynamic routes
 [[redirects]]
-  from = "/api/*"
-  to = "/api/:splat"
-  status = 200
-
-# Handle Next.js static files
-[[redirects]]
-  from = "/_next/static/*"
-  to = "/_next/static/:splat"
-  status = 200
-
-# Handle Next.js image optimization
-[[redirects]]
-  from = "/_next/image"
-  to = "/_next/image"
-  status = 200
-
-# Clerk auth routes
-[[redirects]]
-  from = "/sign-in"
-  to = "/sign-in"
-  status = 200
-
-[[redirects]]
-  from = "/sign-up"
-  to = "/sign-up"
-  status = 200
-
-[[redirects]]
-  from = "/user-profile"
-  to = "/user-profile"
-  status = 200
-
-# SSO callback routes
-[[redirects]]
-  from = "/sign-in/sso-callback"
-  to = "/sign-in/sso-callback"
-  status = 200
-
-[[redirects]]
-  from = "/sign-up/sso-callback"
-  to = "/sign-up/sso-callback"
+  from = "/*"
+  to = "/index.html"
   status = 200

@@ -40,7 +40,7 @@ export default function BulkPricingDeals({ className = '' }: BulkPricingDealsPro
 
     useEffect(() => {
         fetchDeals();
-        const interval = setInterval(fetchDeals, 30000); // Update every 30 seconds
+        const interval = setInterval(fetchDeals, 180000); // Update every 3 minutes
         return () => clearInterval(interval);
     }, []);
 

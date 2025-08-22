@@ -71,7 +71,11 @@ export function useAuthBridge() {
     email: simpleAuth.user.email || '',
     full_name: simpleAuth.user.username,
     phone: '',
-    created_at: simpleAuth.user.createdAt?.toISOString()
+    created_at: simpleAuth.user.createdAt ?
+      (typeof simpleAuth.user.createdAt === 'string' ?
+        simpleAuth.user.createdAt :
+        simpleAuth.user.createdAt.toISOString()
+      ) : undefined
   } : null;
 
   return {

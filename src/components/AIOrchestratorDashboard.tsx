@@ -31,7 +31,8 @@ import {
     Layers,
     GitBranch,
     Workflow
-, Flame} from 'lucide-react';
+    , Flame
+} from 'lucide-react';
 
 interface OrchestratorDashboardProps {
     className?: string;
@@ -85,7 +86,7 @@ export default function AIOrchestratorDashboard({ className = '' }: Orchestrator
 
     useEffect(() => {
         fetchOrchestratorData();
-        const interval = setInterval(fetchOrchestratorData, 30000); // Update every 30 seconds
+        const interval = setInterval(fetchOrchestratorData, 120000); // Update every 2 minutes
         return () => clearInterval(interval);
     }, []);
 

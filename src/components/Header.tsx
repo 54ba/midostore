@@ -3,41 +3,38 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useSimpleAuth } from '@/app/contexts/SimpleAuthContext';
+import { Crown, ShoppingBag, Menu, X, ChevronDown } from 'lucide-react';
 import { useCart } from '@/app/contexts/CartContext';
-import {
-  ShoppingBag,
-  Search,
-  Crown,
-  Menu,
-  X
-} from 'lucide-react';
-import ThemeToggle from './ThemeToggle';
 import LocalizationSelector from './LocalizationSelector';
+import ThemeToggle from './ThemeToggle';
 import SimpleUserProfile from './SimpleUserProfile';
 
 export default function Header({ id }: { id?: string } = {}) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { user, loading: authLoading } = useSimpleAuth();
+  const [isAIDropdownOpen, setIsAIDropdownOpen] = useState(false);
   const { cartItems } = useCart();
   const router = useRouter();
 
-  // Add loading state to prevent rendering before cart is initialized
   const [isCartLoaded, setIsCartLoaded] = useState(false);
+  const [cartItemCount, setCartItemCount] = useState(0);
 
   useEffect(() => {
-    // Set cart as loaded after a brief delay to ensure context is ready
-    const timer = setTimeout(() => setIsCartLoaded(true), 100);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Safe cart item count calculation with null checks
-  const cartItemCount = cartItems && Array.isArray(cartItems)
-    ? cartItems.reduce((total, item) => total + (item?.quantity || 0), 0)
-    : 0;
+    if (cartItems) {
+      setIsCartLoaded(true);
+      setCartItemCount(cartItems && Array.isArray(cartItems) ? cartItems.reduce((total, item) => total + item.quantity, 0) : 0);
+    }
+  }, [cartItems]);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const toggleAIDropdown = () => {
+    setIsAIDropdownOpen(!isAIDropdownOpen);
+  };
+
+  const closeAIDropdown = () => {
+    setIsAIDropdownOpen(false);
   };
 
   return (
@@ -53,7 +50,7 @@ export default function Header({ id }: { id?: string } = {}) {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8">
+          <nav className="hidden md:flex space-x-6">
             <Link
               href="/products"
               className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors duration-200"
@@ -65,6 +62,129 @@ export default function Header({ id }: { id?: string } = {}) {
               className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors duration-200"
             >
               Dashboard
+            </Link>
+
+            {/* AI Services Dropdown */}
+            <div className="relative">
+              <button
+                onClick={toggleAIDropdown}
+                onBlur={() => setTimeout(closeAIDropdown, 150)}
+                className="flex items-center space-x-1 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors duration-200"
+              >
+                <span>AI Services</span>
+                <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isAIDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {isAIDropdownOpen && (
+                <div className="absolute top-full left-0 mt-1 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50">
+                  <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white">AI-Powered Services</h3>
+                  </div>
+
+                  <div className="py-1">
+                    <Link
+                      href="/ai-recommendations"
+                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
+                      onClick={closeAIDropdown}
+                    >
+                      🎯 AI Recommendations
+                    </Link>
+                    <Link
+                      href="/ai-powered-scraping"
+                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
+                      onClick={closeAIDropdown}
+                    >
+                      🤖 AI Scraping Tools
+                    </Link>
+                    <Link
+                      href="/social-trend-analysis"
+                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
+                      onClick={closeAIDropdown}
+                    >
+                      📊 Social Trend Analysis
+                    </Link>
+                    <Link
+                      href="/dashboard/ai-orchestrator"
+                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
+                      onClick={closeAIDropdown}
+                    >
+                      🎼 AI Orchestrator
+                    </Link>
+                    <Link
+                      href="/dashboard/ai-agents"
+                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
+                      onClick={closeAIDropdown}
+                    >
+                      🤖 AI Agents
+                    </Link>
+                  </div>
+
+                  <div className="px-4 py-2 border-t border-gray-200 dark:border-gray-700">
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Powered by advanced AI algorithms</p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <Link
+              href="/localization-demo"
+              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors duration-200"
+            >
+              Localization
+            </Link>
+            <Link
+              href="/dashboard/bulk-deals"
+              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors duration-200"
+            >
+              Bulk Pricing
+            </Link>
+            <Link
+              href="/dashboard/advertising"
+              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors duration-200"
+            >
+              Advertising
+            </Link>
+            <Link
+              href="/dashboard/scraping"
+              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors duration-200"
+            >
+              Scraping Tools
+            </Link>
+            <Link
+              href="/dashboard/enhanced-dashboard"
+              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors duration-200"
+            >
+              Analytics
+            </Link>
+            <Link
+              href="/dashboard/manager"
+              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors duration-200"
+            >
+              Manager
+            </Link>
+            <Link
+              href="/dashboard/orders"
+              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors duration-200"
+            >
+              Orders
+            </Link>
+            <Link
+              href="/dashboard/user-profile"
+              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors duration-200"
+            >
+              Profile
+            </Link>
+            <Link
+              href="/cart"
+              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors duration-200"
+            >
+              Cart
+            </Link>
+            <Link
+              href="/checkout"
+              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors duration-200"
+            >
+              Checkout
             </Link>
             <Link
               href="/contact"
@@ -115,7 +235,7 @@ export default function Header({ id }: { id?: string } = {}) {
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
           <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+            <div className="px-2 pt-2 pb-3 space-y-2 sm:px-3 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
               <Link
                 href="/products"
                 className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 block px-3 py-2 text-base font-medium transition-colors duration-200"
@@ -129,6 +249,123 @@ export default function Header({ id }: { id?: string } = {}) {
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Dashboard
+              </Link>
+
+              {/* AI Services Section Header */}
+              <div className="px-3 py-2 border-t border-gray-200 dark:border-gray-700">
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wide">AI Services</h3>
+              </div>
+
+              <Link
+                href="/ai-recommendations"
+                className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 block px-3 py-2 text-base font-medium transition-colors duration-200 ml-4"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                🎯 AI Recommendations
+              </Link>
+              <Link
+                href="/ai-powered-scraping"
+                className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 block px-3 py-2 text-base font-medium transition-colors duration-200 ml-4"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                🤖 AI Scraping Tools
+              </Link>
+              <Link
+                href="/social-trend-analysis"
+                className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 block px-3 py-2 text-base font-medium transition-colors duration-200 ml-4"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                📊 Social Trend Analysis
+              </Link>
+              <Link
+                href="/dashboard/ai-orchestrator"
+                className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 block px-3 py-2 text-base font-medium transition-colors duration-200 ml-4"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                🎼 AI Orchestrator
+              </Link>
+              <Link
+                href="/dashboard/ai-agents"
+                className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 block px-3 py-2 text-base font-medium transition-colors duration-200 ml-4"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                🤖 AI Agents
+              </Link>
+
+              {/* Other Services Section Header */}
+              <div className="px-3 py-2 border-t border-gray-200 dark:border-gray-700">
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wide">Other Services</h3>
+              </div>
+
+              <Link
+                href="/localization-demo"
+                className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 block px-3 py-2 text-base font-medium transition-colors duration-200"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Localization
+              </Link>
+              <Link
+                href="/dashboard/bulk-deals"
+                className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 block px-3 py-2 text-base font-medium transition-colors duration-200"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Bulk Pricing
+              </Link>
+              <Link
+                href="/dashboard/advertising"
+                className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 block px-3 py-2 text-base font-medium transition-colors duration-200"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Advertising
+              </Link>
+              <Link
+                href="/dashboard/scraping"
+                className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 block px-3 py-2 text-base font-medium transition-colors duration-200"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Scraping Tools
+              </Link>
+              <Link
+                href="/dashboard/enhanced-dashboard"
+                className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 block px-3 py-2 text-base font-medium transition-colors duration-200"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Analytics
+              </Link>
+              <Link
+                href="/dashboard/manager"
+                className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 block px-3 py-2 text-base font-medium transition-colors duration-200"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Manager
+              </Link>
+              <Link
+                href="/dashboard/orders"
+                className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 block px-3 py-2 text-base font-medium transition-colors duration-200"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Orders
+              </Link>
+              <Link
+                href="/dashboard/user-profile"
+                className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 block px-3 py-2 text-base font-medium transition-colors duration-200"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Profile
+              </Link>
+              <Link
+                href="/cart"
+                className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 block px-3 py-2 text-base font-medium transition-colors duration-200"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Cart
+              </Link>
+              <Link
+                href="/checkout"
+                className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 block px-3 py-2 text-base font-medium transition-colors duration-200"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Checkout
               </Link>
               <Link
                 href="/contact"

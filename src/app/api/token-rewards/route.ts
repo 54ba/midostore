@@ -1,164 +1,57 @@
 // @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server';
 import TokenRewardsService from '@/lib/token-rewards-service';
-import Web3Service from '@/lib/web3-service';
-import envConfig from '@/env.config';
 
-// Initialize services
-const web3Config = {
-    rpcUrl: envConfig.ETHEREUM_RPC_URL || 'https://mainnet.infura.io/v3/your-project-id',
-    chainId: envConfig.ETHEREUM_CHAIN_ID || 1,
-    tokenContractAddress: envConfig.TOKEN_CONTRACT_ADDRESS || '',
-    rewardContractAddress: envConfig.REWARD_CONTRACT_ADDRESS || '',
-    p2pMarketplaceAddress: envConfig.P2P_MARKETPLACE_ADDRESS || '',
-    gaslessRelayerUrl: envConfig.GASLESS_RELAYER_URL,
-};
-
-const web3Service = new Web3Service(web3Config);
-const tokenRewardsService = new TokenRewardsService(web3Service);
+// Initialize token rewards service
+const tokenRewardsService = new TokenRewardsService();
 
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
-        const action = searchParams.get('action') || 'reward-tiers';
-        const userId = searchParams.get('userId') as string | null;
+        const action = searchParams.get('action');
+        const userId = searchParams.get('userId');
 
-        switch (action) {
-            case 'user-profile':
-                if (!userId) {
-                    return NextResponse.json(
-                        { error: 'User ID is required' },
-                        { status: 400 }
-                    );
-                }
-
-                const profile = await tokenRewardsService.getUserRewardProfile(userId);
-                if (!profile) {
-                    return NextResponse.json(
-                        { error: 'User profile not found' },
-                        { status: 404 }
-                    );
-                }
-
-                return NextResponse.json({
-                    success: true,
-                    data: profile,
-                });
-
-            case 'reward-tiers':
-                const tiers = tokenRewardsService.getRewardTiers();
-                return NextResponse.json({
-                    success: true,
-                    data: tiers,
-                });
-
-            case 'leaderboard':
-                const limit = parseInt(searchParams.get('limit') || '10');
-                const leaderboard = await tokenRewardsService.getTokenLeaderboard(limit);
-                return NextResponse.json({
-                    success: true,
-                    data: leaderboard,
-                });
-
-            case 'stats':
-                const stats = await tokenRewardsService.getRewardStats();
-                return NextResponse.json({
-                    success: true,
-                    data: stats,
-                });
-
-            case 'reward-rules':
-                // Return the reward rules (this would typically come from a database)
-                const rules = [
-                    {
-                        id: 'daily-login',
-                        name: 'Daily Login',
-                        description: 'Earn tokens for logging in daily',
-                        baseTokens: 5,
-                        maxPerDay: 1,
-                    },
-                    {
-                        id: 'product-purchase',
-                        name: 'Product Purchase',
-                        description: 'Earn tokens for purchasing products',
-                        baseTokens: 10,
-                        maxPerDay: 10,
-                    },
-                    {
-                        id: 'product-review',
-                        name: 'Product Review',
-                        description: 'Earn tokens for writing helpful reviews',
-                        baseTokens: 15,
-                        maxPerDay: 5,
-                    },
-                    {
-                        id: 'referral',
-                        name: 'User Referral',
-                        description: 'Earn tokens for referring new users',
-                        baseTokens: 50,
-                        maxPerDay: 5,
-                    },
-                    {
-                        id: 'social-sharing',
-                        name: 'Social Media Sharing',
-                        description: 'Earn tokens for sharing products on social media',
-                        baseTokens: 8,
-                        maxPerDay: 3,
-                    },
-                    {
-                        id: 'bulk-purchase',
-                        name: 'Bulk Purchase',
-                        description: 'Earn bonus tokens for bulk purchases',
-                        baseTokens: 25,
-                        maxPerDay: 5,
-                    },
-                    {
-                        id: 'early-adopter',
-                        name: 'Early Adopter',
-                        description: 'Earn tokens for being an early adopter of new features',
-                        baseTokens: 100,
-                        maxPerDay: 1,
-                    },
-                    {
-                        id: 'community-contribution',
-                        name: 'Community Contribution',
-                        description: 'Earn tokens for contributing to the community',
-                        baseTokens: 20,
-                        maxPerDay: 2,
-                    },
-                    {
-                        id: 'loyalty-streak',
-                        name: 'Loyalty Streak',
-                        description: 'Earn bonus tokens for consecutive days of activity',
-                        baseTokens: 10,
-                        maxPerDay: 1,
-                    },
-                    {
-                        id: 'p2p-trading',
-                        name: 'P2P Trading',
-                        description: 'Earn tokens for successful P2P trades',
-                        baseTokens: 30,
-                        maxPerDay: 10,
-                    },
-                ];
-
-                return NextResponse.json({
-                    success: true,
-                    data: rules,
-                });
-
-            default:
-                return NextResponse.json(
-                    { error: 'Invalid action parameter' },
-                    { status: 400 }
-                );
+        if (!action) {
+            return NextResponse.json({
+                success: false,
+                error: 'Action parameter is required'
+            }, { status: 400 });
         }
+
+        let result;
+        switch (action) {
+            case 'user-rewards':
+                if (!userId) {
+                    return NextResponse.json({
+                        success: false,
+                        error: 'User ID is required for user-rewards action'
+                    }, { status: 400 });
+                }
+                result = await tokenRewardsService.getUserRewards(userId);
+                break;
+            case 'leaderboard':
+                result = await tokenRewardsService.getLeaderboard();
+                break;
+            case 'available-rewards':
+                result = await tokenRewardsService.getAvailableRewards();
+                break;
+            default:
+                return NextResponse.json({
+                    success: false,
+                    error: 'Invalid action'
+                }, { status: 400 });
+        }
+
+        return NextResponse.json({
+            success: true,
+            data: result
+        });
     } catch (error) {
-        console.error('Error in token rewards GET:', error);
-        return NextResponse.json(
-            { error: 'Failed to process request' },
-            { status: 500 }
-        );
+        console.error('Error in token-rewards GET:', error);
+        return NextResponse.json({
+            success: false,
+            error: 'Internal server error'
+        }, { status: 500 });
     }
 }
 

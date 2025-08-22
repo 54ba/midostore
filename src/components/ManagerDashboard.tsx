@@ -37,7 +37,8 @@ import {
     Play,
     Pause,
     RotateCcw
-, Flame, AlertCircle} from 'lucide-react';
+    , Flame, AlertCircle
+} from 'lucide-react';
 
 interface ManagerDashboardProps {
     className?: string;
@@ -72,7 +73,7 @@ export default function ManagerDashboard({ className = '' }: ManagerDashboardPro
 
     useEffect(() => {
         fetchManagerData();
-        const interval = setInterval(fetchManagerData, 30000); // Update every 30 seconds
+        const interval = setInterval(fetchManagerData, 180000); // Update every 3 minutes
         return () => clearInterval(interval);
     }, []);
 
@@ -245,8 +246,8 @@ export default function ManagerDashboard({ className = '' }: ManagerDashboardPro
                             key={view.id}
                             onClick={() => setActiveView(view.id)}
                             className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${activeView === view.id
-                                    ? 'bg-purple-100 text-purple-700'
-                                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                                ? 'bg-purple-100 text-purple-700'
+                                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                                 }`}
                         >
                             <view.icon className="w-4 h-4" />
@@ -411,7 +412,7 @@ export default function ManagerDashboard({ className = '' }: ManagerDashboardPro
                                         </div>
                                         <div>
                                             <p className="font-medium text-gray-900">Service scaling decision executed</p>
-                                            <p className="text-sm text-gray-600">Web3 service scaled up by 50%</p>
+                                            <p className="text-sm text-gray-600">Analytics service scaled up by 50%</p>
                                         </div>
                                     </div>
                                     <span className="text-sm text-gray-500">5 min ago</span>
@@ -502,8 +503,8 @@ export default function ManagerDashboard({ className = '' }: ManagerDashboardPro
                                         <div className="text-right">
                                             <p className="font-medium text-gray-900">${order.total}</p>
                                             <span className={`px-2 py-1 rounded text-xs font-medium ${order.status === 'delivered' ? 'bg-green-100 text-green-700' :
-                                                    order.status === 'shipped' ? 'bg-blue-100 text-blue-700' :
-                                                        'bg-yellow-100 text-yellow-700'
+                                                order.status === 'shipped' ? 'bg-blue-100 text-blue-700' :
+                                                    'bg-yellow-100 text-yellow-700'
                                                 }`}>
                                                 {order.status}
                                             </span>
@@ -524,8 +525,8 @@ export default function ManagerDashboard({ className = '' }: ManagerDashboardPro
                                             <p className="text-sm text-gray-600">${listing.price}</p>
                                         </div>
                                         <span className={`px-2 py-1 rounded text-xs font-medium ${listing.status === 'active' ? 'bg-green-100 text-green-700' :
-                                                listing.status === 'sold' ? 'bg-blue-100 text-blue-700' :
-                                                    'bg-gray-100 text-gray-700'
+                                            listing.status === 'sold' ? 'bg-blue-100 text-blue-700' :
+                                                'bg-gray-100 text-gray-700'
                                             }`}>
                                             {listing.status}
                                         </span>
@@ -624,7 +625,7 @@ export default function ManagerDashboard({ className = '' }: ManagerDashboardPro
                         <div className="bg-gray-50 rounded-lg p-6">
                             <h3 className="text-lg font-semibold text-gray-900 mb-4">Service Health Monitor</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {['web3-service', 'p2p-marketplace', 'token-rewards', 'bulk-pricing', 'analytics', 'scraping'].map((service, index) => (
+                                {['p2p-marketplace', 'token-rewards', 'bulk-pricing', 'analytics', 'scraping'].map((service, index) => (
                                     <div key={index} className="bg-white rounded-lg p-4">
                                         <div className="flex items-center justify-between mb-2">
                                             <span className="font-medium text-gray-900">{service}</span>

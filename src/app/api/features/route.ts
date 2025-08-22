@@ -38,26 +38,6 @@ export async function GET(request: NextRequest) {
                     rating: 4.7
                 },
                 {
-                    id: 'crypto-payments',
-                    title: 'Crypto Payment Processing',
-                    description: 'Accept Bitcoin, Ethereum, and other cryptocurrencies',
-                    icon: 'Zap',
-                    category: 'Payments',
-                    isActive: true,
-                    usageCount: 9870,
-                    rating: 4.6
-                },
-                {
-                    id: 'p2p-marketplace',
-                    title: 'P2P Marketplace',
-                    description: 'Decentralized peer-to-peer trading platform',
-                    icon: 'Users',
-                    category: 'Trading',
-                    isActive: true,
-                    usageCount: 7560,
-                    rating: 4.5
-                },
-                {
                     id: 'order-batching',
                     title: 'Smart Order Batching',
                     description: 'Optimize shipping costs with intelligent order grouping',
@@ -96,6 +76,26 @@ export async function GET(request: NextRequest) {
                     isActive: true,
                     usageCount: 3980,
                     rating: 4.1
+                },
+                {
+                    id: 'secure-payments',
+                    title: 'Secure Payment Processing',
+                    description: 'Multiple payment methods with bank-level security and fraud protection',
+                    icon: 'Shield',
+                    category: 'Security',
+                    isActive: true,
+                    usageCount: 10000,
+                    rating: 4.9
+                },
+                {
+                    id: 'global-access',
+                    title: 'Global Market Access',
+                    description: 'Connect with suppliers and customers worldwide with multi-language support',
+                    icon: 'Globe',
+                    category: 'International',
+                    isActive: true,
+                    usageCount: 8000,
+                    rating: 4.6
                 }
             ];
 

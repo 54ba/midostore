@@ -16,12 +16,13 @@ interface Order {
 }
 
 interface Payment {
-  payment_id: string
-  order_id: string
-  stripe_payment_id: string
-  amount: number
-  status: string
-  created_at: string
+  id: string;
+  order_id: string;
+  amount: number;
+  status: string;
+  payment_method: string;
+  currency: string;
+  timestamp: string;
 }
 
 export default function OrderConfirmationPage() {
@@ -237,11 +238,7 @@ export default function OrderConfirmationPage() {
             <div id="payment-info-grid" className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div id="payment-id-section">
                 <p id="payment-id-label" className="text-sm text-gray-600">Payment ID</p>
-                <p id="payment-id-value" className="font-semibold text-[rgb(var(--foreground))]">{payment.payment_id}</p>
-              </div>
-              <div id="stripe-payment-section">
-                <p id="stripe-payment-label" className="text-sm text-gray-600">Stripe Payment ID</p>
-                <p id="stripe-payment-value" className="font-semibold text-[rgb(var(--foreground))]">{payment.stripe_payment_id}</p>
+                <p id="payment-id-value" className="font-semibold text-[rgb(var(--foreground))]">{payment.id}</p>
               </div>
               <div id="payment-amount-section">
                 <p id="payment-amount-label" className="text-sm text-gray-600">Amount Paid</p>

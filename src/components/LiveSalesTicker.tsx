@@ -20,13 +20,11 @@ interface LiveSale {
     customer: string;
     amount: number;
     currency: string;
-    paymentMethod: 'crypto' | 'traditional' | 'mixed';
+    paymentMethod: 'traditional' | 'mixed';
     location: string;
     timestamp: Date | string;
     isNew: boolean;
     priceChange?: number;
-    cryptoAmount?: number;
-    cryptoType?: string;
 }
 
 interface LivePriceUpdate {
@@ -64,9 +62,9 @@ export default function LiveSalesTicker() {
         fetchLiveData();
 
         // Set up real-time updates
-        const salesInterval = setInterval(fetchLiveSales, 3000); // Every 3 seconds
-        const priceInterval = setInterval(fetchPriceUpdates, 5000); // Every 5 seconds
-        const inventoryInterval = setInterval(fetchInventoryUpdates, 10000); // Every 10 seconds
+        const salesInterval = setInterval(fetchLiveSales, 30000); // Every 30 seconds
+        const priceInterval = setInterval(fetchPriceUpdates, 60000); // Every minute
+        const inventoryInterval = setInterval(fetchInventoryUpdates, 120000); // Every 2 minutes
 
         // Auto-scroll ticker
         const scrollInterval = setInterval(() => {
@@ -245,12 +243,6 @@ export default function LiveSalesTicker() {
             <span className="font-semibold">{sale.productTitle}</span>
             <span>for</span>
             <span className="font-bold">{formatCurrency(sale.amount, sale.currency)}</span>
-            {sale.paymentMethod === 'crypto' && sale.cryptoAmount && (
-                <span className="flex items-center gap-1">
-                    <Bitcoin className="w-3 h-3" />
-                    {sale.cryptoAmount.toFixed(4)} {sale.cryptoType}
-                </span>
-            )}
             <span className="text-gray-500 text-sm">• {sale.location}</span>
             <Clock className="w-3 h-3 text-gray-400" />
             <span className="text-gray-500 text-sm">{formatTimeAgo(sale.timestamp)}</span>

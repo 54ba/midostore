@@ -76,7 +76,7 @@ export default function AIAgentDashboard({ className = '' }: AIAgentDashboardPro
 
   useEffect(() => {
     fetchAgentData();
-    const interval = setInterval(fetchAgentData, 30000); // Update every 30 seconds
+    const interval = setInterval(fetchAgentData, 120000); // Update every 2 minutes
     return () => clearInterval(interval);
   }, []);
 
@@ -256,13 +256,11 @@ export default function AIAgentDashboard({ className = '' }: AIAgentDashboardPro
 
           <div className="flex items-center gap-4">
             {/* Status Indicator */}
-            <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-              isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-            }`}>
+            <div className={`px-3 py-1 rounded-full text-sm font-medium ${isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+              }`}>
               <div className="flex items-center gap-2">
-                <div className={`w-2 h-2 rounded-full ${
-                  isActive ? 'bg-green-500' : 'bg-red-500'
-                }`}></div>
+                <div className={`w-2 h-2 rounded-full ${isActive ? 'bg-green-500' : 'bg-red-500'
+                  }`}></div>
                 {isActive ? 'Active' : 'Inactive'}
               </div>
             </div>
@@ -302,11 +300,10 @@ export default function AIAgentDashboard({ className = '' }: AIAgentDashboardPro
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
-                activeTab === tab.id
+              className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${activeTab === tab.id
                   ? 'bg-purple-100 text-purple-700'
                   : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-              }`}
+                }`}
             >
               <tab.icon className="w-4 h-4" />
               {tab.label}
@@ -580,11 +577,10 @@ export default function AIAgentDashboard({ className = '' }: AIAgentDashboardPro
                     </div>
                     <div className="space-y-2">
                       {conversation.messages.map((message, msgIndex) => (
-                        <div key={msgIndex} className={`p-2 rounded ${
-                          message.type === 'HumanMessage'
+                        <div key={msgIndex} className={`p-2 rounded ${message.type === 'HumanMessage'
                             ? 'bg-blue-50 text-blue-900'
                             : 'bg-gray-50 text-gray-900'
-                        }`}>
+                          }`}>
                           <p className="text-sm">{message.content}</p>
                         </div>
                       ))}

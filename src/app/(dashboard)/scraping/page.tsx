@@ -51,7 +51,7 @@ export default function ScrapingDashboard() {
 
     useEffect(() => {
         fetchJobs();
-        const interval = setInterval(fetchJobs, 5000); // Refresh every 5 seconds
+        const interval = setInterval(fetchJobs, 30000); // Refresh every 30 seconds
         return () => clearInterval(interval);
     }, []);
 

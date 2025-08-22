@@ -25,9 +25,9 @@ export default function EnhancedDashboardPage() {
                 {/* Page Header */}
                 <div className="mb-8">
                     <h1 className="text-4xl font-extrabold text-gray-900">Enhanced Analytics Hub</h1>
-                    <p className="mt-2 text-gray-600">
-                        Comprehensive dashboard with crypto payments, real-time pricing, shipping tracking, and AI insights
-                    </p>
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                        Comprehensive dashboard with real-time pricing, shipping tracking, and AI insights
+                    </h2>
                 </div>
 
                 {/* Enhanced Dashboard */}
@@ -54,22 +54,22 @@ export default function EnhancedDashboardPage() {
                                 </div>
                                 <div>
                                     <h3 className="font-medium text-gray-900">Scrape Products</h3>
-                                    <p className="text-sm text-gray-600">Add new crypto and traditional products</p>
+                                    <p className="text-sm text-gray-600">Add new products to your inventory</p>
                                 </div>
                             </div>
                         </a>
 
-                        <button className="p-4 border border-gray-200 rounded-lg hover:border-green-500 hover:bg-green-50 transition-colors text-left">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                                    <span className="text-green-600 font-semibold">💰</span>
-                                </div>
+                        <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
+                            <div className="flex items-center justify-between">
                                 <div>
-                                    <h3 className="font-medium text-gray-900">Update Crypto Rates</h3>
-                                    <p className="text-sm text-gray-600">Refresh cryptocurrency exchange rates</p>
+                                    <h3 className="font-medium text-gray-900">Update Exchange Rates</h3>
+                                    <p className="text-sm text-gray-600">Refresh currency exchange rates</p>
                                 </div>
+                                <button className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+                                    Update
+                                </button>
                             </div>
-                        </button>
+                        </div>
 
                         <button className="p-4 border border-gray-200 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors text-left">
                             <div className="flex items-center gap-3">
@@ -90,16 +90,16 @@ export default function EnhancedDashboardPage() {
                     <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6 rounded-lg">
                         <h3 className="font-semibold mb-2">🌍 Global Localization</h3>
                         <p className="text-blue-100 text-sm">
-                            Support for 15+ languages and 25+ currencies including cryptocurrencies
+                            Support for 15+ languages and 25+ currencies with real-time exchange rates
                         </p>
                     </div>
 
-                    <div className="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-lg">
-                        <h3 className="font-semibold mb-2">₿ Crypto Integration</h3>
-                        <p className="text-green-100 text-sm">
-                            Accept Bitcoin, Ethereum, and other cryptocurrencies with real-time tracking
+                    <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-4 rounded-lg">
+                        <h3 className="font-semibold mb-2">🔒 Secure Payments</h3>
+                        <p className="text-purple-100 text-sm">
+                          Multiple payment methods with bank-level security and fraud protection
                         </p>
-                    </div>
+                      </div>
 
                     <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-6 rounded-lg">
                         <h3 className="font-semibold mb-2">📊 Real-time Pricing</h3>

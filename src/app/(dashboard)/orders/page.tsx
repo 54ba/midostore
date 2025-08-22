@@ -7,18 +7,29 @@ import OrderHistoryTable from '@/components/OrderHistoryTable'
 import LoadingSpinner from '@/components/LoadingSpinner'
 
 interface Order {
-  order_id: string
-  user_id: string
-  product_id: string
-  product_name: string
-  quantity: string
-  total_amount: string
+  id: string;
+  orderNumber: string;
+  customerName: string;
+  customerEmail: string;
+  products: Array<{
+    id: string;
+    name: string;
+    quantity: number;
+    price: number;
+    image: string;
+  }>;
+  totalAmount: number;
+  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  orderDate: string;
+  estimatedDelivery: string;
+  shippingAddress: string;
+  paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
+  paymentMethod: string;
 }
 
 interface Payment {
   payment_id: string
   order_id: string
-  stripe_payment_id: string
   amount: string
   status: string
   created_at: string

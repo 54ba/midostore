@@ -1,19 +1,12 @@
-import { LocalizationProvider } from '@/app/contexts/LocalizationContext'
+import { Suspense } from 'react'
 import { ThemeProvider } from '@/app/contexts/ThemeContext'
 import { SimpleAuthProvider } from '@/app/contexts/SimpleAuthContext'
+import { LocalizationProvider } from '@/app/contexts/LocalizationContext'
 import { CartProvider } from '@/app/contexts/CartContext'
-import { Suspense } from 'react'
-
-import { LocalizationProvider as LocalizationProviderType } from '@/app/contexts/LocalizationContext'
-import { ThemeProvider as ThemeProviderType } from '@/app/contexts/ThemeContext'
-import { SimpleAuthProvider as SimpleAuthProviderType } from '@/app/contexts/SimpleAuthContext'
-import { CartProvider as CartProviderType } from '@/app/contexts/CartContext'
 import LiveSalesTicker from '@/components/LiveSalesTicker'
-import SimpleAnalyticsTracker from '@/components/SimpleAnalyticsTracker'
-import type { Metadata } from 'next'
 import './globals.css'
 
-export const metadata: Metadata = {
+export const metadata = {
   title: 'MidoHub - Your Trusted Dropshipping Partner in the Gulf Region',
   description: 'Discover amazing products from Alibaba and AliExpress with AI-powered recommendations, real-time analytics, and comprehensive business intelligence.',
   keywords: 'dropshipping, alibaba, aliexpress, gulf region, UAE, Saudi Arabia, Kuwait, Qatar, Bahrain, Oman, AI recommendations, business analytics',
@@ -82,7 +75,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
                 {/* Analytics Tracker - Wrapped in Suspense */}
                 <Suspense fallback={null}>
-                  <SimpleAnalyticsTracker />
+                  {/* SimpleAnalyticsTracker */}
                 </Suspense>
               </CartProvider>
             </LocalizationProvider>
