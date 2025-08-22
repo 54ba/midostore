@@ -2,13 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSimpleAuth } from '@/app/contexts/SimpleAuthContext';
+import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft } from 'lucide-react';
 import { useCart } from '@/app/contexts/CartContext';
-import Header from '@/components/Header';
+import { useSimpleAuth } from '@/app/contexts/SimpleAuthContext';
+import Button from '@/components/Button';
 import CartItem from '@/components/CartItem';
 import LoadingSpinner from '@/components/LoadingSpinner';
-import Button from '@/components/Button';
-import { ShoppingCart, ArrowLeft, CreditCard } from 'lucide-react';
+import { ShoppingCart, CreditCard } from 'lucide-react';
 
 export default function CartPage() {
     const { user } = useSimpleAuth();
@@ -51,15 +51,14 @@ export default function CartPage() {
 
     if (safeCartItems.length === 0) {
         return (
-            <div className="min-h-screen bg-gray-50">
-                <Header />
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
                 <div className="max-w-4xl mx-auto px-4 py-16">
                     <div className="text-center">
-                        <div className="w-24 h-24 mx-auto mb-8 bg-gray-100 rounded-full flex items-center justify-center">
-                            <ShoppingCart className="w-12 h-12 text-gray-400" />
+                        <div className="w-24 h-24 mx-auto mb-8 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
+                            <ShoppingCart className="w-12 h-12 text-gray-400 dark:text-gray-500" />
                         </div>
-                        <h1 className="text-3xl font-bold text-gray-900 mb-4">Your cart is empty</h1>
-                        <p className="text-gray-600 mb-8 max-w-md mx-auto">
+                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Your cart is empty</h1>
+                        <p className="text-gray-600 dark:text-gray-300 mb-8 max-w-md mx-auto">
                             Looks like you haven't added any items to your cart yet. Start shopping to find great products!
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -87,15 +86,13 @@ export default function CartPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            <Header />
-
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
             <div className="max-w-6xl mx-auto px-4 py-8">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-8">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900">Shopping Cart</h1>
-                        <p className="text-gray-600 mt-1">
+                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Shopping Cart</h1>
+                        <p className="text-gray-600 dark:text-gray-300 mt-1">
                             {safeCartItems.length} {safeCartItems.length === 1 ? 'item' : 'items'} in your cart
                         </p>
                     </div>

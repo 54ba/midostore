@@ -16,12 +16,12 @@ interface ProductReview {
   userAvatar: string;
   rating: number;
   comment: string;
-  reviewDate: Date;
+  reviewDate: Date | string;
   isVerified: boolean;
   isPremium: boolean;
   helpfulCount: number;
   unhelpfulCount: number;
-  purchaseDate?: Date;
+  purchaseDate?: Date | string;
   productRating: number;
   productReviewCount: number;
   productSoldCount: number;
@@ -75,9 +75,17 @@ export default function ProductReviewCard({
     }
   };
 
-  const formatDate = (date: Date) => {
+  const formatDate = (date: Date | string) => {
+    // Convert string to Date if needed
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+
+    // Check if the date is valid
+    if (isNaN(dateObj.getTime())) {
+      return 'Recently';
+    }
+
     const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
+    const diffTime = Math.abs(now.getTime() - dateObj.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
     if (diffDays === 1) return '1 day ago';
@@ -89,7 +97,7 @@ export default function ProductReviewCard({
 
   return (
     <div
-      className={`group relative bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 ${className}`}
+      className={`group relative bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -133,11 +141,10 @@ export default function ProductReviewCard({
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className={`w-4 h-4 ${
-                        i < Math.floor(review.productRating)
-                          ? 'text-yellow-400 fill-current'
-                          : 'text-gray-300'
-                      }`}
+                      className={`w-4 h-4 ${i < Math.floor(review.productRating)
+                        ? 'text-yellow-400 fill-current'
+                        : 'text-gray-300'
+                        }`}
                     />
                   ))}
                   <span className="text-sm text-gray-600 ml-1">
@@ -198,11 +205,10 @@ export default function ProductReviewCard({
             {[...Array(5)].map((_, i) => (
               <Star
                 key={i}
-                className={`w-4 h-4 ${
-                  i < Math.floor(review.rating)
-                    ? 'text-yellow-400 fill-current'
-                    : 'text-gray-300'
-                }`}
+                className={`w-4 h-4 ${i < Math.floor(review.rating)
+                  ? 'text-yellow-400 fill-current'
+                  : 'text-gray-300'
+                  }`}
               />
             ))}
             <span className="ml-2 text-sm font-medium text-gray-600">
@@ -215,8 +221,8 @@ export default function ProductReviewCard({
             {getRatingIcon(review.rating)}
             <span className="text-xs font-medium text-gray-500">
               {review.rating >= 4.8 ? 'Premium' :
-               review.rating >= 4.5 ? 'Excellent' :
-               review.rating >= 4.0 ? 'Great' : 'Good'}
+                review.rating >= 4.5 ? 'Excellent' :
+                  review.rating >= 4.0 ? 'Great' : 'Good'}
             </span>
           </div>
         </div>
@@ -289,11 +295,10 @@ export default function ProductReviewCard({
         <div className="flex items-center space-x-2">
           <button
             onClick={() => handleHelpful(true)}
-            className={`flex items-center space-x-1 px-3 py-2 rounded-lg text-sm transition-colors duration-200 ${
-              isHelpfulClicked === 'helpful'
-                ? 'bg-green-100 text-green-700'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
+            className={`flex items-center space-x-1 px-3 py-2 rounded-lg text-sm transition-colors duration-200 ${isHelpfulClicked === 'helpful'
+              ? 'bg-green-100 text-green-700'
+              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
           >
             <ThumbsUp className="w-4 h-4" />
             <span>{review.helpfulCount + (isHelpfulClicked === 'helpful' ? 1 : 0)}</span>
@@ -301,11 +306,10 @@ export default function ProductReviewCard({
 
           <button
             onClick={() => handleHelpful(false)}
-            className={`flex items-center space-x-1 px-3 py-2 rounded-lg text-sm transition-colors duration-200 ${
-              isHelpfulClicked === 'unhelpful'
-                ? 'bg-red-100 text-red-700'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
+            className={`flex items-center space-x-1 px-3 py-2 rounded-lg text-sm transition-colors duration-200 ${isHelpfulClicked === 'unhelpful'
+              ? 'bg-red-100 text-red-700'
+              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
           >
             <ThumbsDown className="w-4 h-4" />
             <span>{review.unhelpfulCount + (isHelpfulClicked === 'unhelpful' ? 1 : 0)}</span>
@@ -317,9 +321,8 @@ export default function ProductReviewCard({
       <div className={`absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
 
       {/* Corner Decoration */}
-      <div className={`absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-bl-2xl transform rotate-45 origin-top-right transition-transform duration-500 ${
-        isHovered ? 'scale-150' : 'scale-100'
-      }`}></div>
+      <div className={`absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-bl-2xl transform rotate-45 origin-top-right transition-transform duration-500 ${isHovered ? 'scale-150' : 'scale-100'
+        }`}></div>
     </div>
   );
 }

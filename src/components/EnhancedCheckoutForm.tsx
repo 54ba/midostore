@@ -124,7 +124,7 @@ export default function EnhancedCheckoutForm({
             <div key={step.number} className="flex items-center">
               <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${currentStep >= step.number
                 ? 'border-primary bg-blue-500 text-white'
-                : 'border-gray-300 bg-white text-gray-500'
+                : 'border-gray-300 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400'
                 }`}>
                 {currentStep > step.number ? (
                   <CheckCircle className="w-5 h-5" />
@@ -155,8 +155,8 @@ export default function EnhancedCheckoutForm({
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Step 1: Personal Information */}
         {currentStep === 1 && (
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Personal Information</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Personal Information</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
@@ -212,8 +212,8 @@ export default function EnhancedCheckoutForm({
 
         {/* Step 2: Shipping Address */}
         {currentStep === 2 && (
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Shipping Address</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Shipping Address</h2>
             <div className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Street Address</label>
@@ -287,8 +287,8 @@ export default function EnhancedCheckoutForm({
 
         {/* Step 3: Payment Information */}
         {currentStep === 3 && (
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Payment Information</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">Payment Information</h2>
             <div className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Card Number</label>

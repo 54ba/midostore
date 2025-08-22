@@ -78,7 +78,7 @@ export default function CheckoutForm({ id, onSubmit, loading = false }: Checkout
   }
 
   return (
-    <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-8">
+          <div className="max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
       <div className="mb-8">
         <h2 id="checkout-form-title" className="text-3xl font-bold text-[rgb(var(--foreground))] mb-2">
           Checkout Information
@@ -94,7 +94,7 @@ export default function CheckoutForm({ id, onSubmit, loading = false }: Checkout
           <h3 id="checkout-form-contact-heading" className="text-xl font-semibold text-[rgb(var(--foreground))] border-b border-gray-200 pb-2">
             Contact Information
           </h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label htmlFor="checkout-form-email" className="block text-sm font-medium text-[rgb(var(--foreground))] mb-2">
@@ -169,7 +169,7 @@ export default function CheckoutForm({ id, onSubmit, loading = false }: Checkout
           <h3 id="checkout-form-shipping-heading" className="text-xl font-semibold text-[rgb(var(--foreground))] border-b border-gray-200 pb-2">
             Shipping Address
           </h3>
-          
+
           <div>
             <label htmlFor="checkout-form-address" className="block text-sm font-medium text-[rgb(var(--foreground))] mb-2">
               Street Address *

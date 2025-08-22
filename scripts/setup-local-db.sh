@@ -2,24 +2,44 @@
 
 echo "🚀 Setting up local SQLite database for MidoStore..."
 
-# Check if Prisma is installed
-if ! command -v npx prisma &> /dev/null; then
-    echo "❌ Prisma CLI not found. Installing Prisma..."
-    npm install prisma @prisma/client
+# Check if Node.js is available
+if ! command -v node &> /dev/null; then
+    echo "❌ Node.js not found. Please install Node.js first."
+    exit 1
 fi
 
-# Generate Prisma client
-echo "📦 Generating Prisma client..."
-npx prisma generate
+# Install dependencies if needed
+if [ ! -d "node_modules" ]; then
+    echo "📦 Installing dependencies..."
+    npm install
+fi
 
-# Push the schema to create the database
-echo "🗄️  Creating local SQLite database..."
-npx prisma db push
+# Initialize SQLite database manually
+echo "🗄️  Initializing SQLite database..."
+npm run db:init
 
-# Seed the database with initial data
-echo "🌱 Seeding database with initial data..."
-npm run db:seed
+if [ $? -eq 0 ]; then
+    echo "✅ Database initialization completed successfully!"
+    echo "📊 You can view your database with: npm run db:studio"
+    echo "🗄️  Database file: prisma/dev.db"
+    echo "🌱 To re-seed with scraper data: npm run db:seed:scraper"
+    echo "🔄 To reinitialize database: npm run db:init"
+else
+    echo "❌ Database initialization failed!"
+    echo "💡 Trying alternative method with Prisma..."
 
-echo "✅ Local database setup complete!"
-echo "📊 You can view your database with: npm run db:studio"
-echo "🗄️  Database file: prisma/dev.db"
+    # Fallback to Prisma if available
+    if command -v npx prisma &> /dev/null; then
+        echo "📦 Generating Prisma client..."
+        PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1 npx prisma generate
+
+        echo "🗄️  Creating database with Prisma..."
+        PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1 npx prisma db push
+
+        echo "🌱 Seeding database with scraper data..."
+        npm run db:seed:scraper
+    else
+        echo "❌ Neither method worked. Please check your setup."
+        exit 1
+    fi
+fi

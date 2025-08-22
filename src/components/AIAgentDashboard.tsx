@@ -226,7 +226,7 @@ export default function AIAgentDashboard({ className = '' }: AIAgentDashboardPro
 
   if (loading && !supervisorStatus) {
     return (
-      <div className={`bg-white rounded-lg shadow-sm border border-gray-200 p-8 ${className}`}>
+      <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-8 ${className}`}>
         <div className="animate-pulse">
           <div className="h-8 bg-gray-200 rounded w-1/3 mb-6"></div>
           <div className="space-y-4">
@@ -240,7 +240,7 @@ export default function AIAgentDashboard({ className = '' }: AIAgentDashboardPro
   }
 
   return (
-    <div className={`bg-white rounded-lg shadow-sm border border-gray-200 ${className}`}>
+    <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 ${className}`}>
       {/* Header */}
       <div className="border-b border-gray-200 p-6">
         <div className="flex items-center justify-between">
@@ -301,8 +301,8 @@ export default function AIAgentDashboard({ className = '' }: AIAgentDashboardPro
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${activeTab === tab.id
-                  ? 'bg-purple-100 text-purple-700'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                ? 'bg-purple-100 text-purple-700'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                 }`}
             >
               <tab.icon className="w-4 h-4" />
@@ -372,7 +372,7 @@ export default function AIAgentDashboard({ className = '' }: AIAgentDashboardPro
                 <div className="space-y-3">
                   <button
                     onClick={() => executeQuickAction('analyze-system')}
-                    className="w-full flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-sm transition-all"
+                    className="w-full flex items-center gap-3 p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-400 hover:shadow-sm transition-all"
                   >
                     <Cpu className="w-5 h-5 text-blue-600" />
                     <div className="text-left">
@@ -383,7 +383,7 @@ export default function AIAgentDashboard({ className = '' }: AIAgentDashboardPro
 
                   <button
                     onClick={() => executeQuickAction('business-intelligence')}
-                    className="w-full flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200 hover:border-green-300 hover:shadow-sm transition-all"
+                    className="w-full flex items-center gap-3 p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-green-300 dark:hover:border-green-400 hover:shadow-sm transition-all"
                   >
                     <TrendingUp className="w-5 h-5 text-green-600" />
                     <div className="text-left">
@@ -394,7 +394,7 @@ export default function AIAgentDashboard({ className = '' }: AIAgentDashboardPro
 
                   <button
                     onClick={() => executeQuickAction('crisis-assessment')}
-                    className="w-full flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200 hover:border-red-300 hover:shadow-sm transition-all"
+                    className="w-full flex items-center gap-3 p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-red-300 dark:hover:border-red-400 hover:shadow-sm transition-all"
                   >
                     <Shield className="w-5 h-5 text-red-600" />
                     <div className="text-left">
@@ -410,7 +410,7 @@ export default function AIAgentDashboard({ className = '' }: AIAgentDashboardPro
                 <div className="space-y-3">
                   <button
                     onClick={() => executeQuickAction('optimization-review')}
-                    className="w-full flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200 hover:border-purple-300 hover:shadow-sm transition-all"
+                    className="w-full flex items-center gap-3 p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-purple-300 dark:hover:border-purple-400 hover:shadow-sm transition-all"
                   >
                     <Zap className="w-5 h-5 text-purple-600" />
                     <div className="text-left">
@@ -419,7 +419,7 @@ export default function AIAgentDashboard({ className = '' }: AIAgentDashboardPro
                     </div>
                   </button>
 
-                  <button className="w-full flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200 hover:border-yellow-300 hover:shadow-sm transition-all">
+                  <button className="w-full flex items-center gap-3 p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-yellow-300 dark:hover:border-yellow-400 hover:shadow-sm transition-all">
                     <Eye className="w-5 h-5 text-yellow-600" />
                     <div className="text-left">
                       <p className="font-medium text-gray-900">Decision Validation</p>
@@ -427,7 +427,7 @@ export default function AIAgentDashboard({ className = '' }: AIAgentDashboardPro
                     </div>
                   </button>
 
-                  <button className="w-full flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200 hover:border-indigo-300 hover:shadow-sm transition-all">
+                  <button className="w-full flex items-center gap-3 p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-indigo-300 dark:hover:border-indigo-400 hover:shadow-sm transition-all">
                     <Workflow className="w-5 h-5 text-indigo-600" />
                     <div className="text-left">
                       <p className="font-medium text-gray-900">Multi-Agent Coordination</p>
@@ -443,7 +443,7 @@ export default function AIAgentDashboard({ className = '' }: AIAgentDashboardPro
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Agent Activity</h3>
               <div className="space-y-3">
                 {tasks.slice(0, 5).map((task, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-white rounded-lg">
+                  <div key={index} className="flex items-center justify-between p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
                     <div className="flex items-center gap-3">
                       {getAgentIcon(task.assignedAgent)}
                       <div>
@@ -567,7 +567,7 @@ export default function AIAgentDashboard({ className = '' }: AIAgentDashboardPro
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Conversations</h3>
               <div className="space-y-4">
                 {conversations.slice(0, 10).map((conversation, index) => (
-                  <div key={index} className="bg-white rounded-lg p-4">
+                  <div key={index} className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
                     <div className="flex items-center gap-2 mb-2">
                       {getAgentIcon(conversation.agentId)}
                       <span className="font-medium text-gray-900">
@@ -578,8 +578,8 @@ export default function AIAgentDashboard({ className = '' }: AIAgentDashboardPro
                     <div className="space-y-2">
                       {conversation.messages.map((message, msgIndex) => (
                         <div key={msgIndex} className={`p-2 rounded ${message.type === 'HumanMessage'
-                            ? 'bg-blue-50 text-blue-900'
-                            : 'bg-gray-50 text-gray-900'
+                          ? 'bg-blue-50 text-blue-900'
+                          : 'bg-gray-50 text-gray-900'
                           }`}>
                           <p className="text-sm">{message.content}</p>
                         </div>
@@ -648,7 +648,7 @@ export default function AIAgentDashboard({ className = '' }: AIAgentDashboardPro
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Task Management</h3>
               <div className="space-y-3">
                 {tasks.map((task) => (
-                  <div key={task.id} className="bg-white rounded-lg p-4">
+                  <div key={task.id} className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
                     <div className="flex items-start justify-between">
                       <div className="flex items-start gap-3">
                         {getAgentIcon(task.assignedAgent)}
@@ -742,31 +742,31 @@ export default function AIAgentDashboard({ className = '' }: AIAgentDashboardPro
               <div className="bg-gray-50 rounded-lg p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Agent Coordination</h3>
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-white rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
                     <div className="flex items-center gap-2">
                       <Activity className="w-4 h-4 text-blue-500" />
-                      <span className="text-gray-700">System Analyst</span>
+                      <span className="text-gray-700 dark:text-gray-300">System Analyst</span>
                     </div>
                     <span className="text-green-600 text-sm">Active</span>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-white rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
                     <div className="flex items-center gap-2">
                       <TrendingUp className="w-4 h-4 text-green-500" />
-                      <span className="text-gray-700">Business Intelligence</span>
+                      <span className="text-gray-700 dark:text-gray-300">Business Intelligence</span>
                     </div>
                     <span className="text-green-600 text-sm">Active</span>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-white rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
                     <div className="flex items-center gap-2">
                       <Shield className="w-4 h-4 text-red-500" />
-                      <span className="text-gray-700">Crisis Manager</span>
+                      <span className="text-gray-700 dark:text-gray-300">Crisis Manager</span>
                     </div>
                     <span className="text-green-600 text-sm">Monitoring</span>
                   </div>
-                  <div className="flex items-center justify-between p-3 bg-white rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
                     <div className="flex items-center gap-2">
                       <Eye className="w-4 h-4 text-purple-500" />
-                      <span className="text-gray-700">Decision Supervisor</span>
+                      <span className="text-gray-700 dark:text-gray-300">Decision Supervisor</span>
                     </div>
                     <span className="text-green-600 text-sm">Validating</span>
                   </div>

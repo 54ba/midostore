@@ -54,7 +54,10 @@ export class AIAgentSupervisor {
     constructor() {
         this.orchestrator = new AIOrchestrator();
         this.initializeModels();
-        this.initializeAgents();
+        // Initialize agents asynchronously to avoid blocking constructor
+        this.initializeAgents().catch(error => {
+            console.warn('Failed to initialize AI agents:', error.message);
+        });
     }
 
     // Initialize AI models
@@ -167,13 +170,35 @@ export class AIAgentSupervisor {
             tools
         );
 
-        this.agents.set('system-analyst', systemAnalysisAgent);
-        this.agents.set('business-intelligence', businessAgent);
-        this.agents.set('crisis-manager', crisisAgent);
-        this.agents.set('optimizer', optimizationAgent);
-        this.agents.set('decision-supervisor', supervisorAgent);
+        // Only add agents that were successfully created
+        const successfulAgents = [];
 
-        console.log('✅ AI Agent Supervisor initialized with 5 specialized agents');
+        if (systemAnalysisAgent) {
+            this.agents.set('system-analyst', systemAnalysisAgent);
+            successfulAgents.push('system-analyst');
+        }
+        if (businessAgent) {
+            this.agents.set('business-intelligence', businessAgent);
+            successfulAgents.push('business-intelligence');
+        }
+        if (crisisAgent) {
+            this.agents.set('crisis-manager', crisisAgent);
+            successfulAgents.push('crisis-manager');
+        }
+        if (optimizationAgent) {
+            this.agents.set('optimizer', optimizationAgent);
+            successfulAgents.push('optimizer');
+        }
+        if (supervisorAgent) {
+            this.agents.set('decision-supervisor', supervisorAgent);
+            successfulAgents.push('decision-supervisor');
+        }
+
+        if (successfulAgents.length > 0) {
+            console.log(`✅ AI Agent Supervisor initialized with ${successfulAgents.length} specialized agents: ${successfulAgents.join(', ')}`);
+        } else {
+            console.warn('⚠️ No AI agents were initialized due to missing API keys');
+        }
     }
 
     // Create an AI agent with specific tools and prompt
@@ -181,10 +206,11 @@ export class AIAgentSupervisor {
         agentId: string,
         systemPrompt: string,
         tools: Tool[]
-    ): Promise<AgentExecutor> {
+    ): Promise<AgentExecutor | null> {
         const model = this.openaiModel || this.anthropicModel;
         if (!model) {
-            throw new Error('No AI model available. Please configure OPENAI_API_KEY or ANTHROPIC_API_KEY');
+            console.warn(`Skipping agent creation for ${agentId}: No AI model available. Please configure OPENAI_API_KEY or ANTHROPIC_API_KEY`);
+            return null;
         }
 
         const prompt = PromptTemplate.fromTemplate(`
@@ -416,7 +442,7 @@ export class AIAgentSupervisor {
     ): Promise<string> {
         const agent = this.agents.get(agentId);
         if (!agent) {
-            throw new Error(`Agent ${agentId} not found`);
+            throw new Error(`Agent ${agentId} not found or not initialized. Please check if AI models are configured.`);
         }
 
         try {

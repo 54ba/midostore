@@ -21,7 +21,7 @@ export default function ThemeToggle() {
         <div className="relative">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 shadow-sm"
+                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 shadow-sm hover:shadow-md"
                 aria-label="Toggle theme"
             >
                 <IconComponent className={`w-4 h-4 ${currentTheme?.color}`} />
@@ -51,8 +51,8 @@ export default function ThemeToggle() {
                                         setIsOpen(false);
                                     }}
                                     className={`w-full flex items-center gap-3 px-4 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 ${theme === option.value
-                                            ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                                            : 'text-gray-700 dark:text-gray-300'
+                                        ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                                        : 'text-gray-700 dark:text-gray-300'
                                         }`}
                                 >
                                     <OptionIcon className={`w-4 h-4 ${option.color}`} />

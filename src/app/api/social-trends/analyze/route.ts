@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { SocialTrendAnalysisService } from '@/lib/social-trend-analysis-service';
-import { prisma } from '@/lib/db';
 
-const trendService = new SocialTrendAnalysisService(prisma);
+// Create a mock service instance since Prisma isn't available on NixOS
+const trendService = new SocialTrendAnalysisService(null);
 
 export async function POST(request: NextRequest) {
     try {

@@ -257,11 +257,11 @@ async function testDynamicRoutes() {
         { route: '/products/test-product-456', description: 'Product detail page (alt)' },
 
         // Dashboard routes with potential dynamic segments
-        { route: '/dashboard/products', description: 'Dashboard products page' },
-        { route: '/dashboard/cart', description: 'Dashboard cart page' },
-        { route: '/dashboard/checkout', description: 'Dashboard checkout page' },
-        { route: '/dashboard/orders', description: 'Dashboard orders page' },
-        { route: '/dashboard/profile', description: 'Dashboard profile page' },
+        { route: '/products', description: 'Products page' },
+        { route: '/cart', description: 'Cart page' },
+        { route: '/checkout', description: 'Checkout page' },
+        { route: '/orders', description: 'Orders page' },
+        { route: '/account', description: 'Account page' },
 
         // API routes with parameters
         { route: '/api/products?category=electronics', description: 'Products API with category filter' },

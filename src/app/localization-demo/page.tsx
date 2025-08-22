@@ -73,22 +73,6 @@ export default function LocalizationDemo() {
 
   return (
     <div className={`min-h-screen ${styles.bg.primary} ${styles.text.primary} ${isRTL ? 'rtl' : 'ltr'}`}>
-      {/* Header */}
-      <header className={`${styles.bg.card} ${styles.border.primary} border-b sticky top-0 z-50`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4 rtl:space-x-reverse">
-              <Globe className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-              <h1 className="text-2xl font-bold">{t('localizationDemo')}</h1>
-            </div>
-            <div className="flex items-center space-x-4 rtl:space-x-reverse">
-              <LocalizationSelector />
-              <ThemeToggle />
-            </div>
-          </div>
-        </div>
-      </header>
-
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Current Settings Display */}
         <section className="mb-12">
@@ -148,11 +132,10 @@ export default function LocalizationDemo() {
                   {availableLocales.slice(0, 6).map((locale) => (
                     <div
                       key={locale.locale}
-                      className={`p-3 rounded-lg border ${
-                        currentLocale === locale.locale
+                      className={`p-3 rounded-lg border ${currentLocale === locale.locale
                           ? `${styles.border.accent} ${styles.bg.secondary}`
                           : styles.border.secondary
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3 rtl:space-x-reverse">
@@ -181,11 +164,10 @@ export default function LocalizationDemo() {
                     return (
                       <div
                         key={currency}
-                        className={`p-3 rounded-lg border ${
-                          currentCurrency === currency
+                        className={`p-3 rounded-lg border ${currentCurrency === currency
                             ? `${styles.border.accent} ${styles.bg.secondary}`
                             : styles.border.secondary
-                        }`}
+                          }`}
                       >
                         <div className="flex items-center justify-between">
                           <div>
@@ -221,11 +203,10 @@ export default function LocalizationDemo() {
                 {sampleProducts.map((product) => (
                   <div key={product.id} className={`${styles.bg.secondary} rounded-xl p-4 border ${styles.border.secondary}`}>
                     <div className="flex items-center justify-between mb-3">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        product.isHotDeal
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${product.isHotDeal
                           ? 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
                           : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
-                      }`}>
+                        }`}>
                         {product.isHotDeal ? t('hotDeal') : t('regularPrice')}
                       </span>
                       {product.isHotDeal && (

@@ -23,8 +23,8 @@ export default function ProductInfo({ id, product, onAddToCart }: ProductInfoPro
 
   if (!product) {
     return (
-      <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
-        <p id="product-info-error" className="text-gray-500">Product information not available</p>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-8 text-center">
+        <p id="product-info-error" className="text-gray-500 dark:text-gray-400">Product information not available</p>
       </div>
     )
   }
@@ -49,9 +49,9 @@ export default function ProductInfo({ id, product, onAddToCart }: ProductInfoPro
   const savingsPercentage = Math.round((savings / product.price) * 100)
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
       {/* Product Header */}
-      <div className="p-6 border-b border-gray-100">
+      <div className="p-6 border-b border-gray-100 dark:border-gray-700">
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
             <h1 id="product-info-title" className="text-2xl font-bold text-gray-900 mb-2">
@@ -81,7 +81,7 @@ export default function ProductInfo({ id, product, onAddToCart }: ProductInfoPro
               </p>
             </div>
           </div>
-          
+
           {savings > 0 && (
             <div className="flex items-center justify-between pt-3 border-t border-gray-200">
               <p id="product-info-savings-label" className="text-sm font-medium text-gray-700">
@@ -115,7 +115,7 @@ export default function ProductInfo({ id, product, onAddToCart }: ProductInfoPro
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
               </svg>
             </button>
-            
+
             <div className="flex-1 max-w-20">
               <input
                 id="product-info-quantity-input"
@@ -126,7 +126,7 @@ export default function ProductInfo({ id, product, onAddToCart }: ProductInfoPro
                 className="w-full text-center border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
               />
             </div>
-            
+
             <button
               id="product-info-quantity-increase"
               onClick={() => handleQuantityChange(1)}
@@ -193,7 +193,7 @@ export default function ProductInfo({ id, product, onAddToCart }: ProductInfoPro
             href={product.alibaba_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
           >
             <span id="product-info-view-source-text">View Source</span>
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

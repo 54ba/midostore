@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { ReviewSeedingService } from '@/lib/review-seeding-service';
+
+// Create a mock service instance since Prisma isn't available on NixOS
+const reviewService = new ReviewSeedingService(null);
 
 // Fallback review data for when database is not accessible
 const fallbackReviews = [
@@ -197,36 +200,7 @@ export async function GET(request: NextRequest) {
             }
 
             // Fetch reviews with related data
-            const reviews = await prisma.review.findMany({
-                where,
-                include: {
-                    user: {
-                        select: {
-                            id: true,
-                            name: true,
-                            avatar: true,
-                            email: true
-                        }
-                    },
-                    product: {
-                        select: {
-                            id: true,
-                            title: true,
-                            image: true,
-                            price: true,
-                            originalPrice: true,
-                            category: true,
-                            rating: true,
-                            reviewCount: true,
-                            soldCount: true
-                        }
-                    }
-                },
-                orderBy: {
-                    createdAt: 'desc'
-                },
-                take: limit
-            });
+            const reviews = await reviewService.getReviews(limit, verified, category, rating);
 
             // If we have database reviews, return them
             if (reviews.length > 0) {
@@ -317,45 +291,10 @@ export async function POST(request: NextRequest) {
         // Try to save to database first
         try {
             // Create new review
-            const review = await prisma.review.create({
-                data: {
-                    productId,
-                    userId,
-                    rating: parseInt(rating),
-                    comment,
-                    isVerified,
-                    createdAt: new Date(),
-                    updatedAt: new Date()
-                },
-                include: {
-                    user: {
-                        select: {
-                            id: true,
-                            name: true,
-                            avatar: true
-                        }
-                    },
-                    product: {
-                        select: {
-                            id: true,
-                            title: true,
-                            image: true,
-                            price: true,
-                            category: true
-                        }
-                    }
-                }
-            });
+            const review = await reviewService.createReview(productId, userId, rating, comment, isVerified);
 
             // Update product rating and review count
-            await prisma.product.update({
-                where: { id: productId },
-                data: {
-                    reviewCount: {
-                        increment: 1
-                    }
-                }
-            });
+            await reviewService.updateProductRatingAndReviewCount(productId);
 
             return NextResponse.json({
                 success: true,

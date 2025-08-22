@@ -648,6 +648,88 @@ export class ShippingTrackingService {
             console.error('Error sending status notification:', error);
         }
     }
+
+    async getActiveShipments(currency: string = 'USD'): Promise<any[]> {
+        try {
+            // Try to get active shipments from database
+            if (prisma && prisma.shipment) {
+                const shipments = await prisma.shipment.findMany({
+                    where: {
+                        status: {
+                            in: ['pending', 'in_transit', 'out_for_delivery']
+                        }
+                    },
+                    orderBy: {
+                        createdAt: 'desc'
+                    },
+                    take: 20,
+                    select: {
+                        id: true,
+                        trackingNumber: true,
+                        carrier: true,
+                        status: true,
+                        estimatedDelivery: true,
+                        currentLocation: true,
+                        createdAt: true,
+                        orderId: true
+                    }
+                });
+
+                return shipments.map(shipment => ({
+                    id: shipment.id,
+                    trackingNumber: shipment.trackingNumber,
+                    carrier: shipment.carrier,
+                    status: shipment.status,
+                    estimatedDelivery: shipment.estimatedDelivery,
+                    currentLocation: shipment.currentLocation,
+                    createdAt: shipment.createdAt,
+                    orderId: shipment.orderId
+                }));
+            }
+        } catch (error) {
+            console.error('Error getting active shipments:', error);
+        }
+
+        // Return mock data if database is not available
+        return this.getMockActiveShipments(currency);
+    }
+
+    private getMockActiveShipments(currency: string = 'USD'): any[] {
+        const mockShipments = [
+            {
+                id: 'shipment-1',
+                trackingNumber: 'DHL123456789',
+                carrier: 'DHL Express',
+                status: 'in_transit',
+                estimatedDelivery: new Date(Date.now() + 1000 * 60 * 60 * 24 * 2), // 2 days from now
+                currentLocation: 'Dubai, UAE',
+                createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
+                orderId: 'order-001'
+            },
+            {
+                id: 'shipment-2',
+                trackingNumber: 'FED987654321',
+                carrier: 'FedEx',
+                status: 'out_for_delivery',
+                estimatedDelivery: new Date(Date.now() + 1000 * 60 * 60 * 2), // 2 hours from now
+                currentLocation: 'Riyadh, Saudi Arabia',
+                createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3), // 3 days ago
+                orderId: 'order-002'
+            },
+            {
+                id: 'shipment-3',
+                trackingNumber: 'UPS456789123',
+                carrier: 'UPS',
+                status: 'pending',
+                estimatedDelivery: new Date(Date.now() + 1000 * 60 * 60 * 24 * 5), // 5 days from now
+                currentLocation: 'Kuwait City, Kuwait',
+                createdAt: new Date(Date.now() - 1000 * 60 * 60 * 12), // 12 hours ago
+                orderId: 'order-003'
+            }
+        ];
+
+        return mockShipments;
+    }
 }
 
 export default ShippingTrackingService;

@@ -82,6 +82,15 @@ export async function GET(request: NextRequest) {
                     data: priceUpdates,
                 });
 
+            case 'price-alerts':
+                const alertLimit = parseInt(searchParams.get('limit') || '10');
+                const priceAlerts = await localizationService.getPriceAlerts(alertLimit, currency);
+
+                return NextResponse.json({
+                    success: true,
+                    data: priceAlerts,
+                });
+
             case 'currency-rates':
                 const currencyRates = await localizationService.getCurrencyRates();
                 return NextResponse.json({

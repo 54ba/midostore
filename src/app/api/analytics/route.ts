@@ -1,11 +1,104 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '../../../../lib/db';
+import { prisma } from '@/lib/db';
 
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
         const action = searchParams.get('action');
         const limit = parseInt(searchParams.get('limit') || '10');
+        const timeRange = searchParams.get('timeRange') || '7d';
+        const currency = searchParams.get('currency') || 'USD';
+
+        // Calculate start date based on time range
+        const startDate = new Date();
+        switch (timeRange) {
+            case '1d':
+                startDate.setDate(startDate.getDate() - 1);
+                break;
+            case '7d':
+                startDate.setDate(startDate.getDate() - 7);
+                break;
+            case '30d':
+                startDate.setDate(startDate.getDate() - 30);
+                break;
+            case '90d':
+                startDate.setDate(startDate.getDate() - 90);
+                break;
+            default:
+                startDate.setDate(startDate.getDate() - 7);
+        }
+
+        // Check if prisma is available
+        if (!prisma || typeof prisma.product?.count !== 'function') {
+            // Return mock data if database is not available
+            const mockAnalyticsData = {
+                overview: {
+                    totalProducts: 1250,
+                    totalOrders: 15420,
+                    totalRevenue: 1250000,
+                    totalCustomers: 8900,
+                    averageRating: 4.2,
+                    totalReviews: 45600
+                },
+                trends: {
+                    topCategories: [
+                        { name: 'Electronics', count: 450, revenue: 450000 },
+                        { name: 'Fashion', count: 380, revenue: 380000 },
+                        { name: 'Home & Garden', count: 320, revenue: 320000 }
+                    ],
+                    topProducts: [
+                        { id: '1', title: 'Wireless Headphones', soldCount: 1250, revenue: 125000 },
+                        { id: '2', title: 'Smart Watch', soldCount: 980, revenue: 98000 },
+                        { id: '3', title: 'Coffee Maker', soldCount: 750, revenue: 75000 }
+                    ],
+                    monthlyRevenue: [
+                        { month: 'Jan', revenue: 95000 },
+                        { month: 'Feb', revenue: 105000 },
+                        { month: 'Mar', revenue: 115000 }
+                    ],
+                    categoryPerformance: [
+                        { category: 'Electronics', performance: 85, growth: 12 },
+                        { category: 'Fashion', performance: 78, growth: 8 },
+                        { category: 'Home & Garden', performance: 72, growth: 15 }
+                    ]
+                },
+                insights: {
+                    bestPerformingProducts: [
+                        { id: '1', title: 'Wireless Headphones', performance: 95, growth: 25 },
+                        { id: '2', title: 'Smart Watch', performance: 88, growth: 18 },
+                        { id: '3', title: 'Coffee Maker', performance: 82, growth: 22 }
+                    ],
+                    categoryOpportunities: [
+                        { category: 'Electronics', opportunity: 'High', potential: 150000 },
+                        { category: 'Fashion', opportunity: 'Medium', potential: 120000 },
+                        { category: 'Home & Garden', opportunity: 'High', potential: 180000 }
+                    ],
+                    seasonalTrends: [
+                        { season: 'Spring', trend: 'Home & Garden', growth: 25 },
+                        { season: 'Summer', trend: 'Electronics', growth: 20 },
+                        { season: 'Fall', trend: 'Fashion', growth: 30 }
+                    ],
+                    profitAnalysis: [
+                        { category: 'Electronics', margin: 35, trend: 'increasing' },
+                        { category: 'Fashion', margin: 28, trend: 'stable' },
+                        { category: 'Home & Garden', margin: 32, trend: 'increasing' }
+                    ]
+                },
+                recommendations: [
+                    'Focus on Electronics category - highest growth potential',
+                    'Expand Fashion line during fall season',
+                    'Increase marketing for Home & Garden products'
+                ]
+            };
+
+            return NextResponse.json({
+                success: true,
+                data: mockAnalyticsData,
+                timestamp: new Date().toISOString(),
+                timeRange,
+                note: 'Using mock data - database not available'
+            });
+        }
 
         // Handle specific actions
         if (action === 'live-sales') {
@@ -20,30 +113,16 @@ export async function GET(request: NextRequest) {
             return await getInventoryUpdates(limit);
         }
 
-        // Default analytics behavior
-        const timeRange = searchParams.get('timeRange') || '30d';
-        const analysisType = searchParams.get('type') || 'comprehensive';
-
-        // Calculate date range
-        const now = new Date();
-        let startDate = new Date();
-
-        switch (timeRange) {
-            case '7d':
-                startDate.setDate(now.getDate() - 7);
-                break;
-            case '30d':
-                startDate.setDate(now.getDate() - 30);
-                break;
-            case '90d':
-                startDate.setDate(now.getDate() - 90);
-                break;
-            case '1y':
-                startDate.setFullYear(now.getFullYear() - 1);
-                break;
-            default:
-                startDate.setDate(now.getDate() - 30);
+        if (action === 'dashboard-metrics') {
+            return await getDashboardMetrics(timeRange, currency);
         }
+
+        if (action === 'revenue-chart') {
+            return await getRevenueChart(timeRange, currency);
+        }
+
+        // Default analytics behavior
+        const analysisType = searchParams.get('type') || 'comprehensive';
 
         // Fetch analytics data from database
         const [
@@ -551,6 +630,66 @@ async function getInventoryUpdates(limit: number) {
         console.error('Error getting inventory updates:', error);
         return NextResponse.json(
             { success: false, error: 'Failed to get inventory updates' },
+            { status: 500 }
+        );
+    }
+}
+
+async function getDashboardMetrics(timeRange: string, currency: string) {
+    try {
+        // Mock dashboard metrics data
+        const mockMetrics = {
+            totalRevenue: 1250000,
+            totalOrders: 15420,
+            totalCustomers: 8900,
+            averageOrderValue: 89.45,
+            conversionRate: 3.2,
+            customerLifetime: 1247,
+            topProducts: [
+                { id: '1', title: 'Wireless Headphones', sales: 1250, revenue: 125000 },
+                { id: '2', title: 'Smart Watch', sales: 980, revenue: 98000 },
+                { id: '3', title: 'Coffee Maker', sales: 750, revenue: 75000 }
+            ],
+            topCategories: [
+                { name: 'Electronics', revenue: 450000, growth: 12 },
+                { name: 'Fashion', revenue: 380000, growth: 8 },
+                { name: 'Home & Garden', revenue: 320000, growth: 15 }
+            ]
+        };
+
+        return NextResponse.json({
+            success: true,
+            data: mockMetrics
+        });
+    } catch (error) {
+        console.error('Error getting dashboard metrics:', error);
+        return NextResponse.json(
+            { success: false, error: 'Failed to get dashboard metrics' },
+            { status: 500 }
+        );
+    }
+}
+
+async function getRevenueChart(timeRange: string, currency: string) {
+    try {
+        // Mock revenue chart data
+        const mockRevenueData = [
+            { month: 'Jan', revenue: 95000, orders: 1200 },
+            { month: 'Feb', revenue: 105000, orders: 1350 },
+            { month: 'Mar', revenue: 115000, orders: 1480 },
+            { month: 'Apr', revenue: 125000, orders: 1620 },
+            { month: 'May', revenue: 135000, orders: 1750 },
+            { month: 'Jun', revenue: 145000, orders: 1880 }
+        ];
+
+        return NextResponse.json({
+            success: true,
+            data: mockRevenueData
+        });
+    } catch (error) {
+        console.error('Error getting revenue chart:', error);
+        return NextResponse.json(
+            { success: false, error: 'Failed to get revenue chart' },
             { status: 500 }
         );
     }

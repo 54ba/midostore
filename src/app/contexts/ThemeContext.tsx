@@ -22,6 +22,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         const savedTheme = localStorage.getItem('theme') as Theme;
         if (savedTheme && ['light', 'dark', 'system'].includes(savedTheme)) {
             setThemeState(savedTheme);
+        } else {
+            // If no saved theme, check if user prefers dark mode
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (prefersDark) {
+                setThemeState('system');
+            }
         }
     }, []);
 

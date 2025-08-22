@@ -310,7 +310,7 @@ export default function AIRecommendations({
                     return (
                         <div
                             key={recommendation.item_id}
-                            className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
+                            className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
                         >
                             {/* Product Image */}
                             <div className="relative h-48 bg-gray-100">

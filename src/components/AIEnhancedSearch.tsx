@@ -356,7 +356,7 @@ export default function AIEnhancedSearch({
                         onChange={(e) => handleSearchChange(e.target.value)}
                         onFocus={() => setShowSuggestions(true)}
                         onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                        className="w-full pl-10 pr-20 py-3 border border-gray-200 rounded-xl bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                        className="w-full pl-10 pr-20 py-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     />
 
                     {/* Location Indicator */}

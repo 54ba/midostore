@@ -1,78 +1,111 @@
 'use client'
 
-import React, { useId } from 'react'
+import React from 'react';
 
 interface LoadingSpinnerProps {
-  id?: string
-  size?: 'sm' | 'md' | 'lg'
-  color?: string
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  color?: 'blue' | 'purple' | 'green' | 'red' | 'gray';
+  text?: string;
+  className?: string;
 }
 
-export default function LoadingSpinner({ 
-  id, 
-  size = 'md', 
-  color = 'text-teal-600' 
+export default function LoadingSpinner({
+  size = 'md',
+  color = 'blue',
+  text,
+  className = ''
 }: LoadingSpinnerProps) {
-  const defaultId = useId()
-  const componentId = id || defaultId
-
   const sizeClasses = {
     sm: 'w-4 h-4',
-    md: 'w-8 h-8',
-    lg: 'w-12 h-12'
-  }
+    md: 'w-6 h-6',
+    lg: 'w-8 h-8',
+    xl: 'w-12 h-12'
+  };
 
-  const strokeWidthClasses = {
-    sm: 'stroke-2',
-    md: 'stroke-2',
-    lg: 'stroke-[1.5]'
-  }
+  const colorClasses = {
+    blue: 'border-blue-500',
+    purple: 'border-purple-500',
+    green: 'border-green-500',
+    red: 'border-red-500',
+    gray: 'border-gray-500'
+  };
+
+  const textSizeClasses = {
+    sm: 'text-xs',
+    md: 'text-sm',
+    lg: 'text-base',
+    xl: 'text-lg'
+  };
 
   return (
-    <div 
-      id="loading-spinner-container"
-      className="flex items-center justify-center"
-    >
-      <div 
-        id="loading-spinner-wrapper"
-        className="relative"
-      >
-        <svg
-          id="loading-spinner-svg"
-          className={`${sizeClasses[size]} animate-spin ${color}`}
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <circle
-            id="loading-spinner-background-circle"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            strokeWidth="2"
-            className="opacity-25"
-          />
-          <path
-            id="loading-spinner-progress-path"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            className="opacity-75"
-          />
-        </svg>
-        
-        <div 
-          id="loading-spinner-pulse-ring"
-          className={`absolute inset-0 ${sizeClasses[size]} rounded-full border-2 border-current opacity-20 animate-ping`}
-          style={{ animationDuration: '1.5s' }}
+    <div className={`flex items-center justify-center space-x-2 ${className}`}>
+      <div className="relative">
+        <div
+          className={`${sizeClasses[size]} border-2 border-gray-200 dark:border-gray-700 rounded-full animate-pulse`}
+        />
+        <div
+          className={`absolute top-0 left-0 ${sizeClasses[size]} border-2 border-transparent ${colorClasses[color]} border-t-current rounded-full animate-spin`}
         />
       </div>
-      
-      <span 
-        id="loading-spinner-text"
-        className="ml-3 text-sm font-medium text-gray-600 animate-pulse"
-      >
-        Loading...
-      </span>
+      {text && (
+        <span className={`${textSizeClasses[size]} text-gray-600 dark:text-gray-300 animate-pulse`}>
+          {text}
+        </span>
+      )}
     </div>
-  )
+  );
+}
+
+// Skeleton loading component for content
+export function SkeletonLoader({
+  lines = 3,
+  className = '',
+  animate = true
+}: {
+  lines?: number;
+  className?: string;
+  animate?: boolean;
+}) {
+  return (
+    <div className={`space-y-3 ${className}`}>
+      {Array.from({ length: lines }).map((_, index) => (
+        <div
+          key={index}
+          className={`h-4 bg-gray-200 dark:bg-gray-700 rounded ${animate ? 'animate-pulse' : ''
+            }`}
+          style={{
+            width: index === lines - 1 ? '75%' : '100%'
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+// Card skeleton for product cards
+export function CardSkeleton({ className = '' }: { className?: string }) {
+  return (
+    <div className={`border border-gray-200 dark:border-gray-700 rounded-lg p-4 ${className}`}>
+      <div className="animate-pulse">
+        {/* Image skeleton */}
+        <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4" />
+
+        {/* Title skeleton */}
+        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2" />
+
+        {/* Price skeleton */}
+        <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-3" />
+
+        {/* Rating skeleton */}
+        <div className="flex space-x-1 mb-3">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="w-4 h-4 bg-gray-200 dark:bg-gray-700 rounded" />
+          ))}
+        </div>
+
+        {/* Button skeleton */}
+        <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-full" />
+      </div>
+    </div>
+  );
 }

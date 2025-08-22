@@ -413,7 +413,7 @@ export default function OrderBatchingSystem({
                 {batches.map((batch) => (
                     <div
                         key={batch.id}
-                        className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden"
+                        className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden"
                     >
                         {/* Product Header */}
                         <div className={`bg-gradient-to-r ${getUrgencyColor(batch.urgency)} text-white p-6`}>

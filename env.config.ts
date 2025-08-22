@@ -56,6 +56,10 @@ const envSchema = z.object({
     PYTHON_PATH: z.string().default('python3'),
     VENV_PATH: z.string().default('./ai/venv'),
 
+    // AI Model API Keys
+    OPENAI_API_KEY: z.string().optional(),
+    ANTHROPIC_API_KEY: z.string().optional(),
+
     // Database Type
     DATABASE_TYPE: z.string().default('postgresql'),
 

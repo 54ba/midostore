@@ -24,12 +24,21 @@ export interface SimpleUser {
     user_id?: string;
     bio?: string;
     isPremium?: boolean;
+    isGuest?: boolean;
+    preferences?: {
+        language: string;
+        currency: string;
+        theme: string;
+        notifications: boolean;
+    };
     sessionData?: {
         cartItems: any[];
         wishlist: string[];
         recentlyViewed: string[];
         searchHistory: string[];
     };
+    createdAt?: Date;
+    lastSeen?: Date;
 }
 
 interface SimpleAuthContextType {
@@ -125,8 +134,8 @@ export function SimpleAuthProvider({ children }: { children: React.ReactNode }) 
             }
         };
 
-        // Small delay to ensure hydration is complete
-        const timer = setTimeout(initializeUser, 500);
+        // Reduced delay to ensure hydration is complete but not too long
+        const timer = setTimeout(initializeUser, 100);
         return () => clearTimeout(timer);
     }, []);
 
@@ -392,8 +401,8 @@ export function SimpleAuthProvider({ children }: { children: React.ReactNode }) 
     const value: SimpleAuthContextType = {
         user,
         loading,
-        isGuest: user?.isGuest || true,
-        isAuthenticated: !user?.isGuest,
+        isGuest: user?.isGuest ?? true,
+        isAuthenticated: user?.isGuest === false,
         signIn,
         signUp,
         signOut,

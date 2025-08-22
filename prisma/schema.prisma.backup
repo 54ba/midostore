@@ -1,0 +1,281 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id                String   @id @default(cuid())
+  externalId        String   @unique // Alibaba/AliExpress product ID
+  source            String   // "alibaba" or "aliexpress"
+  title             String
+  description       String?
+  price             Decimal  @db.Decimal(10, 2)
+  originalPrice     Decimal? @db.Decimal(10, 2)
+  currency          String   @default("USD")
+  images            String[] // Array of image URLs
+  category          String?
+  subcategory       String?
+  tags              String[]
+  rating            Float?
+  reviewCount       Int      @default(0)
+  soldCount         Int      @default(0)
+  minOrderQuantity  Int      @default(1)
+  maxOrderQuantity  Int?
+  shippingWeight    Float?
+  shippingDimensions String?
+  supplier          Supplier @relation(fields: [supplierId], references: [id])
+  supplierId        String
+  variants          ProductVariant[]
+  localizations    ProductLocalization[]
+  reviews           Review[]
+  userInteractions  UserInteraction[]
+  orderItems        OrderItem[]
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  lastScraped      DateTime @default(now())
+  isActive          Boolean  @default(true)
+  isFeatured        Boolean  @default(false)
+  profitMargin      Decimal? @db.Decimal(5, 2) // Percentage markup
+  gulfPrice         Decimal? @db.Decimal(10, 2) // Localized price for Gulf countries
+  gulfCurrency      String   @default("AED") // Default to UAE Dirham
+
+  @@index([source, externalId])
+  @@index([category, isActive])
+  @@index([isFeatured])
+}
+
+model Review {
+  id          String   @id @default(cuid())
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  reviewerName String
+  rating      Int      // 1-5 stars
+  title       String?
+  content     String
+  helpful     Int      @default(0)
+  verified    Boolean  @default(false)
+  source      String   // "alibaba", "aliexpress", "generated"
+  externalId  String?  // Original review ID from source platform
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([productId])
+  @@index([rating])
+  @@index([source])
+}
+
+model ProductVariant {
+  id          String   @id @default(cuid())
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name        String   // e.g., "Color", "Size"
+  value       String   // e.g., "Red", "XL"
+  price       Decimal? @db.Decimal(10, 2)
+  stock       Int      @default(0)
+  sku         String?  @unique
+  isActive    Boolean  @default(true)
+
+  @@index([productId])
+}
+
+model ProductLocalization {
+  id          String   @id @default(cuid())
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  locale      String   // e.g., "ar-SA", "en-AE"
+  title       String
+  description String?
+  price       Decimal  @db.Decimal(10, 2)
+  currency    String
+  isActive    Boolean  @default(true)
+
+  @@unique([productId, locale])
+  @@index([locale])
+}
+
+model Supplier {
+  id          String   @id @default(cuid())
+  externalId  String   @unique
+  source      String   // "alibaba" or "aliexpress"
+  name        String
+  companyName String?
+  country     String?
+  city        String?
+  rating      Float?
+  responseRate Float?
+  responseTime String?
+  verified    Boolean  @default(false)
+  goldMember  Boolean  @default(false)
+  products   Product[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([source, externalId])
+}
+
+model ExchangeRate {
+  id           String   @id @default(cuid())
+  fromCurrency String
+  toCurrency   String
+  rate         Decimal  @db.Decimal(10, 6)
+  lastUpdated  DateTime @default(now())
+  source       String   // API source for the rate
+
+  @@unique([fromCurrency, toCurrency])
+  @@index([fromCurrency, toCurrency])
+}
+
+model ScrapingJob {
+  id          String   @id @default(cuid())
+  source      String   // "alibaba" or "aliexpress"
+  category    String?
+  status      String   // "pending", "running", "completed", "failed"
+  totalProducts Int    @default(0)
+  scrapedProducts Int  @default(0)
+  failedProducts Int   @default(0)
+  startedAt   DateTime?
+  completedAt DateTime?
+  error       String?
+  metadata    Json?    // Store additional job metadata as JSON
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([status, source])
+}
+
+model GulfCountry {
+  id          String   @id @default(cuid())
+  code        String   @unique // e.g., "AE", "SA", "KW"
+  name        String
+  nameAr      String   // Arabic name
+  currency    String
+  currencyAr  String   // Arabic currency name
+  timezone    String
+  locale      String   // e.g., "ar-AE", "ar-SA"
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model User {
+  id        String   @id @default(cuid())
+  user_id   String   @unique
+  email     String   @unique
+  full_name String
+  phone     String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  interactions UserInteraction[]
+  preferences  UserPreference[]
+  orders      Order[]
+
+  @@map("users")
+}
+
+model UserInteraction {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  type      InteractionType
+  timestamp DateTime @default(now())
+  metadata  Json?
+
+  // Relations
+  user    User    @relation(fields: [userId], references: [user_id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [externalId], onDelete: Cascade)
+
+  @@unique([userId, productId, type])
+  @@map("user_interactions")
+}
+
+model UserPreference {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  category  String
+  weight    Float    @default(1.0)
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [user_id], onDelete: Cascade)
+
+  @@map("user_preferences")
+}
+
+model Order {
+  id        String   @id @default(cuid())
+  userId    String
+  status    OrderStatus @default(PENDING)
+  total     Float
+  currency  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user      User         @relation(fields: [userId], references: [user_id], onDelete: Cascade)
+  items     OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  productId String
+  quantity  Int
+  price     Float
+  currency  String
+
+  // Relations
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [externalId], onDelete: Cascade)
+
+  @@map("order_items")
+}
+
+enum InteractionType {
+  VIEW
+  LIKE
+  CART
+  PURCHASE
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+model TrendData {
+  id               String   @id @default(cuid())
+  platform         String   // "reddit", "twitter", "news", etc.
+  topic            String
+  category         String?
+  sentiment        String   // "positive", "negative", "neutral"
+  engagement       Json     // Store engagement metrics as JSON
+  trendingScore    Float
+  relatedProducts  String[] // Array of product IDs
+  keywords         String[] // Array of keywords
+  timestamp        DateTime @default(now())
+  source           String?  // Source URL or identifier
+  url              String?  // Direct URL to the trend
+  aiInsights       Json?    // AI analysis insights as JSON
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([category, sentiment])
+  @@index([platform, timestamp])
+  @@index([trendingScore])
+}

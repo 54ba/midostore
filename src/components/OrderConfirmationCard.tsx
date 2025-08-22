@@ -15,17 +15,17 @@ interface OrderConfirmationCardProps {
   paymentStatus: string
 }
 
-export default function OrderConfirmationCard({ 
-  id, 
-  order, 
-  paymentStatus 
+export default function OrderConfirmationCard({
+  id,
+  order,
+  paymentStatus
 }: OrderConfirmationCardProps) {
   const defaultId = useId()
   const componentId = id || defaultId
 
   const getStatusColor = (status: string) => {
     if (!status) return 'bg-gray-100 text-gray-800'
-    
+
     const normalizedStatus = status.toLowerCase()
     switch (normalizedStatus) {
       case 'completed':
@@ -46,18 +46,18 @@ export default function OrderConfirmationCard({
 
   const getStatusIcon = (status: string) => {
     if (!status) return null
-    
+
     const normalizedStatus = status.toLowerCase()
     switch (normalizedStatus) {
       case 'completed':
       case 'success':
       case 'paid':
         return (
-          <svg 
+          <svg
             id="order-confirmation-card-success-icon"
-            className="w-5 h-5 text-emerald-600" 
-            fill="none" 
-            stroke="currentColor" 
+            className="w-5 h-5 text-emerald-600"
+            fill="none"
+            stroke="currentColor"
             viewBox="0 0 24 24"
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -66,11 +66,11 @@ export default function OrderConfirmationCard({
       case 'pending':
       case 'processing':
         return (
-          <svg 
+          <svg
             id="order-confirmation-card-pending-icon"
-            className="w-5 h-5 text-amber-600 animate-spin" 
-            fill="none" 
-            stroke="currentColor" 
+            className="w-5 h-5 text-amber-600 animate-spin"
+            fill="none"
+            stroke="currentColor"
             viewBox="0 0 24 24"
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -80,11 +80,11 @@ export default function OrderConfirmationCard({
       case 'error':
       case 'cancelled':
         return (
-          <svg 
+          <svg
             id="order-confirmation-card-error-icon"
-            className="w-5 h-5 text-red-600" 
-            fill="none" 
-            stroke="currentColor" 
+            className="w-5 h-5 text-red-600"
+            fill="none"
+            stroke="currentColor"
             viewBox="0 0 24 24"
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -105,7 +105,7 @@ export default function OrderConfirmationCard({
 
   if (!order) {
     return (
-      <div id="order-confirmation-card-error" className="bg-white rounded-lg shadow-lg border border-red-200 p-6 max-w-md mx-auto">
+      <div id="order-confirmation-card-error" className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-red-200 dark:border-red-800 p-6 max-w-md mx-auto">
         <div className="text-center">
           <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -124,7 +124,7 @@ export default function OrderConfirmationCard({
   }
 
   return (
-    <div id="order-confirmation-card-container" className="bg-white rounded-lg shadow-lg border border-gray-200 p-6 max-w-md mx-auto transform transition-all duration-300 hover:shadow-xl">
+    <div id="order-confirmation-card-container" className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-6 max-w-md mx-auto transform transition-all duration-300 hover:shadow-xl">
       {/* Header with Status */}
       <div className="text-center mb-6">
         <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -151,7 +151,7 @@ export default function OrderConfirmationCard({
               {order.order_id || 'N/A'}
             </span>
           </div>
-          
+
           <div className="flex justify-between items-start mb-3">
             <span id="order-confirmation-card-product-label" className="text-sm font-medium text-gray-500">
               Product
@@ -160,7 +160,7 @@ export default function OrderConfirmationCard({
               {order.product_name || 'Unknown Product'}
             </span>
           </div>
-          
+
           <div className="flex justify-between items-center mb-3">
             <span id="order-confirmation-card-quantity-label" className="text-sm font-medium text-gray-500">
               Quantity
@@ -169,7 +169,7 @@ export default function OrderConfirmationCard({
               {order.quantity || 0}
             </span>
           </div>
-          
+
           <div className="flex justify-between items-center pt-3 border-t border-gray-200">
             <span id="order-confirmation-card-total-label" className="text-base font-semibold text-gray-900">
               Total Amount
@@ -183,14 +183,14 @@ export default function OrderConfirmationCard({
 
       {/* Action Buttons */}
       <div className="mt-6 space-y-3">
-        <button 
+        <button
           id="order-confirmation-card-track-button"
           className="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
         >
           Track Your Order
         </button>
-        
-        <button 
+
+        <button
           id="order-confirmation-card-continue-button"
           className="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
         >

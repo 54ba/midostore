@@ -66,7 +66,7 @@ export default function SearchAndFilter({
                     placeholder="Search products..."
                     value={searchQuery}
                     onChange={(e) => handleSearch(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                 />
                 {searchQuery && (
                     <button
@@ -82,7 +82,7 @@ export default function SearchAndFilter({
             <div className="flex items-center justify-between">
                 <button
                     onClick={() => setIsFilterOpen(!isFilterOpen)}
-                    className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                 >
                     <Filter className="h-4 w-4" />
                     <span>Filters</span>
@@ -101,7 +101,7 @@ export default function SearchAndFilter({
 
             {/* Filter Panel */}
             {isFilterOpen && (
-                <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-lg space-y-6 animate-in slide-in-from-top-2 duration-200">
+                <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 shadow-lg space-y-6 animate-in slide-in-from-top-2 duration-200">
                     {/* Category Filter */}
                     <div>
                         <h3 className="text-sm font-semibold text-gray-900 mb-3">Category</h3>
@@ -109,8 +109,8 @@ export default function SearchAndFilter({
                             <button
                                 onClick={() => handleFilterChange({ category: 'all' })}
                                 className={`px-3 py-2 text-sm rounded-lg transition-colors ${filters.category === 'all'
-                                        ? 'bg-blue-500 text-white'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    ? 'bg-blue-500 text-white'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                     }`}
                             >
                                 All Categories
@@ -120,8 +120,8 @@ export default function SearchAndFilter({
                                     key={category}
                                     onClick={() => handleFilterChange({ category })}
                                     className={`px-3 py-2 text-sm rounded-lg transition-colors ${filters.category === category
-                                            ? 'bg-blue-500 text-white'
-                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                        ? 'bg-blue-500 text-white'
+                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                         }`}
                                 >
                                     {category}

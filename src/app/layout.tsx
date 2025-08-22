@@ -3,7 +3,11 @@ import { ThemeProvider } from '@/app/contexts/ThemeContext'
 import { SimpleAuthProvider } from '@/app/contexts/SimpleAuthContext'
 import { LocalizationProvider } from '@/app/contexts/LocalizationContext'
 import { CartProvider } from '@/app/contexts/CartContext'
+import { NavigationProvider } from '@/app/contexts/NavigationContext'
+import Header from '@/components/Header'
 import LiveSalesTicker from '@/components/LiveSalesTicker'
+import PageLoadingSpinner from '@/components/PageLoadingSpinner'
+import PageTransitionLoader from '@/components/PageTransitionLoader'
 import './globals.css'
 
 export const metadata = {
@@ -61,22 +65,59 @@ export const metadata = {
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="h-full">
-      <body className="h-full font-sans">
+    <html lang="en" className="h-full" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var theme = localStorage.getItem('theme') || 'system';
+                  var isDark = false;
+
+                  if (theme === 'system') {
+                    isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  } else {
+                    isDark = theme === 'dark';
+                  }
+
+                  if (isDark) {
+                    document.documentElement.classList.add('dark');
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
+      <body className="h-full font-sans bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
         <ThemeProvider>
           <SimpleAuthProvider>
             <LocalizationProvider>
               <CartProvider>
-                {/* Live Sales Ticker */}
-                <LiveSalesTicker />
+                <NavigationProvider>
+                  {/* Page Loading Spinner */}
+                  <PageLoadingSpinner />
 
-                {/* Main Content */}
-                {children}
+                  {/* Page Transition Loader */}
+                  <PageTransitionLoader />
 
-                {/* Analytics Tracker - Wrapped in Suspense */}
-                <Suspense fallback={null}>
-                  {/* SimpleAnalyticsTracker */}
-                </Suspense>
+                  {/* Header Navigation */}
+                  <Header />
+
+                  {/* Live Sales Ticker */}
+                  <LiveSalesTicker />
+
+                  {/* Main Content */}
+                  {children}
+
+                  {/* Analytics Tracker - Wrapped in Suspense */}
+                  <Suspense fallback={null}>
+                    {/* SimpleAnalyticsTracker */}
+                  </Suspense>
+                </NavigationProvider>
               </CartProvider>
             </LocalizationProvider>
           </SimpleAuthProvider>

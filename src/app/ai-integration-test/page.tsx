@@ -113,20 +113,20 @@ export default function AIIntegrationTest() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
             <div className="max-w-6xl mx-auto px-4">
                 <div className="text-center mb-8">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                    <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
                         🤖 AI Integration Test
                     </h1>
-                    <p className="text-xl text-gray-600">
+                    <p className="text-xl text-gray-600 dark:text-gray-300">
                         Testing the integration between Next.js and Python AI services
                     </p>
                 </div>
 
                 {/* AI Service Status */}
-                <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-                    <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8">
+                    <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
                         AI Service Status
                     </h2>
                     <div className="flex items-center space-x-4">
@@ -141,8 +141,8 @@ export default function AIIntegrationTest() {
                 </div>
 
                 {/* Test Controls */}
-                <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-                    <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8">
+                    <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
                         Test Controls
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -188,13 +188,13 @@ export default function AIIntegrationTest() {
                 )}
 
                 {/* Sample Data Display */}
-                <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-                    <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8">
+                    <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
                         Sample Product Data
                     </h2>
                     <div className="overflow-x-auto">
-                        <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gray-50">
+                        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            <thead className="bg-gray-50 dark:bg-gray-700">
                                 <tr>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>

@@ -44,7 +44,6 @@ export default function DashboardLayoutFrame({ children }: { children: React.Rea
 
   return (
     <div className="min-h-screen bg-[rgb(var(--background))] flex flex-col">
-      <Header id="dashboard-header" />
       <main className="flex-1">
         {children}
       </main>

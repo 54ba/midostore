@@ -21,7 +21,9 @@ import {
   Target,
   Lightbulb,
   Network,
-  Eye
+  Eye,
+  Search,
+  Smartphone
 } from 'lucide-react';
 
 interface Feature {
@@ -55,17 +57,38 @@ export default function FeatureGrid({
     const fetchFeatures = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/api/features');
+        setError(null);
+
+        const response = await fetch('/api/features', {
+          signal: AbortSignal.timeout(10000) // 10 second timeout
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
         const data = await response.json();
 
-        if (data.success) {
+        if (data.success && data.data && Array.isArray(data.data)) {
           setFeatures(data.data);
         } else {
-          throw new Error(data.error || 'Failed to fetch features');
+          throw new Error(data.error || 'Invalid data format received');
         }
       } catch (err) {
         console.error('Error fetching features:', err);
-        setError('Failed to load features');
+
+        let errorMessage = 'Failed to load features';
+        if (err instanceof Error) {
+          if (err.name === 'AbortError') {
+            errorMessage = 'Request timed out. Using fallback data.';
+          } else if (err.message.includes('HTTP')) {
+            errorMessage = `Server error: ${err.message}`;
+          } else {
+            errorMessage = err.message;
+          }
+        }
+
+        setError(errorMessage);
 
         // Fallback to default features
         setFeatures([
@@ -139,7 +162,9 @@ export default function FeatureGrid({
       'Star': Star,
       'Heart': Heart,
       'Rocket': Rocket,
-      'Truck': Truck
+      'Truck': Truck,
+      'Search': Search,
+      'Smartphone': Smartphone
     };
 
     return iconMap[icon] || Globe;
@@ -202,10 +227,10 @@ export default function FeatureGrid({
 
         {/* Features Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {features.map((feature, index) => {
-            const IconComponent = getIconComponent(feature.icon);
-            const gradient = getGradientForCategory(feature.category);
-            const isHighlighted = feature.usageCount > 10000 || feature.rating > 4.5;
+          {features && Array.isArray(features) && features.map((feature, index) => {
+            const IconComponent = getIconComponent(feature.icon || 'Globe');
+            const gradient = getGradientForCategory(feature.category || 'General');
+            const isHighlighted = (feature.usageCount || 0) > 10000 || (feature.rating || 0) > 4.5;
 
             return (
               <div
@@ -227,11 +252,11 @@ export default function FeatureGrid({
                 <div className="relative">
                   <h3 className={`font-bold text-xl text-gray-900 mb-4 ${isHighlighted ? 'text-blue-900' : ''
                     }`}>
-                    {feature.title}
+                    {feature.title || 'Feature Title'}
                   </h3>
                   <p className={`text-gray-600 leading-relaxed mb-6 ${isHighlighted ? 'text-blue-800' : ''
                     }`}>
-                    {feature.description}
+                    {feature.description || 'Feature description not available'}
                   </p>
 
                   {/* Stats */}
@@ -239,7 +264,7 @@ export default function FeatureGrid({
                     <div className="text-center">
                       <div className={`text-2xl font-bold ${isHighlighted ? 'text-blue-600' : 'text-gray-900'
                         }`}>
-                        {feature.usageCount.toLocaleString()}
+                        {(feature.usageCount || 0).toLocaleString()}
                       </div>
                       <div className={`text-sm ${isHighlighted ? 'text-blue-700' : 'text-gray-600'
                         }`}>
@@ -250,7 +275,7 @@ export default function FeatureGrid({
                     <div className="text-center">
                       <div className={`text-2xl font-bold ${isHighlighted ? 'text-blue-600' : 'text-gray-900'
                         }`}>
-                        {feature.rating.toFixed(1)}
+                        {(feature.rating || 0).toFixed(1)}
                       </div>
                       <div className={`text-sm ${isHighlighted ? 'text-blue-700' : 'text-gray-600'
                         }`}>
@@ -265,7 +290,7 @@ export default function FeatureGrid({
                       ? 'bg-blue-100 text-blue-800'
                       : 'bg-gray-100 text-gray-800'
                       }`}>
-                      {feature.category}
+                      {feature.category || 'General'}
                     </span>
                   </div>
                 </div>
@@ -277,8 +302,28 @@ export default function FeatureGrid({
           })}
         </div>
 
+        {/* Fallback when no features */}
+        {(!features || !Array.isArray(features) || features.length === 0) && !loading && (
+          <div className="text-center py-12">
+            <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Award className="w-8 h-8 text-gray-400" />
+            </div>
+            <p className="text-gray-500 text-lg mb-4">
+              {error ? 'Failed to load features' : 'No features available'}
+            </p>
+            {error && (
+              <button
+                onClick={() => window.location.reload()}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Try Again
+              </button>
+            )}
+          </div>
+        )}
+
         {/* Summary Stats */}
-        {features.length > 0 && (
+        {features && Array.isArray(features) && features.length > 0 && (
           <div className="mt-16 text-center">
             <div className="inline-flex items-center space-x-8 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl px-8 py-6">
               <div>
@@ -289,13 +334,13 @@ export default function FeatureGrid({
               </div>
               <div>
                 <div className="text-3xl font-bold text-purple-600">
-                  {Math.round(features.reduce((sum, f) => sum + f.rating, 0) / features.length * 10) / 10}
+                  {features.length > 0 ? Math.round(features.reduce((sum, f) => sum + (f.rating || 0), 0) / features.length * 10) / 10 : 0}
                 </div>
                 <div className="text-sm text-purple-800">Avg Rating</div>
               </div>
               <div>
                 <div className="text-3xl font-bold text-green-600">
-                  {features.reduce((sum, f) => sum + f.usageCount, 0).toLocaleString()}
+                  {features.reduce((sum, f) => sum + (f.usageCount || 0), 0).toLocaleString()}
                 </div>
                 <div className="text-sm text-green-800">Total Users</div>
               </div>

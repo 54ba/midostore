@@ -1,4 +1,4 @@
-#!/usr/bin/env tsx
+#!/usr/bin/env npx tsx
 
 import { ScrapingService } from '../lib/scraping-service';
 import { ProductService } from '../lib/product-service';
@@ -50,22 +50,19 @@ async function main() {
         let successCount = 0;
         let errorCount = 0;
 
-        // Temporarily commented out due to build issues
-        // for (const product of products) {
-        //     try {
-        //         await productService.createProductFromScraped(product);
-        //         successCount++;
-        //         console.log(`✅ Processed: ${product.title}`);
-        //     } catch (error) {
-        //         errorCount++;
-        //         console.error(`❌ Failed to process: ${product.title}`, error);
-        //     }
+        for (const product of products) {
+            try {
+                await productService.createProductFromScraped(product);
+                successCount++;
+                console.log(`✅ Processed: ${product.title}`);
+            } catch (error) {
+                errorCount++;
+                console.error(`❌ Failed to process: ${product.title}`, error);
+            }
 
-        //     // Small delay between products
-        //     await new Promise(resolve => setTimeout(resolve, 100));
-        // }
-
-        console.log('⚠️ Product processing temporarily disabled for build compatibility');
+            // Small delay between products
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
 
         console.log(`\n🎉 Scraping completed!`);
         console.log(`📊 Results:`);

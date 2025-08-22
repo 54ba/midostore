@@ -103,7 +103,7 @@ export default function BulkPricingDeals({ className = '' }: BulkPricingDealsPro
     };
 
     const renderDealCard = (deal: ProductBulkPricing) => (
-        <div key={deal.productId} className="bg-white rounded-lg shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
+        <div key={deal.productId} className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow">
             {/* Deal Header */}
             <div className="p-4 border-b border-gray-100">
                 <div className="flex items-start justify-between mb-2">

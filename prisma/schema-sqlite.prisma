@@ -1,0 +1,97 @@
+// SQLite-compatible Prisma schema
+// This schema removes features not supported by SQLite
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id                String   @id @default(cuid())
+  externalId        String   @unique // Alibaba/AliExpress product ID
+  source            String   // "alibaba" or "aliexpress"
+  title             String
+  description       String?
+  price             Float    // Changed from Decimal to Float for SQLite
+  originalPrice     Float?   // Changed from Decimal to Float
+  currency          String   @default("USD")
+  images            String   // Changed from String[] to String (comma-separated)
+  category          String?
+  subcategory       String?
+  tags              String   // Changed from String[] to String (comma-separated)
+  rating            Float?
+  reviewCount       Int      @default(0)
+  soldCount         Int      @default(0)
+  minOrderQuantity  Int      @default(1)
+  maxOrderQuantity  Int?
+  shippingWeight    Float?
+  shippingDimensions String?
+  supplierId        String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  lastScraped      DateTime @default(now())
+  isActive          Boolean  @default(true)
+  isFeatured        Boolean  @default(false)
+  profitMargin      Float?   // Changed from Decimal to Float
+  gulfPrice         Float?   // Changed from Decimal to Float
+  gulfCurrency      String   @default("AED")
+
+  @@index([source, externalId])
+  @@index([category, isActive])
+  @@index([isFeatured])
+}
+
+model Review {
+  id          String   @id @default(cuid())
+  productId   String
+  reviewerName String
+  rating      Int      // 1-5 stars
+  title       String?
+  content     String
+  helpful     Int      @default(0)
+  verified    Boolean  @default(false)
+  source      String   // "alibaba", "aliexpress", "generated"
+  externalId  String?  // Original review ID from source platform
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([productId])
+  @@index([rating])
+  @@index([source])
+}
+
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  name        String?
+  role        String   @default("user")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ExchangeRate {
+  id          String   @id @default(cuid())
+  fromCurrency String
+  toCurrency   String
+  rate         Float
+  lastUpdated  DateTime @default(now())
+
+  @@unique([fromCurrency, toCurrency])
+}
+
+model Feature {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  icon        String
+  category    String
+  usageCount  Int      @default(0)
+  rating      Float    @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

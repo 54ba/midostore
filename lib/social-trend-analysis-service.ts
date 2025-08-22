@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+// import { PrismaClient } from '@prisma/client';
 import axios from 'axios';
 // Dynamic import to avoid webpack issues
 // import { AIPoweredScrapingService } from './ai-powered-scraping-service';
@@ -62,13 +62,13 @@ export interface TrendAnalysisConfig {
 }
 
 export class SocialTrendAnalysisService {
-    private prisma: PrismaClient;
+    private prisma: any;
     private redditApiKey: string;
     private twitterApiKey: string;
     private newsApiKey: string;
 
-    constructor(prisma?: PrismaClient) {
-        this.prisma = prisma || new PrismaClient();
+    constructor(prisma?: any) {
+        this.prisma = prisma;
         this.redditApiKey = process.env.REDDIT_API_KEY || '';
         this.twitterApiKey = process.env.TWITTER_API_KEY || '';
         this.newsApiKey = process.env.NEWS_API_KEY || '';

@@ -2,12 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSimpleAuth } from '@/app/contexts/SimpleAuthContext';
+import { ShoppingBag, CreditCard, MapPin, User, ArrowLeft } from 'lucide-react';
 import { useCart } from '@/app/contexts/CartContext';
-import Header from '@/components/Header';
+import { useSimpleAuth } from '@/app/contexts/SimpleAuthContext';
+import Button from '@/components/Button';
 import CheckoutForm from '@/components/CheckoutForm';
 import LoadingSpinner from '@/components/LoadingSpinner';
-import { ShoppingCart, ArrowLeft } from 'lucide-react';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -51,51 +51,50 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
-
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Header */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-4">
             <button
               onClick={handleBackToCart}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+              className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
               Back to Cart
             </button>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">Checkout</h1>
-          <p className="mt-2 text-gray-600">Complete your order below</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Checkout</h1>
+          <p className="mt-2 text-gray-600 dark:text-gray-300">Complete your order below</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Checkout Form */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
               <CheckoutForm />
             </div>
           </div>
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sticky top-4">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Order Summary</h2>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 sticky top-4">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Order Summary</h2>
 
               <div className="space-y-3 mb-6">
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Items ({safeCartItems.length})</span>
+                  <span className="text-gray-600 dark:text-gray-300">Items ({safeCartItems.length})</span>
                   <span className="font-medium">
                     ${safeCartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2)}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Shipping</span>
+                  <span className="text-gray-600 dark:text-gray-300">Shipping</span>
                   <span className="font-medium">$15.00</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Tax</span>
+                  <span className="text-gray-600 dark:text-gray-300">Tax</span>
                   <span className="font-medium">
                     ${(safeCartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0) * 0.08).toFixed(2)}
                   </span>

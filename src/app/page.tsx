@@ -46,136 +46,80 @@ import OrderBatchingSystem from '@/components/OrderBatchingSystem';
 import LiveUpdates from '@/components/LiveUpdates';
 
 export default function LandingPage() {
+  console.log('HomePage: Component rendering');
+
   const router = useRouter();
-  const { user, loading: authLoading, isGuest, isAuthenticated } = useSimpleAuth();
-  const { t, currentLocale, isRTL, formatPrice } = useLocalization();
+
+  // Temporarily bypass contexts to isolate the issue
+  const [user, setUser] = useState<any>(null);
+  const [authLoading, setAuthLoading] = useState(false);
+  const [isGuest, setIsGuest] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentLocale, setCurrentLocale] = useState('en-AE');
+  const [isRTL, setIsRTL] = useState(false);
+
+  // Simple fallback functions
+  const t = (key: string) => key;
+  const formatPrice = (price: number) => `$${price}`;
 
   // State for dynamic data
   const [productReviews, setProductReviews] = useState<any[]>([]);
-  const [analyticsData, setAnalyticsData] = useState<any>(null);
+  const [analyticsData, setAnalyticsData] = useState<any>({
+    conversionRate: 3.2,
+    avgOrderValue: 89.45,
+    customerLifetime: 1247,
+    totalOrders: 15420,
+    totalRevenue: 1378945,
+    activeUsers: 8920,
+    topProducts: []
+  });
   const [featureData, setFeatureData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch real data from our services
+  console.log('HomePage: Component rendering - loading:', loading, 'authLoading:', authLoading);
+
+  // Data fetching with proper error handling
   useEffect(() => {
-    const fetchDynamicData = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true);
 
-        // Fetch real product reviews
+        // Fetch reviews
         const reviewsResponse = await fetch('/api/reviews?limit=8&verified=true');
         if (reviewsResponse.ok) {
           const reviewsData = await reviewsResponse.json();
-          if (reviewsData.success) {
-            setProductReviews(reviewsData.data.map((review: any) => ({
-              id: review.id,
-              productId: review.productId,
-              productTitle: review.productTitle || review.product?.title || 'Product',
-              productImage: review.productImage || review.product?.image || '/api/placeholder/40/40?text=Product',
-              productPrice: review.productPrice || review.product?.price || 0,
-              productOriginalPrice: review.productOriginalPrice || review.product?.originalPrice || 0,
-              productCategory: review.productCategory || review.product?.category || 'general',
-              userId: review.userId,
-              userName: review.userName || review.user?.name || 'Customer',
-              userAvatar: review.userAvatar || review.user?.avatar || '/api/placeholder/40/40?text=U',
-              rating: review.rating || 5,
-              comment: review.comment || review.review || 'Great product!',
-              reviewDate: new Date(review.createdAt || review.reviewDate || Date.now()),
-              isVerified: review.isVerified || true,
-              isPremium: review.isPremium || false,
-              helpfulCount: review.helpfulCount || 0,
-              unhelpfulCount: review.unhelpfulCount || 0,
-              purchaseDate: new Date(review.purchaseDate || Date.now() - 1000 * 60 * 60 * 24 * 7),
-              productRating: review.productRating || review.product?.rating || 4.5,
-              productReviewCount: review.productReviewCount || review.product?.reviewCount || 100,
-              productSoldCount: review.productSoldCount || review.product?.soldCount || 500,
-              productDiscount: review.productDiscount || 0,
-              isHotDeal: review.isHotDeal || false,
-              isLimitedTime: review.isLimitedTime || false,
-              timeRemaining: review.timeRemaining || undefined
-            })));
+          if (reviewsData.success && reviewsData.data) {
+            setProductReviews(reviewsData.data);
           }
         }
 
-        // Fetch real analytics data
+        // Fetch analytics
         const analyticsResponse = await fetch('/api/analytics/overview');
         if (analyticsResponse.ok) {
           const analyticsData = await analyticsResponse.json();
-          if (analyticsData.success) {
-            setAnalyticsData({
-              conversionRate: analyticsData.data.conversionRate || 3.2,
-              avgOrderValue: analyticsData.data.avgOrderValue || 89.45,
-              customerLifetime: analyticsData.data.customerLifetime || 1247,
-              totalOrders: analyticsData.data.totalOrders || 15420,
-              totalRevenue: analyticsData.data.totalRevenue || 1378945,
-              activeUsers: analyticsData.data.activeUsers || 8920,
-              topProducts: analyticsData.data.topProducts || []
-            });
+          if (analyticsData.success && analyticsData.data) {
+            setAnalyticsData(analyticsData.data);
           }
         }
 
-        // Fetch real feature data
+        // Fetch features
         const featuresResponse = await fetch('/api/features');
         if (featuresResponse.ok) {
           const featuresData = await featuresResponse.json();
-          if (featuresData.success) {
-            setFeatureData(featuresData.data || []);
+          if (featuresData.success && featuresData.data) {
+            setFeatureData(featuresData.data);
           }
         }
-
-        setError(null);
-      } catch (err) {
-        console.error('Error fetching dynamic data:', err);
-        setError('Failed to load dynamic content');
-
-        // Fallback to sample data if API fails
-        setProductReviews([
-          {
-            id: 'fallback-1',
-            productId: 'prod-1',
-            productTitle: 'Wireless Noise-Canceling Headphones Pro',
-            productImage: '/api/placeholder/40/40?text=Headphones',
-            productPrice: 89.99,
-            productOriginalPrice: 149.99,
-            productCategory: 'electronics',
-            userId: 'user-1',
-            userName: 'Ahmed Hassan',
-            userAvatar: '/api/placeholder/40/40?text=AH',
-            rating: 5,
-            comment: 'Excellent quality and amazing sound!',
-            reviewDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2),
-            isVerified: true,
-            isPremium: true,
-            helpfulCount: 23,
-            unhelpfulCount: 1,
-            purchaseDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5),
-            productRating: 4.8,
-            productReviewCount: 1247,
-            productSoldCount: 8500,
-            productDiscount: 40,
-            isHotDeal: true,
-            isLimitedTime: true,
-            timeRemaining: '2 days left'
-          }
-        ]);
-
-        setAnalyticsData({
-          conversionRate: 3.2,
-          avgOrderValue: 89.45,
-          customerLifetime: 1247,
-          totalOrders: 15420,
-          totalRevenue: 1378945,
-          activeUsers: 8920,
-          topProducts: []
-        });
+      } catch (error) {
+        console.error('Error fetching data:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchDynamicData();
-  }, [t]);
+    fetchData();
+  }, []);
 
   const handleGetStarted = () => {
     if (isAuthenticated) {
@@ -199,6 +143,7 @@ export default function LandingPage() {
   };
 
   if (loading || authLoading) {
+    console.log('HomePage: Still loading - loading:', loading, 'authLoading:', authLoading);
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -213,9 +158,6 @@ export default function LandingPage() {
 
   return (
     <div className={`min-h-screen ${isRTL ? 'rtl' : 'ltr'}`}>
-      {/* Header */}
-      <Header />
-
       {/* Welcome Section for Authenticated Users */}
       {isAuthenticated && user && (
         <section className="py-8 bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20">

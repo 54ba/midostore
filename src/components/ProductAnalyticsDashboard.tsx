@@ -176,25 +176,25 @@ export default function ProductAnalyticsDashboard() {
                             </tr>
                         </thead>
                         <tbody>
-                            {analyticsData?.topProducts?.map((product, index) => (
-                                <tr key={product.id} className="border-b border-gray-100 dark:border-gray-700">
+                            {analyticsData?.topProducts && Array.isArray(analyticsData.topProducts) ? analyticsData.topProducts.map((product, index) => (
+                                <tr key={product.id || `product-${index}`} className="border-b border-gray-100 dark:border-gray-700">
                                     <td className="py-3 px-4 text-gray-900 dark:text-white">
-                                        {product.name}
+                                        {product.name || 'Unknown Product'}
                                     </td>
                                     <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
-                                        {product.sales.toLocaleString()}
+                                        {(product.sales || 0).toLocaleString()}
                                     </td>
                                     <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
-                                        ${product.revenue.toLocaleString()}
+                                        ${(product.revenue || 0).toLocaleString()}
                                     </td>
                                 </tr>
-                            )) || (
-                                    <tr>
-                                        <td colSpan={3} className="py-8 text-center text-gray-500">
-                                            No data available
-                                        </td>
-                                    </tr>
-                                )}
+                            )) : (
+                                <tr>
+                                    <td colSpan={3} className="py-8 text-center text-gray-500">
+                                        No data available
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>

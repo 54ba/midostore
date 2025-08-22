@@ -63,6 +63,15 @@ export async function GET(request: NextRequest) {
                     data: carrierInfo,
                 });
 
+            case 'active-shipments':
+                const currency = searchParams.get('currency') || 'USD';
+                const activeShipments = await shippingService.getActiveShipments(currency);
+
+                return NextResponse.json({
+                    success: true,
+                    data: activeShipments,
+                });
+
             default:
                 return NextResponse.json(
                     { error: 'Invalid action parameter' },
