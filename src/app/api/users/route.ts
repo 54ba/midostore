@@ -1,113 +1,28 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
-
-const PROXY_URL = 'https://api.internal.tasker.ai'
-const CHAT_ROOM_UUID = "91d799d8-8f50-4e00-92b7-738e055f90c4"
-const USER_UUID = "b3f753f4-ee49-4263-a1ec-1b798c8d5948"
-const FUNCTION_UUID = "d59873ee-bb56-4a3d-a5a9-78d459c8a3f8"
-const SPREADSHEET_ID = '18EGqQ8F7mBO08nqDin9mwfLt_R-lB1xSDmlgI_BNyXw'
-
-interface UserSession {
-  user_id: string
-  email: string
-  full_name: string
-  phone: string
-}
-
-interface User {
-  user_id: string
-  email: string
-  password: string
-  full_name: string
-  phone: string
-  created_at: string
-}
+import { NextRequest, NextResponse } from 'next/server';
+import MongoDBService from '@/lib/mongodb-service';
 
 export async function GET(request: NextRequest) {
   try {
-    // Check authentication
-    const cookieStore = await cookies()
-    const authToken = cookieStore.get('auth_token')
+    const { searchParams } = new URL(request.url);
+    const role = searchParams.get('role');
+    const verified = searchParams.get('verified');
 
-    if (!authToken) {
-      // For testing purposes, return demo data if no auth token
-      return NextResponse.json({
-        success: true,
-        data: {
-          user_id: 'demo-user-123',
-          email: 'demo@example.com',
-          full_name: 'Demo User',
-          phone: '+1234567890',
-          created_at: new Date().toISOString()
-        },
-        message: 'Demo user data (provide auth_token for real data)'
-      })
-    }
+    const dbService = MongoDBService.getInstance();
+    await dbService.initialize();
 
-    let userSession: UserSession
-    try {
-      userSession = JSON.parse(authToken.value)
-    } catch (error) {
-      return NextResponse.json({ error: 'Invalid authentication token' }, { status: 401 })
-    }
-
-    const { searchParams } = new URL(request.url)
-    const userId = searchParams.get('id') ?? userSession.user_id
-
-    if (!userId) {
-      return NextResponse.json({ error: 'User ID parameter is required' }, { status: 400 })
-    }
-
-    // Read user data from Google Sheets
-    const response = await fetch(`${PROXY_URL}/proxy/google-sheets`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        chatRoomUUID: CHAT_ROOM_UUID,
-        userUUID: USER_UUID,
-        functionUUID: FUNCTION_UUID,
-        operation: 'read',
-        spreadsheetId: SPREADSHEET_ID,
-        range: 'User!A1:F1000'
-      })
-    })
-
-    if (!response.ok) {
-      return NextResponse.json({ error: 'Failed to fetch user data' }, { status: 500 })
-    }
-
-    const sheetsData = await response.json()
-
-    if (!sheetsData.result || !sheetsData.result.values || sheetsData.result.values.length === 0) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
-    }
-
-    const rows = sheetsData.result.values
-    const headers = rows[0]
-
-    // Find user by ID
-    const userRow = rows.slice(1).find((row: string[]) => row[0] === userId)
-
-    if (!userRow) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
-    }
-
-    // Map row data to user object (excluding password for security)
-    const user = {
-      user_id: userRow[0] || '',
-      email: userRow[1] || '',
-      full_name: userRow[3] || '',
-      phone: userRow[4] || '',
-      created_at: userRow[5] || ''
-    }
-
-    return NextResponse.json({ success: true, data: user })
-
+    // For now, we'll return a simple response since we don't have a getAllUsers method
+    // In a real application, you'd implement proper user listing with pagination and filtering
+    return NextResponse.json({
+      success: true,
+      message: 'Users API endpoint created. Implement getAllUsers method in MongoDBService for full functionality.',
+      data: []
+    });
   } catch (error) {
-    console.error('Error fetching user:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error('Error fetching users:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to fetch users' },
+      { status: 500 }
+    );
   }
 }
 

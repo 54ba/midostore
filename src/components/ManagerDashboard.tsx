@@ -1,896 +1,773 @@
-// @ts-nocheck
-"use client";
+'use client'
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 import {
-    Crown,
-    User,
-    Brain,
-    BarChart3,
-    Settings,
-    ShoppingCart,
-    Package,
-    TrendingUp,
     Users,
-    Activity,
-    Zap,
+    ShoppingCart,
+    DollarSign,
+    TrendingUp,
+    Settings,
     Shield,
-    Eye,
-    Target,
-    Layers,
-    Workflow,
+    Database,
+    Activity,
+    Package,
+    Truck,
+    CreditCard,
+    BarChart3,
+    UserCheck,
     AlertTriangle,
     CheckCircle,
-    Clock,
-    DollarSign,
-    Coins,
-    Gift,
-    Network,
-    Database,
-    Cpu,
-    Database,
-    Gauge,
-    LineChart,
-    PieChart,
-    BarChart,
-    RefreshCw,
-    Play,
-    Pause,
-    RotateCcw
-    , Flame, AlertCircle
-} from 'lucide-react';
+    XCircle,
+    Edit,
+    Trash2,
+    Plus,
+    Search,
+    Filter,
+    Download,
+    RefreshCw
+} from 'lucide-react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog'
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table'
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 
-interface ManagerDashboardProps {
-    className?: string;
+interface DashboardStats {
+    totalUsers: number
+    totalOrders: number
+    totalRevenue: number
+    activeUsers: number
+    pendingOrders: number
+    systemHealth: 'healthy' | 'warning' | 'critical'
 }
 
-interface ManagerData {
-    userExperience: {
-        cart: any;
-        orders: any[];
-        tokens: number;
-        p2pListings: any[];
-    };
-    orchestrator: {
-        status: any;
-        services: any[];
-        trends: any[];
-        decisions: any[];
-    };
-    analytics: {
-        users: any;
-        revenue: any;
-        performance: any;
-        market: any;
-    };
+interface User {
+    id: string
+    name: string
+    email: string
+    role: string
+    status: 'active' | 'suspended' | 'pending'
+    createdAt: string
+    lastLogin: string
 }
 
-export default function ManagerDashboard({ className = '' }: ManagerDashboardProps) {
-    const [managerData, setManagerData] = useState<ManagerData | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [activeView, setActiveView] = useState('overview');
-    const [orchestratorRunning, setOrchestratorRunning] = useState(false);
+interface Order {
+    id: string
+    orderNumber: string
+    customerName: string
+    total: number
+    status: string
+    createdAt: string
+    paymentStatus: string
+}
+
+interface SystemAlert {
+    id: string
+    type: 'info' | 'warning' | 'error' | 'success'
+    message: string
+    timestamp: string
+    isRead: boolean
+}
+
+export default function ManagerDashboard() {
+    const [stats, setStats] = useState<DashboardStats>({
+        totalUsers: 0,
+        totalOrders: 0,
+        totalRevenue: 0,
+        activeUsers: 0,
+        pendingOrders: 0,
+        systemHealth: 'healthy'
+    })
+    const [users, setUsers] = useState<User[]>([])
+    const [orders, setOrders] = useState<Order[]>([])
+    const [alerts, setAlerts] = useState<SystemAlert[]>([])
+    const [selectedTab, setSelectedTab] = useState('overview')
+    const [searchTerm, setSearchTerm] = useState('')
+    const [filterRole, setFilterRole] = useState('all')
+    const [filterStatus, setFilterStatus] = useState('all')
+    const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
-        fetchManagerData();
-        const interval = setInterval(fetchManagerData, 180000); // Update every 3 minutes
-        return () => clearInterval(interval);
-    }, []);
+        loadDashboardData()
+    }, [])
 
-    const fetchManagerData = async () => {
+    const loadDashboardData = async () => {
         try {
-            setLoading(true);
-
-            // Simulate fetching comprehensive manager data
-            const [userExp, orchestrator, analytics] = await Promise.all([
-                fetchUserExperience(),
-                fetchOrchestratorData(),
-                fetchAnalyticsData(),
-            ]);
-
-            setManagerData({
-                userExperience: userExp,
-                orchestrator: orchestrator,
-                analytics: analytics
-            });
-
-            setOrchestratorRunning(orchestrator.status?.isRunning || false);
-
+            setIsLoading(true)
+            // In a real implementation, these would be API calls
+            await Promise.all([
+                loadStats(),
+                loadUsers(),
+                loadOrders(),
+                loadAlerts()
+            ])
         } catch (error) {
-            console.error('Error fetching manager data:', error);
+            console.error('Failed to load dashboard data:', error)
         } finally {
-            setLoading(false);
+            setIsLoading(false)
         }
-    };
+    }
 
-    const fetchUserExperience = async () => {
-        // Simulate user experience data
-        return {
-            cart: { items: 3, total: 299.99 },
-            orders: [
-                { id: '1', total: 149.99, status: 'delivered', date: '2024-01-15' },
-                { id: '2', total: 89.99, status: 'shipped', date: '2024-01-20' }
-            ],
-            tokens: 1250,
-            p2pListings: [
-                { id: '1', title: 'Wireless Headphones', price: 79.99, status: 'active' },
-                { id: '2', title: 'Smart Watch', price: 199.99, status: 'sold' }
-            ]
-        };
-    };
+    const loadStats = async () => {
+        // Mock data - replace with real API calls
+        setStats({
+            totalUsers: 1247,
+            totalOrders: 8934,
+            totalRevenue: 124750.50,
+            activeUsers: 892,
+            pendingOrders: 156,
+            systemHealth: 'healthy'
+        })
+    }
 
-    const fetchOrchestratorData = async () => {
-        // Fetch real orchestrator data
+    const loadUsers = async () => {
+        // Mock data - replace with real API calls
+        const mockUsers: User[] = [
+            {
+                id: '1',
+                name: 'John Doe',
+                email: 'john@example.com',
+                role: 'customer',
+                status: 'active',
+                createdAt: '2024-01-15',
+                lastLogin: '2024-01-20'
+            },
+            {
+                id: '2',
+                name: 'Jane Smith',
+                email: 'jane@example.com',
+                role: 'seller',
+                status: 'active',
+                createdAt: '2024-01-10',
+                lastLogin: '2024-01-19'
+            },
+            {
+                id: '3',
+                name: 'Bob Johnson',
+                email: 'bob@example.com',
+                role: 'admin',
+                status: 'active',
+                createdAt: '2024-01-05',
+                lastLogin: '2024-01-20'
+            }
+        ]
+        setUsers(mockUsers)
+    }
+
+    const loadOrders = async () => {
+        // Mock data - replace with real API calls
+        const mockOrders: Order[] = [
+            {
+                id: '1',
+                orderNumber: 'ORD-001',
+                customerName: 'John Doe',
+                total: 299.99,
+                status: 'pending',
+                createdAt: '2024-01-20',
+                paymentStatus: 'paid'
+            },
+            {
+                id: '2',
+                orderNumber: 'ORD-002',
+                customerName: 'Jane Smith',
+                total: 149.50,
+                status: 'shipped',
+                createdAt: '2024-01-19',
+                paymentStatus: 'paid'
+            }
+        ]
+        setOrders(mockOrders)
+    }
+
+    const loadAlerts = async () => {
+        // Mock data - replace with real API calls
+        const mockAlerts: SystemAlert[] = [
+            {
+                id: '1',
+                type: 'info',
+                message: 'System maintenance scheduled for tonight at 2 AM',
+                timestamp: '2024-01-20 10:00',
+                isRead: false
+            },
+            {
+                id: '2',
+                type: 'warning',
+                message: 'High server load detected',
+                timestamp: '2024-01-20 09:30',
+                isRead: false
+            }
+        ]
+        setAlerts(mockAlerts)
+    }
+
+    const filteredUsers = users.filter(user => {
+        const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            user.email.toLowerCase().includes(searchTerm.toLowerCase())
+        const matchesRole = filterRole === 'all' || user.role === filterRole
+        const matchesStatus = filterStatus === 'all' || user.status === filterStatus
+
+        return matchesSearch && matchesRole && matchesStatus
+    })
+
+    const getStatusBadge = (status: string) => {
+        const variants: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
+            active: 'default',
+            suspended: 'destructive',
+            pending: 'secondary',
+            shipped: 'default',
+            delivered: 'default',
+            cancelled: 'destructive'
+        }
+
+        return <Badge variant={variants[status] || 'outline'}>{status}</Badge>
+    }
+
+    const getHealthStatus = (health: string) => {
+        switch (health) {
+            case 'healthy':
+                return <div className="flex items-center text-green-600"><CheckCircle className="w-4 h-4 mr-2" />Healthy</div>
+            case 'warning':
+                return <div className="flex items-center text-yellow-600"><AlertTriangle className="w-4 h-4 mr-2" />Warning</div>
+            case 'critical':
+                return <div className="flex items-center text-red-600"><XCircle className="w-4 h-4 mr-2" />Critical</div>
+            default:
+                return <div className="flex items-center text-gray-600"><Activity className="w-4 h-4 mr-2" />Unknown</div>
+        }
+    }
+
+    const handleUserAction = async (userId: string, action: string) => {
         try {
-            const response = await fetch('/api/ai-orchestrator?action=status');
-            if (response.ok) {
-                const data = await response.json();
-                return data.success ? data.data : {};
+            // In a real implementation, this would make API calls
+            console.log(`Performing ${action} on user ${userId}`)
+
+            // Update local state
+            if (action === 'suspend') {
+                setUsers(users.map(user =>
+                    user.id === userId ? { ...user, status: 'suspended' as const } : user
+                ))
+            } else if (action === 'activate') {
+                setUsers(users.map(user =>
+                    user.id === userId ? { ...user, status: 'active' as const } : user
+                ))
+            } else if (action === 'delete') {
+                setUsers(users.filter(user => user.id !== userId))
             }
         } catch (error) {
-            console.error('Error fetching orchestrator data:', error);
+            console.error(`Failed to ${action} user:`, error)
         }
-        return { status: { isRunning: false }, services: [], trends: [], decisions: [] };
-    };
+    }
 
-    const fetchAnalyticsData = async () => {
-        // Simulate comprehensive analytics
-        return {
-            users: {
-                total: 15420,
-                active: 8930,
-                new: 245,
-                retention: 78.5
-            },
-            revenue: {
-                total: 245780,
-                monthly: 45230,
-                growth: 12.5,
-                conversion: 3.2
-            },
-            performance: {
-                responseTime: 245,
-                uptime: 99.8,
-                errorRate: 0.2,
-                throughput: 1250
-            },
-            market: {
-                trending: ['electronics', 'fashion', 'home'],
-                sentiment: 0.75,
-                competition: 'moderate'
-            }
-        };
-    };
-
-    const handleOrchestratorAction = async (action: string) => {
-        try {
-            const response = await fetch('/api/ai-orchestrator', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action }),
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                if (data.success) {
-                    setOrchestratorRunning(action === 'start' || action === 'restart');
-                    await fetchManagerData();
-                }
-            }
-        } catch (error) {
-            console.error(`Error executing ${action}:`, error);
-        }
-    };
-
-    if (loading && !managerData) {
-        return (
-            <div className={`bg-white rounded-lg shadow-sm border border-gray-200 p-8 ${className}`}>
-                <div className="animate-pulse">
-                    <div className="h-8 bg-gray-200 rounded w-1/3 mb-6"></div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {[...Array(8)].map((_, i) => (
-                            <div key={i} className="h-32 bg-gray-200 rounded"></div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-        );
+    const handleExportData = (type: string) => {
+        // In a real implementation, this would generate and download CSV/Excel files
+        console.log(`Exporting ${type} data`)
     }
 
     return (
-        <div className={`bg-white rounded-lg shadow-sm border border-gray-200 ${className}`}>
-            {/* Header */}
-            <div className="border-b border-gray-200 p-6">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                            <Crown className="w-6 h-6 text-purple-600" />
-                            Manager Dashboard
-                        </h2>
-                        <p className="text-gray-600 mt-1">
-                            Unified platform management with user experience and AI orchestrator supervision
-                        </p>
-                    </div>
-
-                    <div className="flex items-center gap-4">
-                        {/* Manager Badge */}
-                        <div className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-medium">
-                            <div className="flex items-center gap-2">
-                                <Crown className="w-4 h-4" />
-                                Manager Access
-                            </div>
-                        </div>
-
-                        {/* Orchestrator Status */}
-                        <div className={`px-3 py-1 rounded-full text-sm font-medium ${orchestratorRunning ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                            }`}>
-                            <div className="flex items-center gap-2">
-                                <div className={`w-2 h-2 rounded-full ${orchestratorRunning ? 'bg-green-500' : 'bg-red-500'
-                                    }`}></div>
-                                AI {orchestratorRunning ? 'Active' : 'Inactive'}
-                            </div>
-                        </div>
-                    </div>
+        <div className="min-h-screen bg-gray-50 p-6">
+            <div className="max-w-7xl mx-auto">
+                {/* Header */}
+                <div className="mb-8">
+                    <h1 className="text-3xl font-bold text-gray-900">Manager Dashboard</h1>
+                    <p className="text-gray-600">Complete control over your e-commerce platform</p>
                 </div>
 
-                {/* View Navigation */}
-                <div className="flex space-x-1 mt-6">
-                    {[
-                        { id: 'overview', label: 'Overview', icon: BarChart3 },
-                        { id: 'user-experience', label: 'User Experience', icon: User },
-                        { id: 'ai-orchestrator', label: 'AI Orchestrator', icon: Brain },
-                        { id: 'analytics', label: 'Analytics', icon: LineChart },
-                        { id: 'supervision', label: 'Supervision', icon: Eye },
-                    ].map((view: any) => (
-                        <button
-                            key={view.id}
-                            onClick={() => setActiveView(view.id)}
-                            className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${activeView === view.id
-                                ? 'bg-purple-100 text-purple-700'
-                                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                                }`}
-                        >
-                            <view.icon className="w-4 h-4" />
-                            {view.label}
-                        </button>
-                    ))}
+                {/* Stats Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+                            <Users className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{stats.totalUsers.toLocaleString()}</div>
+                            <p className="text-xs text-muted-foreground">
+                                +{stats.activeUsers} active
+                            </p>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
+                            <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{stats.totalOrders.toLocaleString()}</div>
+                            <p className="text-xs text-muted-foreground">
+                                {stats.pendingOrders} pending
+                            </p>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+                            <DollarSign className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">${stats.totalRevenue.toLocaleString()}</div>
+                            <p className="text-xs text-muted-foreground">
+                                +12% from last month
+                            </p>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">System Health</CardTitle>
+                            <Activity className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            {getHealthStatus(stats.systemHealth)}
+                        </CardContent>
+                    </Card>
                 </div>
-            </div>
 
-            {/* Content */}
-            <div className="p-6">
-                {activeView === 'overview' && (
-                    <div className="space-y-6">
-                        {/* Key Metrics */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg p-4">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-blue-100 text-sm">Total Users</p>
-                                        <p className="text-2xl font-bold">
-                                            {managerData?.analytics.users.total.toLocaleString() || '0'}
-                                        </p>
-                                    </div>
-                                    <Users className="w-8 h-8 text-blue-200" />
-                                </div>
-                            </div>
+                {/* Main Content Tabs */}
+                <Tabs value={selectedTab} onValueChange={setSelectedTab} className="space-y-6">
+                    <TabsList className="grid w-full grid-cols-6">
+                        <TabsTrigger value="overview">Overview</TabsTrigger>
+                        <TabsTrigger value="users">Users</TabsTrigger>
+                        <TabsTrigger value="orders">Orders</TabsTrigger>
+                        <TabsTrigger value="analytics">Analytics</TabsTrigger>
+                        <TabsTrigger value="system">System</TabsTrigger>
+                        <TabsTrigger value="settings">Settings</TabsTrigger>
+                    </TabsList>
 
-                            <div className="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg p-4">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-green-100 text-sm">Revenue</p>
-                                        <p className="text-2xl font-bold">
-                                            ${managerData?.analytics.revenue.total.toLocaleString() || '0'}
-                                        </p>
-                                    </div>
-                                    <DollarSign className="w-8 h-8 text-green-200" />
-                                </div>
-                            </div>
-
-                            <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg p-4">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-purple-100 text-sm">My Tokens</p>
-                                        <p className="text-2xl font-bold">
-                                            {managerData?.userExperience.tokens.toLocaleString() || '0'}
-                                        </p>
-                                    </div>
-                                    <Coins className="w-8 h-8 text-purple-200" />
-                                </div>
-                            </div>
-
-                            <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg p-4">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-orange-100 text-sm">System Health</p>
-                                        <p className="text-2xl font-bold">
-                                            {managerData?.analytics.performance.uptime || '0'}%
-                                        </p>
-                                    </div>
-                                    <Activity className="w-8 h-8 text-orange-200" />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Quick Actions */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="bg-gray-50 rounded-lg p-6">
-                                <h3 className="text-lg font-semibold text-gray-900 mb-4">User Experience Actions</h3>
-                                <div className="space-y-3">
-                                    <button className="w-full flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-sm transition-all">
-                                        <ShoppingCart className="w-5 h-5 text-blue-600" />
-                                        <div className="text-left">
-                                            <p className="font-medium text-gray-900">View My Cart</p>
-                                            <p className="text-sm text-gray-600">{managerData?.userExperience.cart.items || 0} items</p>
-                                        </div>
-                                    </button>
-
-                                    <button className="w-full flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200 hover:border-green-300 hover:shadow-sm transition-all">
-                                        <Package className="w-5 h-5 text-green-600" />
-                                        <div className="text-left">
-                                            <p className="font-medium text-gray-900">My Orders</p>
-                                            <p className="text-sm text-gray-600">{managerData?.userExperience.orders.length || 0} orders</p>
-                                        </div>
-                                    </button>
-
-                                    <button className="w-full flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200 hover:border-purple-300 hover:shadow-sm transition-all">
-                                        <Gift className="w-5 h-5 text-purple-600" />
-                                        <div className="text-left">
-                                            <p className="font-medium text-gray-900">Token Rewards</p>
-                                            <p className="text-sm text-gray-600">Earn & manage tokens</p>
-                                        </div>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div className="bg-gray-50 rounded-lg p-6">
-                                <h3 className="text-lg font-semibold text-gray-900 mb-4">AI Orchestrator Control</h3>
-                                <div className="space-y-3">
-                                    <div className="flex items-center gap-2 mb-3">
-                                        <button
-                                            onClick={() => handleOrchestratorAction('start')}
-                                            disabled={orchestratorRunning}
-                                            className="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                                        >
-                                            <Play className="w-4 h-4" />
-                                            Start
-                                        </button>
-
-                                        <button
-                                            onClick={() => handleOrchestratorAction('stop')}
-                                            disabled={!orchestratorRunning}
-                                            className="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                                        >
-                                            <Pause className="w-4 h-4" />
-                                            Stop
-                                        </button>
-
-                                        <button
-                                            onClick={() => handleOrchestratorAction('restart')}
-                                            className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
-                                        >
-                                            <RotateCcw className="w-4 h-4" />
-                                            Restart
-                                        </button>
-                                    </div>
-
-                                    <div className="bg-white rounded-lg p-3 border border-gray-200">
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-sm text-gray-600">Services Monitored</span>
-                                            <span className="font-medium">{managerData?.orchestrator.services?.length || 0}</span>
-                                        </div>
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-sm text-gray-600">Active Decisions</span>
-                                            <span className="font-medium">{managerData?.orchestrator.decisions?.length || 0}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Recent Activity */}
-                        <div className="bg-gray-50 rounded-lg p-6">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
-                            <div className="space-y-3">
-                                <div className="flex items-center justify-between p-3 bg-white rounded-lg">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                            <TrendingUp className="w-4 h-4 text-blue-600" />
-                                        </div>
-                                        <div>
-                                            <p className="font-medium text-gray-900">Market trend analysis completed</p>
-                                            <p className="text-sm text-gray-600">Electronics category showing high momentum</p>
-                                        </div>
-                                    </div>
-                                    <span className="text-sm text-gray-500">2 min ago</span>
-                                </div>
-
-                                <div className="flex items-center justify-between p-3 bg-white rounded-lg">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                                            <CheckCircle className="w-4 h-4 text-green-600" />
-                                        </div>
-                                        <div>
-                                            <p className="font-medium text-gray-900">Service scaling decision executed</p>
-                                            <p className="text-sm text-gray-600">Analytics service scaled up by 50%</p>
-                                        </div>
-                                    </div>
-                                    <span className="text-sm text-gray-500">5 min ago</span>
-                                </div>
-
-                                <div className="flex items-center justify-between p-3 bg-white rounded-lg">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                                            <Coins className="w-4 h-4 text-purple-600" />
-                                        </div>
-                                        <div>
-                                            <p className="font-medium text-gray-900">Token rewards distributed</p>
-                                            <p className="text-sm text-gray-600">Daily login reward earned: +5 tokens</p>
-                                        </div>
-                                    </div>
-                                    <span className="text-sm text-gray-500">1 hour ago</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {activeView === 'user-experience' && (
-                    <div className="space-y-6">
-                        {/* User Experience Dashboard */}
+                    {/* Overview Tab */}
+                    <TabsContent value="overview" className="space-y-6">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            {/* Shopping Cart */}
-                            <div className="bg-gray-50 rounded-lg p-6">
-                                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                                    <ShoppingCart className="w-5 h-5" />
-                                    My Shopping Cart
-                                </h3>
-                                <div className="bg-white rounded-lg p-4">
-                                    <div className="flex items-center justify-between mb-3">
-                                        <span className="text-gray-600">Items in cart</span>
-                                        <span className="font-medium">{managerData?.userExperience.cart.items || 0}</span>
-                                    </div>
-                                    <div className="flex items-center justify-between mb-3">
-                                        <span className="text-gray-600">Total value</span>
-                                        <span className="font-medium">${managerData?.userExperience.cart.total || 0}</span>
-                                    </div>
-                                    <button className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                                        View Cart
-                                    </button>
-                                </div>
-                            </div>
-
-                            {/* Token Balance */}
-                            <div className="bg-gray-50 rounded-lg p-6">
-                                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                                    <Coins className="w-5 h-5" />
-                                    Token Rewards
-                                </h3>
-                                <div className="bg-white rounded-lg p-4">
-                                    <div className="text-center mb-4">
-                                        <div className="text-3xl font-bold text-purple-600">
-                                            {managerData?.userExperience.tokens.toLocaleString() || 0}
-                                        </div>
-                                        <div className="text-gray-600">Total Tokens</div>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <button className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
-                                            Claim Rewards
-                                        </button>
-                                        <button className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
-                                            Transfer Tokens
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Recent Orders */}
-                        <div className="bg-gray-50 rounded-lg p-6">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Orders</h3>
-                            <div className="space-y-3">
-                                {managerData?.userExperience.orders.map((order, index) => (
-                                    <div key={index} className="flex items-center justify-between p-4 bg-white rounded-lg">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                                <Package className="w-5 h-5 text-blue-600" />
-                                            </div>
-                                            <div>
-                                                <p className="font-medium text-gray-900">Order #{order.id}</p>
-                                                <p className="text-sm text-gray-600">{order.date}</p>
-                                            </div>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="font-medium text-gray-900">${order.total}</p>
-                                            <span className={`px-2 py-1 rounded text-xs font-medium ${order.status === 'delivered' ? 'bg-green-100 text-green-700' :
-                                                order.status === 'shipped' ? 'bg-blue-100 text-blue-700' :
-                                                    'bg-yellow-100 text-yellow-700'
-                                                }`}>
-                                                {order.status}
-                                            </span>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* P2P Listings */}
-                        <div className="bg-gray-50 rounded-lg p-6">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">My P2P Listings</h3>
-                            <div className="space-y-3">
-                                {managerData?.userExperience.p2pListings.map((listing, index) => (
-                                    <div key={index} className="flex items-center justify-between p-4 bg-white rounded-lg">
-                                        <div>
-                                            <p className="font-medium text-gray-900">{listing.title}</p>
-                                            <p className="text-sm text-gray-600">${listing.price}</p>
-                                        </div>
-                                        <span className={`px-2 py-1 rounded text-xs font-medium ${listing.status === 'active' ? 'bg-green-100 text-green-700' :
-                                            listing.status === 'sold' ? 'bg-blue-100 text-blue-700' :
-                                                'bg-gray-100 text-gray-700'
-                                            }`}>
-                                            {listing.status}
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {activeView === 'ai-orchestrator' && (
-                    <div className="space-y-6">
-                        {/* Orchestrator Status */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg p-4">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-blue-100 text-sm">Services Monitored</p>
-                                        <p className="text-2xl font-bold">
-                                            {managerData?.orchestrator.services?.length || 0}
-                                        </p>
-                                    </div>
-                                    <Layers className="w-8 h-8 text-blue-200" />
-                                </div>
-                            </div>
-
-                            <div className="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg p-4">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-green-100 text-sm">Active Decisions</p>
-                                        <p className="text-2xl font-bold">
-                                            {managerData?.orchestrator.decisions?.length || 0}
-                                        </p>
-                                    </div>
-                                    <Brain className="w-8 h-8 text-green-200" />
-                                </div>
-                            </div>
-
-                            <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg p-4">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-purple-100 text-sm">Trend Categories</p>
-                                        <p className="text-2xl font-bold">
-                                            {managerData?.orchestrator.trends?.length || 0}
-                                        </p>
-                                    </div>
-                                    <TrendingUp className="w-8 h-8 text-purple-200" />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* AI Control Panel */}
-                        <div className="bg-gray-50 rounded-lg p-6">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">AI Orchestrator Control</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="bg-white rounded-lg p-4">
-                                    <h4 className="font-medium text-gray-900 mb-3">System Control</h4>
-                                    <div className="space-y-2">
-                                        <button
-                                            onClick={() => handleOrchestratorAction('start')}
-                                            disabled={orchestratorRunning}
-                                            className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                                        >
-                                            <Play className="w-4 h-4" />
-                                            Start AI Orchestrator
-                                        </button>
-
-                                        <button
-                                            onClick={() => handleOrchestratorAction('restart')}
-                                            className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2"
-                                        >
-                                            <RotateCcw className="w-4 h-4" />
-                                            Restart System
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div className="bg-white rounded-lg p-4">
-                                    <h4 className="font-medium text-gray-900 mb-3">Quick Actions</h4>
-                                    <div className="space-y-2">
-                                        <button className="w-full px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 flex items-center justify-center gap-2">
-                                            <RefreshCw className="w-4 h-4" />
-                                            Force Analysis
-                                        </button>
-
-                                        <button className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 flex items-center justify-center gap-2">
-                                            <Settings className="w-4 h-4" />
-                                            Configure Rules
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Service Health Monitor */}
-                        <div className="bg-gray-50 rounded-lg p-6">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Service Health Monitor</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {['p2p-marketplace', 'token-rewards', 'bulk-pricing', 'analytics', 'scraping'].map((service, index) => (
-                                    <div key={index} className="bg-white rounded-lg p-4">
-                                        <div className="flex items-center justify-between mb-2">
-                                            <span className="font-medium text-gray-900">{service}</span>
-                                            <span className="px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-700">
-                                                Healthy
-                                            </span>
-                                        </div>
-                                        <div className="text-sm text-gray-600">
-                                            <div className="flex justify-between">
-                                                <span>Response Time:</span>
-                                                <span>{Math.floor(Math.random() * 500 + 100)}ms</span>
-                                            </div>
-                                            <div className="flex justify-between">
-                                                <span>CPU Usage:</span>
-                                                <span>{Math.floor(Math.random() * 50 + 20)}%</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {activeView === 'analytics' && (
-                    <div className="space-y-6">
-                        {/* Analytics Overview */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            <div className="bg-blue-50 rounded-lg p-4">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-blue-600 text-sm font-medium">Active Users</p>
-                                        <p className="text-2xl font-bold text-blue-900">
-                                            {managerData?.analytics.users.active?.toLocaleString() || '0'}
-                                        </p>
-                                    </div>
-                                    <Users className="w-8 h-8 text-blue-500" />
-                                </div>
-                            </div>
-
-                            <div className="bg-green-50 rounded-lg p-4">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-green-600 text-sm font-medium">Monthly Revenue</p>
-                                        <p className="text-2xl font-bold text-green-900">
-                                            ${managerData?.analytics.revenue.monthly?.toLocaleString() || '0'}
-                                        </p>
-                                    </div>
-                                    <DollarSign className="w-8 h-8 text-green-500" />
-                                </div>
-                            </div>
-
-                            <div className="bg-purple-50 rounded-lg p-4">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-purple-600 text-sm font-medium">Conversion Rate</p>
-                                        <p className="text-2xl font-bold text-purple-900">
-                                            {managerData?.analytics.revenue.conversion || 0}%
-                                        </p>
-                                    </div>
-                                    <Target className="w-8 h-8 text-purple-500" />
-                                </div>
-                            </div>
-
-                            <div className="bg-orange-50 rounded-lg p-4">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-orange-600 text-sm font-medium">Response Time</p>
-                                        <p className="text-2xl font-bold text-orange-900">
-                                            {managerData?.analytics.performance.responseTime || 0}ms
-                                        </p>
-                                    </div>
-                                    <Gauge className="w-8 h-8 text-orange-500" />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Performance Charts Placeholder */}
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            <div className="bg-gray-50 rounded-lg p-6">
-                                <h3 className="text-lg font-semibold text-gray-900 mb-4">Revenue Trend</h3>
-                                <div className="h-64 bg-white rounded-lg flex items-center justify-center border border-gray-200">
-                                    <div className="text-center">
-                                        <LineChart className="w-16 h-16 text-gray-400 mx-auto mb-2" />
-                                        <p className="text-gray-500">Revenue chart visualization</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="bg-gray-50 rounded-lg p-6">
-                                <h3 className="text-lg font-semibold text-gray-900 mb-4">User Growth</h3>
-                                <div className="h-64 bg-white rounded-lg flex items-center justify-center border border-gray-200">
-                                    <div className="text-center">
-                                        <BarChart className="w-16 h-16 text-gray-400 mx-auto mb-2" />
-                                        <p className="text-gray-500">User growth visualization</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Market Intelligence */}
-                        <div className="bg-gray-50 rounded-lg p-6">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Market Intelligence</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div className="bg-white rounded-lg p-4">
-                                    <h4 className="font-medium text-gray-900 mb-2">Trending Categories</h4>
-                                    <div className="space-y-2">
-                                        {managerData?.analytics.market.trending?.map((category: any, index: number) => (
-                                            <div key={index} className="flex items-center justify-between">
-                                                <span className="text-gray-600 capitalize">{category}</span>
-                                                <span className="text-green-600 font-medium">+{Math.floor(Math.random() * 20 + 10)}%</span>
+                            {/* Recent Activity */}
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Recent Activity</CardTitle>
+                                    <CardDescription>Latest system events and user actions</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="space-y-4">
+                                        {alerts.slice(0, 5).map(alert => (
+                                            <div key={alert.id} className="flex items-start space-x-3">
+                                                <div className={`w-2 h-2 rounded-full mt-2 ${alert.type === 'error' ? 'bg-red-500' :
+                                                        alert.type === 'warning' ? 'bg-yellow-500' :
+                                                            alert.type === 'success' ? 'bg-green-500' : 'bg-blue-500'
+                                                    }`} />
+                                                <div className="flex-1">
+                                                    <p className="text-sm">{alert.message}</p>
+                                                    <p className="text-xs text-gray-500">{alert.timestamp}</p>
+                                                </div>
                                             </div>
                                         ))}
                                     </div>
-                                </div>
+                                </CardContent>
+                            </Card>
 
-                                <div className="bg-white rounded-lg p-4">
-                                    <h4 className="font-medium text-gray-900 mb-2">Market Sentiment</h4>
-                                    <div className="text-center">
-                                        <div className="text-3xl font-bold text-green-600">
-                                            {((managerData?.analytics.market.sentiment || 0) * 100).toFixed(0)}%
-                                        </div>
-                                        <div className="text-gray-600">Positive</div>
+                            {/* Quick Actions */}
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Quick Actions</CardTitle>
+                                    <CardDescription>Common management tasks</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <Button variant="outline" className="h-20 flex-col">
+                                            <UserCheck className="w-6 h-6 mb-2" />
+                                            <span className="text-sm">User Management</span>
+                                        </Button>
+                                        <Button variant="outline" className="h-20 flex-col">
+                                            <Package className="w-6 h-6 mb-2" />
+                                            <span className="text-sm">Product Catalog</span>
+                                        </Button>
+                                        <Button variant="outline" className="h-20 flex-col">
+                                            <Truck className="w-6 h-6 mb-2" />
+                                            <span className="text-sm">Shipping</span>
+                                        </Button>
+                                        <Button variant="outline" className="h-20 flex-col">
+                                            <CreditCard className="w-6 h-6 mb-2" />
+                                            <span className="text-sm">Payments</span>
+                                        </Button>
                                     </div>
-                                </div>
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </TabsContent>
 
-                                <div className="bg-white rounded-lg p-4">
-                                    <h4 className="font-medium text-gray-900 mb-2">Competition Level</h4>
-                                    <div className="text-center">
-                                        <div className="text-3xl font-bold text-orange-600 capitalize">
-                                            {managerData?.analytics.market.competition || 'N/A'}
-                                        </div>
-                                        <div className="text-gray-600">Intensity</div>
+                    {/* Users Tab */}
+                    <TabsContent value="users" className="space-y-6">
+                        <Card>
+                            <CardHeader>
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <CardTitle>User Management</CardTitle>
+                                        <CardDescription>Manage platform users and permissions</CardDescription>
                                     </div>
+                                    <Button>
+                                        <Plus className="w-4 h-4 mr-2" />
+                                        Add User
+                                    </Button>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
+                            </CardHeader>
+                            <CardContent>
+                                {/* Filters */}
+                                <div className="flex items-center space-x-4 mb-6">
+                                    <div className="flex-1">
+                                        <Input
+                                            placeholder="Search users..."
+                                            value={searchTerm}
+                                            onChange={(e) => setSearchTerm(e.target.value)}
+                                            className="max-w-sm"
+                                        />
+                                    </div>
+                                    <Select value={filterRole} onValueChange={setFilterRole}>
+                                        <SelectTrigger className="w-32">
+                                            <SelectValue placeholder="Role" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="all">All Roles</SelectItem>
+                                            <SelectItem value="customer">Customer</SelectItem>
+                                            <SelectItem value="seller">Seller</SelectItem>
+                                            <SelectItem value="admin">Admin</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <Select value={filterStatus} onValueChange={setFilterStatus}>
+                                        <SelectTrigger className="w-32">
+                                            <SelectValue placeholder="Status" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="all">All Status</SelectItem>
+                                            <SelectItem value="active">Active</SelectItem>
+                                            <SelectItem value="suspended">Suspended</SelectItem>
+                                            <SelectItem value="pending">Pending</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <Button variant="outline" onClick={() => handleExportData('users')}>
+                                        <Download className="w-4 h-4 mr-2" />
+                                        Export
+                                    </Button>
+                                </div>
 
-                {activeView === 'supervision' && (
-                    <div className="space-y-6">
-                        {/* Supervision Overview */}
-                        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg p-6">
-                            <h3 className="text-lg font-semibold mb-4">Platform Supervision</h3>
-                            <p className="text-indigo-100 mb-4">
-                                Comprehensive oversight of all platform operations, user activities, and AI decisions
-                            </p>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div className="text-center">
-                                    <div className="text-2xl font-bold">{managerData?.analytics.users.total || 0}</div>
-                                    <div className="text-indigo-100 text-sm">Total Users Supervised</div>
-                                </div>
-                                <div className="text-center">
-                                    <div className="text-2xl font-bold">{managerData?.orchestrator.services?.length || 0}</div>
-                                    <div className="text-indigo-100 text-sm">Services Monitored</div>
-                                </div>
-                                <div className="text-center">
-                                    <div className="text-2xl font-bold">{managerData?.orchestrator.decisions?.length || 0}</div>
-                                    <div className="text-indigo-100 text-sm">AI Decisions Reviewed</div>
-                                </div>
-                            </div>
-                        </div>
+                                {/* Users Table */}
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Name</TableHead>
+                                            <TableHead>Email</TableHead>
+                                            <TableHead>Role</TableHead>
+                                            <TableHead>Status</TableHead>
+                                            <TableHead>Created</TableHead>
+                                            <TableHead>Last Login</TableHead>
+                                            <TableHead>Actions</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {filteredUsers.map(user => (
+                                            <TableRow key={user.id}>
+                                                <TableCell className="font-medium">{user.name}</TableCell>
+                                                <TableCell>{user.email}</TableCell>
+                                                <TableCell>
+                                                    <Badge variant="outline">{user.role}</Badge>
+                                                </TableCell>
+                                                <TableCell>{getStatusBadge(user.status)}</TableCell>
+                                                <TableCell>{user.createdAt}</TableCell>
+                                                <TableCell>{user.lastLogin}</TableCell>
+                                                <TableCell>
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger asChild>
+                                                            <Button variant="ghost" className="h-8 w-8 p-0">
+                                                                <span className="sr-only">Open menu</span>
+                                                                <Edit className="h-4 w-4" />
+                                                            </Button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent align="end">
+                                                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                                            <DropdownMenuItem onClick={() => handleUserAction(user.id, 'edit')}>
+                                                                <Edit className="mr-2 h-4 w-4" />
+                                                                Edit User
+                                                            </DropdownMenuItem>
+                                                            {user.status === 'active' ? (
+                                                                <DropdownMenuItem onClick={() => handleUserAction(user.id, 'suspend')}>
+                                                                    <AlertTriangle className="mr-2 h-4 w-4" />
+                                                                    Suspend User
+                                                                </DropdownMenuItem>
+                                                            ) : (
+                                                                <DropdownMenuItem onClick={() => handleUserAction(user.id, 'activate')}>
+                                                                    <CheckCircle className="mr-2 h-4 w-4" />
+                                                                    Activate User
+                                                                </DropdownMenuItem>
+                                                            )}
+                                                            <DropdownMenuSeparator />
+                                                            <DropdownMenuItem
+                                                                onClick={() => handleUserAction(user.id, 'delete')}
+                                                                className="text-red-600"
+                                                            >
+                                                                <Trash2 className="mr-2 h-4 w-4" />
+                                                                Delete User
+                                                            </DropdownMenuItem>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
 
-                        {/* System Health Dashboard */}
+                    {/* Orders Tab */}
+                    <TabsContent value="orders" className="space-y-6">
+                        <Card>
+                            <CardHeader>
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <CardTitle>Order Management</CardTitle>
+                                        <CardDescription>Monitor and manage customer orders</CardDescription>
+                                    </div>
+                                    <Button variant="outline" onClick={() => handleExportData('orders')}>
+                                        <Download className="w-4 h-4 mr-2" />
+                                        Export Orders
+                                    </Button>
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Order #</TableHead>
+                                            <TableHead>Customer</TableHead>
+                                            <TableHead>Total</TableHead>
+                                            <TableHead>Status</TableHead>
+                                            <TableHead>Payment</TableHead>
+                                            <TableHead>Date</TableHead>
+                                            <TableHead>Actions</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {orders.map(order => (
+                                            <TableRow key={order.id}>
+                                                <TableCell className="font-medium">{order.orderNumber}</TableCell>
+                                                <TableCell>{order.customerName}</TableCell>
+                                                <TableCell>${order.total.toFixed(2)}</TableCell>
+                                                <TableCell>{getStatusBadge(order.status)}</TableCell>
+                                                <TableCell>{getStatusBadge(order.paymentStatus)}</TableCell>
+                                                <TableCell>{order.createdAt}</TableCell>
+                                                <TableCell>
+                                                    <Button variant="outline" size="sm">
+                                                        View Details
+                                                    </Button>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
+                    {/* Analytics Tab */}
+                    <TabsContent value="analytics" className="space-y-6">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            <div className="bg-gray-50 rounded-lg p-6">
-                                <h3 className="text-lg font-semibold text-gray-900 mb-4">System Health</h3>
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-gray-600">Overall Uptime</span>
-                                        <span className="font-medium text-green-600">{managerData?.analytics.performance.uptime || 0}%</span>
-                                    </div>
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-gray-600">Error Rate</span>
-                                        <span className="font-medium text-green-600">{managerData?.analytics.performance.errorRate || 0}%</span>
-                                    </div>
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-gray-600">Avg Response Time</span>
-                                        <span className="font-medium text-blue-600">{managerData?.analytics.performance.responseTime || 0}ms</span>
-                                    </div>
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-gray-600">Throughput</span>
-                                        <span className="font-medium text-purple-600">{managerData?.analytics.performance.throughput || 0} req/s</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="bg-gray-50 rounded-lg p-6">
-                                <h3 className="text-lg font-semibold text-gray-900 mb-4">Critical Alerts</h3>
-                                <div className="space-y-3">
-                                    <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
-                                        <CheckCircle className="w-5 h-5 text-green-600" />
-                                        <div>
-                                            <p className="font-medium text-green-900">All Systems Operational</p>
-                                            <p className="text-sm text-green-700">No critical issues detected</p>
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Revenue Analytics</CardTitle>
+                                    <CardDescription>Track your platform's financial performance</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="space-y-4">
+                                        <div className="flex items-center justify-between">
+                                            <span>Monthly Revenue</span>
+                                            <span className="font-bold">${(stats.totalRevenue / 12).toFixed(2)}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span>Average Order Value</span>
+                                            <span className="font-bold">${(stats.totalRevenue / stats.totalOrders).toFixed(2)}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span>Conversion Rate</span>
+                                            <span className="font-bold">{(stats.totalOrders / stats.totalUsers * 100).toFixed(1)}%</span>
                                         </div>
                                     </div>
+                                </CardContent>
+                            </Card>
 
-                                    <div className="flex items-center gap-3 p-3 bg-yellow-50 rounded-lg">
-                                        <AlertTriangle className="w-5 h-5 text-yellow-600" />
-                                        <div>
-                                            <p className="font-medium text-yellow-900">High Traffic Alert</p>
-                                            <p className="text-sm text-yellow-700">Traffic increased by 25% in last hour</p>
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>User Analytics</CardTitle>
+                                    <CardDescription>Understand your user base and behavior</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="space-y-4">
+                                        <div className="flex items-center justify-between">
+                                            <span>Active Users</span>
+                                            <span className="font-bold">{stats.activeUsers}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span>User Growth</span>
+                                            <span className="font-bold text-green-600">+15%</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span>Retention Rate</span>
+                                            <span className="font-bold">78%</span>
                                         </div>
                                     </div>
-
-                                    <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
-                                        <Clock className="w-5 h-5 text-blue-600" />
-                                        <div>
-                                            <p className="font-medium text-blue-900">Scheduled Maintenance</p>
-                                            <p className="text-sm text-blue-700">System update planned for tonight</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                </CardContent>
+                            </Card>
                         </div>
+                    </TabsContent>
 
-                        {/* Manager Privileges */}
-                        <div className="bg-gray-50 rounded-lg p-6">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Manager Privileges & Capabilities</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                <div className="bg-white rounded-lg p-4">
-                                    <h4 className="font-medium text-gray-900 mb-2 flex items-center gap-2">
-                                        <User className="w-4 h-4" />
-                                        User Experience
-                                    </h4>
-                                    <ul className="text-sm text-gray-600 space-y-1">
-                                        <li>• Full shopping capabilities</li>
-                                        <li>• Token earning & management</li>
-                                        <li>• P2P marketplace access</li>
-                                        <li>• Social sharing features</li>
-                                    </ul>
-                                </div>
+                    {/* System Tab */}
+                    <TabsContent value="system" className="space-y-6">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>System Status</CardTitle>
+                                    <CardDescription>Monitor platform health and performance</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="space-y-4">
+                                        <div className="flex items-center justify-between">
+                                            <span>Database Status</span>
+                                            <Badge variant="default">Connected</Badge>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span>API Response Time</span>
+                                            <span className="font-bold">45ms</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span>Uptime</span>
+                                            <span className="font-bold">99.9%</span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span>Last Backup</span>
+                                            <span className="font-bold">2 hours ago</span>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
 
-                                <div className="bg-white rounded-lg p-4">
-                                    <h4 className="font-medium text-gray-900 mb-2 flex items-center gap-2">
-                                        <Brain className="w-4 h-4" />
-                                        AI Supervision
-                                    </h4>
-                                    <ul className="text-sm text-gray-600 space-y-1">
-                                        <li>• Orchestrator control</li>
-                                        <li>• Decision oversight</li>
-                                        <li>• Automation management</li>
-                                        <li>• Crisis intervention</li>
-                                    </ul>
-                                </div>
-
-                                <div className="bg-white rounded-lg p-4">
-                                    <h4 className="font-medium text-gray-900 mb-2 flex items-center gap-2">
-                                        <BarChart3 className="w-4 h-4" />
-                                        Analytics Access
-                                    </h4>
-                                    <ul className="text-sm text-gray-600 space-y-1">
-                                        <li>• Full data visibility</li>
-                                        <li>• Performance metrics</li>
-                                        <li>• Business intelligence</li>
-                                        <li>• Export capabilities</li>
-                                    </ul>
-                                </div>
-                            </div>
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>System Alerts</CardTitle>
+                                    <CardDescription>Active system notifications</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="space-y-3">
+                                        {alerts.map(alert => (
+                                            <div key={alert.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                                <div className="flex items-center space-x-3">
+                                                    <div className={`w-3 h-3 rounded-full ${alert.type === 'error' ? 'bg-red-500' :
+                                                            alert.type === 'warning' ? 'bg-yellow-500' :
+                                                                alert.type === 'success' ? 'bg-green-500' : 'bg-blue-500'
+                                                        }`} />
+                                                    <span className="text-sm">{alert.message}</span>
+                                                </div>
+                                                <Button variant="ghost" size="sm">
+                                                    Mark Read
+                                                </Button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </CardContent>
+                            </Card>
                         </div>
-                    </div>
-                )}
+                    </TabsContent>
+
+                    {/* Settings Tab */}
+                    <TabsContent value="settings" className="space-y-6">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Platform Settings</CardTitle>
+                                <CardDescription>Configure your e-commerce platform</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="space-y-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium">Platform Name</label>
+                                            <Input defaultValue="MidoStore" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium">Default Currency</label>
+                                            <Select defaultValue="USD">
+                                                <SelectTrigger>
+                                                    <SelectValue />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="USD">USD</SelectItem>
+                                                    <SelectItem value="EUR">EUR</SelectItem>
+                                                    <SelectItem value="GBP">GBP</SelectItem>
+                                                    <SelectItem value="AED">AED</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium">Timezone</label>
+                                            <Select defaultValue="UTC">
+                                                <SelectTrigger>
+                                                    <SelectValue />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="UTC">UTC</SelectItem>
+                                                    <SelectItem value="EST">EST</SelectItem>
+                                                    <SelectItem value="PST">PST</SelectItem>
+                                                    <SelectItem value="GMT">GMT</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium">Maintenance Mode</label>
+                                            <Select defaultValue="false">
+                                                <SelectTrigger>
+                                                    <SelectValue />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="false">Disabled</SelectItem>
+                                                    <SelectItem value="true">Enabled</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex space-x-4">
+                                        <Button>Save Settings</Button>
+                                        <Button variant="outline">Reset to Defaults</Button>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+                </Tabs>
             </div>
         </div>
-    );
+    )
 }

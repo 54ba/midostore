@@ -5,6 +5,8 @@ import { Star, ShoppingCart, Heart, Eye, Truck, TrendingUp, DollarSign } from 'l
 import Image from 'next/image';
 import ImageGallery from './ImageGallery';
 import { useLocalization } from '../app/contexts/LocalizationContext';
+import { useCart } from '@/contexts/CartContext';
+import { useWishlist } from '@/contexts/WishlistContext';
 
 interface ProductCardProps {
   product: {
@@ -39,9 +41,7 @@ interface ProductCardProps {
     winMargin?: number;
   };
   variant?: 'default' | 'compact' | 'featured';
-  onAddToCart?: (productId: string) => void;
   onViewDetails?: (productId: string) => void;
-  onAddToWishlist?: (productId: string) => void;
   className?: string;
   showPricingBreakdown?: boolean;
 }
@@ -49,14 +49,43 @@ interface ProductCardProps {
 export default function ProductCard({
   product,
   variant = 'default',
-  onAddToCart,
   onViewDetails,
-  onAddToWishlist,
   className = '',
   showPricingBreakdown = false
 }: ProductCardProps) {
   const { formatPrice, currentCurrency } = useLocalization();
+  const { addItem, isInCart } = useCart();
+  const { toggleItem, isInWishlist } = useWishlist();
   const [showBreakdown, setShowBreakdown] = useState(false);
+
+  const handleAddToCart = () => {
+    addItem({
+      id: product.id,
+      title: product.name,
+      price: product.totalPrice || product.price,
+      image: product.image || product.images?.[0] || '',
+      supplierId: undefined
+    });
+  };
+
+  const handleToggleWishlist = () => {
+    toggleItem({
+      id: product.id,
+      title: product.name,
+      price: product.totalPrice || product.price,
+      image: product.image || product.images?.[0] || '',
+      supplierId: undefined
+    });
+  };
+
+  const handleViewDetails = () => {
+    if (onViewDetails) {
+      onViewDetails(product.id);
+    } else {
+      // Default navigation to product details page
+      window.location.href = `/products/${product.id}`;
+    }
+  };
 
   const getBadgeColor = () => {
     if (product.isNew) return 'bg-blue-500';
@@ -99,211 +128,125 @@ export default function ProductCard({
     if (margin >= 20) return 'text-purple-600';
     if (margin >= 10) return 'text-amber-600';
     return 'text-gray-600';
-  }
+  };
 
-  const getWinMarginBgColor = () => {
-    const margin = product.winMargin || 0;
-    if (margin >= 30) return 'bg-blue-100 text-blue-800';
-    if (margin >= 20) return 'bg-purple-100 text-purple-800';
-    if (margin >= 10) return 'bg-amber-100 text-amber-800';
-    return 'bg-gray-100 text-gray-800';
-  }
+  const renderProductImage = () => {
+    if (product.images && product.images.length > 0) {
+      return (
+        <ImageGallery
+          images={product.images}
+          alt={product.name}
+          className="w-full h-full object-cover"
+        />
+      );
+    } else if (product.image) {
+      return (
+        <Image
+          src={product.image}
+          alt={product.name}
+          width={160}
+          height={160}
+          className="w-full h-full object-cover"
+        />
+      );
+    } else {
+      return (
+        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+          <span className="text-gray-400 text-sm">No Image</span>
+        </div>
+      );
+    }
+  };
+
+  const renderWinMarginBadge = () => {
+    if (product.winMargin && product.winMargin > 0) {
+      return (
+        <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1 text-xs font-bold">
+          <span className={getWinMarginColor()}>
+            Win: {product.winMargin}%
+          </span>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  const renderShippingInfo = () => {
+    if (product.shippingWeight || product.shippingDimensions) {
+      return (
+        <div className="flex items-center gap-2 mb-3 text-xs text-gray-500">
+          <Truck className="w-3 h-3" />
+          {product.shippingWeight && (
+            <span>{product.shippingWeight}g</span>
+          )}
+          {product.shippingDimensions && (
+            <span>• {product.shippingDimensions}</span>
+          )}
+        </div>
+      );
+    }
+    return null;
+  };
 
   const renderPricingBreakdown = () => {
     if (!showPricingBreakdown || !product.alibabaPrice) return null;
 
     return (
-      <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-gray-700">Pricing Breakdown</span>
-          <button
-            onClick={() => setShowBreakdown(!showBreakdown)}
-            className="text-xs text-blue-600 hover:text-blue-800"
-          >
-            {showBreakdown ? 'Hide' : 'Show'} Details
-          </button>
+      <div className="mt-3 p-3 bg-gray-50 rounded-lg">
+        <div className="flex items-center justify-between text-xs mb-2">
+          <span className="text-gray-600">Alibaba Price:</span>
+          <span className="font-medium">
+            {formatPrice(product.alibabaPrice, product.alibabaCurrency)}
+          </span>
         </div>
-
-        {showBreakdown && (
-          <div className="space-y-2 text-xs">
-            <div className="flex justify-between">
-              <span className="text-gray-600">Alibaba Price:</span>
-              <span className="font-medium">
-                {formatPrice(product.alibabaPrice, product.alibabaCurrency || 'USD')}
-              </span>
-            </div>
-
-            {product.profitMargin && (
-              <div className="flex justify-between">
-                <span className="text-gray-600">Win Margin:</span>
-                <span className={`font-medium ${getWinMarginColor()}`}>
-                  +{product.profitMargin}%
-                </span>
-              </div>
-            )}
-
-            {product.shippingCost && (
-              <div className="flex justify-between">
-                <span className="text-gray-600">Shipping:</span>
-                <span className="font-medium">
-                  {formatPrice(product.shippingCost, product.currency)}
-                </span>
-              </div>
-            )}
-
-            {product.savings && product.savings > 0 && (
-              <div className="flex justify-between">
-                <span className="text-gray-600">You Save:</span>
-                <span className="font-medium text-green-600">
-                  {formatPrice(product.savings, product.currency)} ({product.savingsPercentage}%)
-                </span>
-              </div>
-            )}
+        {product.shippingCost && (
+          <div className="flex items-center justify-between text-xs mb-2">
+            <span className="text-gray-600">Shipping:</span>
+            <span className="font-medium">
+              {formatPrice(product.shippingCost, product.currency)}
+            </span>
+          </div>
+        )}
+        {product.profitMargin && (
+          <div className="flex items-center justify-between text-xs mb-2">
+            <span className="text-gray-600">Profit Margin:</span>
+            <span className="font-medium text-green-600">
+              {product.profitMargin}%
+            </span>
+          </div>
+        )}
+        {product.savings && (
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-gray-600">You Save:</span>
+            <span className="font-medium text-green-600">
+              {formatPrice(product.savings, product.currency)} ({product.savingsPercentage}%)
+            </span>
           </div>
         )}
       </div>
     );
   };
 
-  const renderWinMarginBadge = () => {
-    if (!product.profitMargin) return null;
-
-    return (
-      <div className={`absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-bold ${getWinMarginBgColor()}`}>
-        <TrendingUp className="w-3 h-3 inline mr-1" />
-        +{product.profitMargin}%
-      </div>
-    );
-  };
-
-  const renderShippingInfo = () => {
-    if (!product.shippingCost) return null;
-
-    return (
-      <div className="flex items-center gap-1 text-xs text-gray-600 mb-2">
-        <Truck className="w-3 h-3" />
-        <span>Shipping: {formatPrice(product.shippingCost, product.currency)}</span>
-      </div>
-    );
-  };
-
-  const renderProductImage = () => {
-    // If we have multiple images, use ImageGallery
-    if (product.images && product.images.length > 1) {
-      return (
-        <ImageGallery
-          images={product.images}
-          alt={product.name}
-          height="h-full"
-          showThumbnails={false}
-          showCounter={true}
-          showNavigation={true}
-          className="w-full h-full"
-        />
-      );
-    }
-
-    // Fallback to single image
-    if (product.image) {
-      return (
-        <Image
-          src={product.image}
-          alt={product.name}
-          fill
-          className="w-full h-full object-cover"
-        />
-      );
-    }
-
-    // Default placeholder
-    return (
-      <div className="w-full h-full flex items-center justify-center bg-gray-200">
-        <span className="text-2xl">📦</span>
-      </div>
-    );
-  };
-
-  if (variant === 'compact') {
-    return (
-      <div className={`group bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 overflow-hidden ${className}`}>
-        <div className="relative">
-          <div className={`w-full h-32 bg-gradient-to-br ${getCategoryColor()} flex items-center justify-center group-hover:scale-105 transition-transform duration-300`}>
-            {renderProductImage()}
-          </div>
-          {getBadgeColor() && (
-            <div className={`absolute top-2 right-2 ${getBadgeColor()} text-white px-2 py-1 rounded-full text-xs font-bold`}>
-              {getBadgeText()}
-            </div>
-          )}
-          {/* Win Margin Badge */}
-          {product.profitMargin && (
-            <div className={`absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-bold ${getWinMarginBgColor()} animate-slide-up`}>
-              <TrendingUp className="w-3 h-3 inline mr-1" />
-              +{product.profitMargin}%
-            </div>
-          )}
-
-          {/* Pricing Breakdown */}
-          {renderPricingBreakdown() && (
-            <div className="mb-4 p-2 bg-blue-50 rounded-lg hover-scale">
-              <div className="flex items-center gap-2 text-blue-700">
-                <span>💰</span>
-                <span className="text-sm font-medium">
-                  Win Margin: +{product.profitMargin}%
-                </span>
-              </div>
-            </div>
-          )}
-        </div>
-        <div className="p-4">
-          <h4 className="font-medium text-gray-900 mb-2 text-sm line-clamp-1 group-hover:text-blue-600 transition-colors">
-            {product.name}
-          </h4>
-          {renderShippingInfo()}
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-lg font-bold text-blue-600">
-              {formatPrice(product.totalPrice || product.price, product.currency)}
-            </span>
-            {product.originalPrice && (
-              <span className="text-sm text-gray-500 line-through">
-                {formatPrice(product.originalPrice, product.currency)}
-              </span>
-            )}
-          </div>
-          <button
-            onClick={() => onAddToCart?.(product.id)}
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2 px-3 rounded-lg text-sm font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105"
-          >
-            Add to Cart
-          </button>
-          {renderPricingBreakdown()}
-        </div>
-      </div>
-    );
-  }
-
+  // Featured variant
   if (variant === 'featured') {
     return (
-      <div className={`group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden ${className}`}>
+      <div className={`group bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden ${className}`}>
         <div className="relative">
           <div className={`w-full h-48 bg-gradient-to-br ${getCategoryColor()} flex items-center justify-center group-hover:scale-105 transition-transform duration-300`}>
             {renderProductImage()}
           </div>
           {getBadgeColor() && (
-            <div className={`absolute top-3 right-3 ${getBadgeColor()} text-white px-2 py-1 rounded-full text-xs font-bold`}>
+            <div className={`absolute top-3 right-3 ${getBadgeColor()} text-white px-3 py-1 rounded-full text-sm font-bold`}>
               {getBadgeText()}
             </div>
           )}
           {renderWinMarginBadge()}
-          <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full text-xs font-medium text-gray-700">
-            {product.category}
-          </div>
         </div>
         <div className="p-6">
-          <h4 className="font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors line-clamp-1">
+          <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
             {product.name}
-          </h4>
-          <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+          </h3>
+          <p className="text-gray-600 mb-4 line-clamp-2">
             {product.description}
           </p>
 
@@ -316,52 +259,47 @@ export default function ProductCard({
                   <Star key={i} className={`w-4 h-4 ${i < Math.floor(product.rating!) ? 'fill-current' : ''}`} />
                 ))}
               </div>
-              <span className="text-xs text-gray-500">({product.reviewCount || 0})</span>
+              <span className="text-sm text-gray-500">({product.reviewCount || 0})</span>
             </div>
           )}
 
           <div className="flex items-center justify-between mb-4">
-            <span className="text-xl font-bold text-blue-600">
+            <span className="text-2xl font-bold text-blue-600">
               {formatPrice(product.totalPrice || product.price, product.currency)}
             </span>
             {product.originalPrice && (
-              <span className="text-sm text-gray-500 line-through">
+              <span className="text-lg text-gray-500 line-through">
                 {formatPrice(product.originalPrice, product.currency)}
               </span>
             )}
           </div>
 
-          {product.savings && product.savings > 0 && (
-            <div className="mb-4 p-2 bg-green-50 rounded-lg">
-              <div className="flex items-center gap-2 text-green-700">
-                <DollarSign className="w-4 h-4" />
-                <span className="text-sm font-medium">
-                  Save {formatPrice(product.savings, product.currency)} ({product.savingsPercentage}%)
-                </span>
-              </div>
-            </div>
-          )}
-
           <div className="flex gap-2">
             <button
-              onClick={() => onAddToCart?.(product.id)}
-              className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105"
+              onClick={handleAddToCart}
+              className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 ${isInCart(product.id)
+                  ? 'bg-green-600 text-white hover:bg-green-700'
+                  : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700'
+                }`}
             >
-              Add to Cart
+              {isInCart(product.id) ? 'In Cart' : 'Add to Cart'}
             </button>
             <button
-              onClick={() => onViewDetails?.(product.id)}
-              className="p-2 text-gray-600 hover:text-blue-600 transition-colors"
+              onClick={handleViewDetails}
+              className="p-3 text-gray-600 hover:text-blue-600 transition-colors"
               title="View Details"
             >
-              <Eye className="w-4 h-4" />
+              <Eye className="w-5 h-5" />
             </button>
             <button
-              onClick={() => onAddToWishlist?.(product.id)}
-              className="p-2 text-gray-600 hover:text-red-600 transition-colors"
-              title="Add to Wishlist"
+              onClick={handleToggleWishlist}
+              className={`p-3 transition-colors ${isInWishlist(product.id)
+                  ? 'text-red-600 hover:text-red-700'
+                  : 'text-gray-600 hover:text-red-600'
+                }`}
+              title={isInWishlist(product.id) ? 'Remove from Wishlist' : 'Add to Wishlist'}
             >
-              <Heart className="w-4 h-4" />
+              <Heart className={`w-5 h-5 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
             </button>
           </div>
 
@@ -419,18 +357,35 @@ export default function ProductCard({
 
         <div className="flex gap-2">
           <button
-            onClick={() => onAddToCart?.(product.id)}
-            className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2 px-3 rounded-lg text-sm font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105"
+            onClick={handleAddToCart}
+            className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 ${isInCart(product.id)
+                ? 'bg-green-600 text-white hover:bg-green-700'
+                : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700'
+              }`}
           >
-            <ShoppingCart className="w-4 h-4 inline mr-1" />
-            Add to Cart
+            {isInCart(product.id) ? 'In Cart' : (
+              <>
+                <ShoppingCart className="w-4 h-4 inline mr-1" />
+                Add to Cart
+              </>
+            )}
           </button>
           <button
-            onClick={() => onViewDetails?.(product.id)}
+            onClick={handleViewDetails}
             className="p-2 text-gray-600 hover:text-blue-600 transition-colors"
             title="View Details"
           >
             <Eye className="w-4 h-4" />
+          </button>
+          <button
+            onClick={handleToggleWishlist}
+            className={`p-2 transition-colors ${isInWishlist(product.id)
+                ? 'text-red-600 hover:text-red-700'
+                : 'text-gray-600 hover:text-red-600'
+              }`}
+            title={isInWishlist(product.id) ? 'Remove from Wishlist' : 'Add to Wishlist'}
+          >
+            <Heart className={`w-4 h-4 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
           </button>
         </div>
 

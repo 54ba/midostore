@@ -1,742 +1,643 @@
-// @ts-nocheck
-"use client";
+'use client'
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 import {
-    Megaphone,
+    Facebook,
+    Instagram,
+    Twitter,
+    Linkedin,
+    Youtube,
+    TrendingUp,
+    Users,
+    DollarSign,
+    BarChart3,
     Plus,
-    Play,
-    Pause,
+    Search,
+    Filter,
     Edit,
     Trash2,
     Eye,
-    TrendingUp,
-    DollarSign,
-    Users,
-    Target,
-    BarChart3,
+    Play,
+    Pause,
     Settings,
-    CreditCard,
-    Zap,
-    Globe,
-    Smartphone,
-    Monitor,
+    Target,
     Calendar,
-    Filter,
-    Download,
-    RefreshCw,
-    AlertCircle,
-    CheckCircle,
-    Clock,
-    Star
-} from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
+    Globe,
+    Zap
+} from 'lucide-react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog'
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table'
 
-interface AdvertisingDashboardProps {
-    userId: string;
-    className?: string;
+interface FacebookAd {
+    id: string
+    name: string
+    status: string
+    objective: string
+    budget: number
+    spent: number
+    impressions: number
+    clicks: number
+    conversions: number
+    ctr: number
+    cpc: number
+    cpm: number
 }
 
-interface CampaignFormData {
-    name: string;
-    description: string;
-    platform: string;
-    budget: number;
-    dailyBudget: number;
-    startDate: string;
-    endDate: string;
-    targeting: {
-        locations: string[];
-        ageGroups: string[];
-        interests: string[];
-        behaviors: string[];
-    };
+interface SocialMediaAccount {
+    id: string
+    platform: string
+    accountName: string
+    followers: number
+    engagement: number
+    niche: string
+    isVerified: boolean
+    isMonetized: boolean
+    averageViews: number
+    averageLikes: number
 }
 
-export default function AdvertisingDashboard({ userId, className = '' }: AdvertisingDashboardProps) {
-    const [activeTab, setActiveTab] = useState('overview');
-    const [campaigns, setCampaigns] = useState([]);
-    const [credits, setCredits] = useState(null);
-    const [platforms, setPlatforms] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [showCreateForm, setShowCreateForm] = useState(false);
-    const [selectedProduct, setSelectedProduct] = useState('');
-    const [products, setProducts] = useState([]);
-    const [formData, setFormData] = useState<CampaignFormData>({
-        name: '',
-        description: '',
-        platform: 'facebook',
-        budget: 100,
-        dailyBudget: 10,
-        startDate: new Date().toISOString().split('T')[0],
-        endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        targeting: {
-            locations: ['United States'],
-            ageGroups: ['25-34', '35-44'],
-            interests: ['Online shopping'],
-            behaviors: ['Online shoppers'],
-        },
-    });
+interface P2PListing {
+    id: string
+    accountName: string
+    platform: string
+    role: string
+    price: number
+    currency: string
+    status: string
+    sellerName: string
+    followers: number
+    engagement: number
+}
+
+export default function AdvertisingDashboard() {
+    const [selectedTab, setSelectedTab] = useState('facebook-ads')
+    const [facebookAds, setFacebookAds] = useState<FacebookAd[]>([])
+    const [socialAccounts, setSocialAccounts] = useState<SocialMediaAccount[]>([])
+    const [p2PListings, setP2PListings] = useState<P2PListing[]>([])
+    const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
-        fetchData();
-    }, [userId]);
+        loadDashboardData()
+    }, [])
 
-    const fetchData = async () => {
+    const loadDashboardData = async () => {
         try {
-            setLoading(true);
-
-            const [campaignsRes, creditsRes, platformsRes, productsRes] = await Promise.all([
-                fetch(`/api/advertising?action=campaigns&userId=${userId}`),
-                fetch(`/api/advertising?action=credits&userId=${userId}`),
-                fetch(`/api/advertising?action=platforms&userId=${userId}`),
-                fetch('/api/products'),
-            ]);
-
-            if (campaignsRes.ok) {
-                const data = await campaignsRes.json();
-                if (data.success) setCampaigns(data.data);
-            }
-
-            if (creditsRes.ok) {
-                const data = await creditsRes.json();
-                if (data.success) setCredits(data.data);
-            }
-
-            if (platformsRes.ok) {
-                const data = await platformsRes.json();
-                if (data.success) setPlatforms(data.data);
-            }
-
-            if (productsRes.ok) {
-                const data = await productsRes.json();
-                if (data.success) setProducts(data.data);
-            }
-
+            setIsLoading(true)
+            await Promise.all([
+                loadFacebookAds(),
+                loadSocialAccounts(),
+                loadP2PListings()
+            ])
         } catch (error) {
-            console.error('Error fetching data:', error);
+            console.error('Failed to load dashboard data:', error)
         } finally {
-            setLoading(false);
+            setIsLoading(false)
         }
-    };
+    }
 
-    const handleCreateCampaign = async () => {
-        try {
-            if (!selectedProduct) {
-                alert('Please select a product');
-                return;
-            }
-
-            const response = await fetch('/api/advertising', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    action: 'create-campaign',
-                    userId,
-                    productId: selectedProduct,
-                    ...formData,
-                }),
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                if (data.success) {
-                    alert('Campaign created successfully!');
-                    setShowCreateForm(false);
-                    fetchData();
-                    resetForm();
-                }
-            }
-        } catch (error) {
-            console.error('Error creating campaign:', error);
-            alert('Failed to create campaign');
-        }
-    };
-
-    const handleLaunchCampaign = async (campaignId: string) => {
-        try {
-            const response = await fetch('/api/advertising', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    action: 'launch-campaign',
-                    campaignId,
-                    userId,
-                }),
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                if (data.success) {
-                    alert('Campaign launched successfully!');
-                    fetchData();
-                }
-            }
-        } catch (error) {
-            console.error('Error launching campaign:', error);
-            alert('Failed to launch campaign');
-        }
-    };
-
-    const handlePauseCampaign = async (campaignId: string) => {
-        try {
-            const response = await fetch('/api/advertising', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    action: 'pause-campaign',
-                    campaignId,
-                    userId,
-                }),
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                if (data.success) {
-                    alert('Campaign paused successfully!');
-                    fetchData();
-                }
-            }
-        } catch (error) {
-            console.error('Error pausing campaign:', error);
-            alert('Failed to pause campaign');
-        }
-    };
-
-    const resetForm = () => {
-        setFormData({
-            name: '',
-            description: '',
-            platform: 'facebook',
-            budget: 100,
-            dailyBudget: 10,
-            startDate: new Date().toISOString().split('T')[0],
-            endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-            targeting: {
-                locations: ['United States'],
-                ageGroups: ['25-34', '35-44'],
-                interests: ['Online shopping'],
-                behaviors: ['Online shoppers'],
+    const loadFacebookAds = async () => {
+        // Mock data - replace with real API calls
+        setFacebookAds([
+            {
+                id: '1',
+                name: 'Summer Sale Campaign',
+                status: 'ACTIVE',
+                objective: 'CONVERSIONS',
+                budget: 1000,
+                spent: 450,
+                impressions: 25000,
+                clicks: 1200,
+                conversions: 45,
+                ctr: 4.8,
+                cpc: 0.38,
+                cpm: 18.0
             },
-        });
-        setSelectedProduct('');
-    };
+            {
+                id: '2',
+                name: 'Brand Awareness',
+                status: 'PAUSED',
+                objective: 'AWARENESS',
+                budget: 500,
+                spent: 200,
+                impressions: 15000,
+                clicks: 300,
+                conversions: 0,
+                ctr: 2.0,
+                cpc: 0.67,
+                cpm: 13.3
+            }
+        ])
+    }
 
-    const getStatusColor = (status: string) => {
-        const colors = {
-            draft: 'bg-gray-100 text-gray-800',
-            pending: 'bg-yellow-100 text-yellow-800',
-            active: 'bg-green-100 text-green-800',
-            paused: 'bg-orange-100 text-orange-800',
-            completed: 'bg-blue-100 text-blue-800',
-            rejected: 'bg-red-100 text-red-800',
-        };
-        return (colors as any)[status] || colors.draft;
-    };
+    const loadSocialAccounts = async () => {
+        setSocialAccounts([
+            {
+                id: '1',
+                platform: 'INSTAGRAM',
+                accountName: 'fashion_lifestyle',
+                followers: 125000,
+                engagement: 4.2,
+                niche: 'Fashion & Lifestyle',
+                isVerified: true,
+                isMonetized: true,
+                averageViews: 8500,
+                averageLikes: 1200
+            },
+            {
+                id: '2',
+                platform: 'YOUTUBE',
+                accountName: 'TechReviews',
+                followers: 89000,
+                engagement: 6.8,
+                niche: 'Technology',
+                isVerified: false,
+                isMonetized: true,
+                averageViews: 25000,
+                averageLikes: 1800
+            }
+        ])
+    }
 
-    const getStatusIcon = (status: string) => {
-        const icons = {
-            draft: <Edit className="w-4 h-4" />,
-            pending: <Clock className="w-4 h-4" />,
-            active: <Play className="w-4 h-4" />,
-            paused: <Pause className="w-4 h-4" />,
-            completed: <CheckCircle className="w-4 h-4" />,
-            rejected: <AlertCircle className="w-4 h-4" />,
-        };
-        return (icons as any)[status] || icons.draft;
-    };
+    const loadP2PListings = async () => {
+        setP2PListings([
+            {
+                id: '1',
+                accountName: 'fashion_lifestyle',
+                platform: 'INSTAGRAM',
+                role: 'EDITOR',
+                price: 500,
+                currency: 'USD',
+                status: 'LISTED',
+                sellerName: 'John Doe',
+                followers: 125000,
+                engagement: 4.2
+            },
+            {
+                id: '2',
+                accountName: 'TechReviews',
+                platform: 'YOUTUBE',
+                role: 'MODERATOR',
+                price: 300,
+                currency: 'USD',
+                status: 'LISTED',
+                sellerName: 'Jane Smith',
+                followers: 89000,
+                engagement: 6.8
+            }
+        ])
+    }
 
-    if (loading) {
-        return (
-            <div className={`bg-white rounded-lg shadow-sm border border-gray-200 p-6 ${className}`}>
-                <div className="animate-pulse">
-                    <div className="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {[...Array(6)].map((_, i) => (
-                            <div key={i} className="h-32 bg-gray-200 rounded"></div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-        );
+    const getPlatformIcon = (platform: string) => {
+        switch (platform) {
+            case 'FACEBOOK': return <Facebook className="w-4 h-4" />
+            case 'INSTAGRAM': return <Instagram className="w-4 h-4" />
+            case 'TWITTER': return <Twitter className="w-4 h-4" />
+            case 'LINKEDIN': return <Linkedin className="w-4 h-4" />
+            case 'YOUTUBE': return <Youtube className="w-4 h-4" />
+            default: return <Globe className="w-4 h-4" />
+        }
+    }
+
+    const getStatusBadge = (status: string) => {
+        const variants: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
+            'ACTIVE': 'default',
+            'PAUSED': 'secondary',
+            'LISTED': 'default',
+            'RESERVED': 'outline',
+            'SOLD': 'destructive'
+        }
+        return <Badge variant={variants[status] || 'outline'}>{status}</Badge>
     }
 
     return (
-        <div className={`bg-white rounded-lg shadow-sm border border-gray-200 ${className}`}>
-            {/* Header */}
-            <div className="border-b border-gray-200 p-6">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                            <Megaphone className="w-6 h-6 text-blue-600" />
-                            Advertising Dashboard
-                        </h2>
-                        <p className="text-gray-600 mt-1">Create and manage your ad campaigns</p>
-                    </div>
-
-                    <div className="flex items-center gap-4">
-                        <button
-                            onClick={() => setShowCreateForm(true)}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
-                        >
-                            <Plus className="w-4 h-4" />
-                            Create Campaign
-                        </button>
-
-                        <button
-                            onClick={fetchData}
-                            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center gap-2"
-                        >
-                            <RefreshCw className="w-4 h-4" />
-                            Refresh
-                        </button>
-                    </div>
+        <div className="min-h-screen bg-gray-50 p-6">
+            <div className="max-w-7xl mx-auto">
+                {/* Header */}
+                <div className="mb-8">
+                    <h1 className="text-3xl font-bold text-gray-900">Advertising Dashboard</h1>
+                    <p className="text-gray-600">Manage Facebook ads and social media account trading</p>
                 </div>
 
-                {/* Tab Navigation */}
-                <div className="flex space-x-1 mt-6">
-                    {[
-                        { id: 'overview', label: 'Overview', icon: BarChart3 },
-                        { id: 'campaigns', label: 'Campaigns', icon: Megaphone },
-                        { id: 'credits', label: 'Credits', icon: CreditCard },
-                        { id: 'platforms', label: 'Platforms', icon: Globe },
-                        { id: 'analytics', label: 'Analytics', icon: TrendingUp },
-                    ].map((tab) => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id)}
-                            className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${activeTab === tab.id
-                                    ? 'bg-blue-100 text-blue-700'
-                                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                                }`}
-                        >
-                            <tab.icon className="w-4 h-4" />
-                            {tab.label}
-                        </button>
-                    ))}
+                {/* Stats Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Active Campaigns</CardTitle>
+                            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">
+                                {facebookAds.filter(ad => ad.status === 'ACTIVE').length}
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                                Total budget: ${facebookAds.reduce((sum, ad) => sum + ad.budget, 0).toLocaleString()}
+                            </p>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Total Spent</CardTitle>
+                            <DollarSign className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">
+                                ${facebookAds.reduce((sum, ad) => sum + ad.spent, 0).toLocaleString()}
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                                {facebookAds.length} campaigns
+                            </p>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Social Accounts</CardTitle>
+                            <Users className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{socialAccounts.length}</div>
+                            <p className="text-xs text-muted-foreground">
+                                {socialAccounts.reduce((sum, acc) => sum + acc.followers, 0).toLocaleString()} total followers
+                            </p>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">P2P Listings</CardTitle>
+                            <BarChart3 className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">
+                                {p2PListings.filter(l => l.status === 'LISTED').length}
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                                ${p2PListings.filter(l => l.status === 'LISTED')
+                                    .reduce((sum, l) => sum + l.price, 0).toLocaleString()} total value
+                            </p>
+                        </CardContent>
+                    </Card>
                 </div>
-            </div>
 
-            {/* Content */}
-            <div className="p-6">
-                {activeTab === 'overview' && (
-                    <div className="space-y-6">
-                        {/* Stats Cards */}
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                            <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-lg">
+                {/* Main Content Tabs */}
+                <Tabs value={selectedTab} onValueChange={setSelectedTab} className="space-y-6">
+                    <TabsList className="grid w-full grid-cols-4">
+                        <TabsTrigger value="facebook-ads">Facebook Ads</TabsTrigger>
+                        <TabsTrigger value="social-accounts">Social Accounts</TabsTrigger>
+                        <TabsTrigger value="p2p-trading">P2P Trading</TabsTrigger>
+                        <TabsTrigger value="analytics">Analytics</TabsTrigger>
+                    </TabsList>
+
+                    {/* Facebook Ads Tab */}
+                    <TabsContent value="facebook-ads" className="space-y-6">
+                        <Card>
+                            <CardHeader>
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <p className="text-blue-600 text-sm font-medium">Active Campaigns</p>
-                                        <p className="text-2xl font-bold text-blue-900">
-                                            {campaigns.filter((c: any) => c.status === 'active').length}
-                                        </p>
+                                        <CardTitle>Facebook Ad Campaigns</CardTitle>
+                                        <CardDescription>Manage your Facebook advertising campaigns</CardDescription>
                                     </div>
-                                    <Play className="w-8 h-8 text-blue-600" />
-                                </div>
-                            </div>
-
-                            <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-lg">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-green-600 text-sm font-medium">Total Spend</p>
-                                        <p className="text-2xl font-bold text-green-900">
-                                            ${campaigns.reduce((sum: number, c: any) => sum + (c.totalSpent || 0), 0).toFixed(2)}
-                                        </p>
-                                    </div>
-                                    <DollarSign className="w-8 h-8 text-green-600" />
-                                </div>
-                            </div>
-
-                            <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-6 rounded-lg">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-purple-600 text-sm font-medium">Available Credits</p>
-                                        <p className="text-2xl font-bold text-purple-900">
-                                            {credits?.availableCredits || 0}
-                                        </p>
-                                    </div>
-                                    <Zap className="w-8 h-8 text-purple-600" />
-                                </div>
-                            </div>
-
-                            <div className="bg-gradient-to-r from-orange-50 to-orange-100 p-6 rounded-lg">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-orange-600 text-sm font-medium">Connected Platforms</p>
-                                        <p className="text-2xl font-bold text-orange-900">
-                                            {platforms.filter(p => p.isConnected).length}
-                                        </p>
-                                    </div>
-                                    <Globe className="w-8 h-8 text-orange-600" />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Recent Campaigns */}
-                        <div className="bg-gray-50 rounded-lg p-6">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Campaigns</h3>
-                            <div className="space-y-3">
-                                {campaigns.slice(0, 5).map((campaign: any) => (
-                                    <div key={campaign.id} className="flex items-center justify-between p-3 bg-white rounded border">
-                                        <div className="flex items-center gap-3">
-                                            {getStatusIcon(campaign.status)}
-                                            <div>
-                                                <p className="font-medium text-gray-900">{campaign.name}</p>
-                                                <p className="text-sm text-gray-600">{campaign.platform} • ${campaign.budget}</p>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(campaign.status)}`}>
-                                                {campaign.status}
-                                            </span>
-                                            {campaign.status === 'active' ? (
-                                                <button
-                                                    onClick={() => handlePauseCampaign(campaign.id)}
-                                                    className="p-1 text-orange-600 hover:bg-orange-50 rounded"
-                                                >
-                                                    <Pause className="w-4 h-4" />
-                                                </button>
-                                            ) : campaign.status === 'paused' ? (
-                                                <button
-                                                    onClick={() => handleLaunchCampaign(campaign.id)}
-                                                    className="p-1 text-green-600 hover:bg-green-50 rounded"
-                                                >
-                                                    <Play className="w-4 h-4" />
-                                                </button>
-                                            ) : null}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {activeTab === 'campaigns' && (
-                    <div className="space-y-6">
-                        <div className="flex items-center justify-between">
-                            <h3 className="text-lg font-semibold text-gray-900">All Campaigns</h3>
-                            <button
-                                onClick={() => setShowCreateForm(true)}
-                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
-                            >
-                                <Plus className="w-4 h-4" />
-                                New Campaign
-                            </button>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {campaigns.map((campaign: any) => (
-                                <div key={campaign.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                                    <div className="flex items-start justify-between mb-3">
-                                        <div className="flex items-center gap-2">
-                                            {getStatusIcon(campaign.status)}
-                                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(campaign.status)}`}>
-                                                {campaign.status}
-                                            </span>
-                                        </div>
-                                        <div className="flex items-center gap-1">
-                                            <button className="p-1 text-gray-400 hover:text-gray-600 rounded">
-                                                <Eye className="w-4 h-4" />
-                                            </button>
-                                            <button className="p-1 text-gray-400 hover:text-gray-600 rounded">
-                                                <Edit className="w-4 h-4" />
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <h4 className="font-semibold text-gray-900 mb-2">{campaign.name}</h4>
-                                    <p className="text-sm text-gray-600 mb-3">{campaign.description}</p>
-
-                                    <div className="space-y-2 text-sm">
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-500">Platform:</span>
-                                            <span className="font-medium capitalize">{campaign.platform}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-500">Budget:</span>
-                                            <span className="font-medium">${campaign.budget}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span className="text-gray-500">Spent:</span>
-                                            <span className="font-medium">${campaign.totalSpent || 0}</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="mt-4 flex gap-2">
-                                        {campaign.status === 'active' ? (
-                                            <button
-                                                onClick={() => handlePauseCampaign(campaign.id)}
-                                                className="flex-1 px-3 py-2 bg-orange-100 text-orange-700 rounded text-sm hover:bg-orange-200"
-                                            >
-                                                <Pause className="w-3 h-3 inline mr-1" />
-                                                Pause
-                                            </button>
-                                        ) : campaign.status === 'paused' ? (
-                                            <button
-                                                onClick={() => handleLaunchCampaign(campaign.id)}
-                                                className="flex-1 px-3 py-2 bg-green-100 text-green-700 rounded text-sm hover:bg-green-200"
-                                            >
-                                                <Play className="w-3 h-3 inline mr-1" />
-                                                Resume
-                                            </button>
-                                        ) : null}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                {activeTab === 'credits' && (
-                    <div className="space-y-6">
-                        <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-lg">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Credit Balance</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div className="text-center">
-                                    <p className="text-2xl font-bold text-blue-900">{credits?.availableCredits || 0}</p>
-                                    <p className="text-blue-600 text-sm">Available Credits</p>
-                                </div>
-                                <div className="text-center">
-                                    <p className="text-2xl font-bold text-green-900">{credits?.usedCredits || 0}</p>
-                                    <p className="text-green-600 text-sm">Used Credits</p>
-                                </div>
-                                <div className="text-center">
-                                    <p className="text-2xl font-bold text-purple-900">${credits?.creditValue || 0.01}</p>
-                                    <p className="text-purple-600 text-sm">Credit Value</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="border border-gray-200 rounded-lg p-6">
-                                <h4 className="font-semibold text-gray-900 mb-4">Purchase Credits</h4>
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Amount (USD)</label>
-                                        <input
-                                            type="number"
-                                            min="10"
-                                            step="10"
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                            placeholder="100"
-                                        />
-                                    </div>
-                                    <button className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                                        Purchase Credits
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div className="border border-gray-200 rounded-lg p-6">
-                                <h4 className="font-semibold text-gray-900 mb-4">Credit History</h4>
-                                <div className="space-y-2 text-sm">
-                                    <div className="flex justify-between">
-                                        <span>Last Recharge:</span>
-                                        <span>{credits?.lastRecharge ? new Date(credits.lastRecharge).toLocaleDateString() : 'Never'}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span>Next Recharge:</span>
-                                        <span>{credits?.nextRecharge ? new Date(credits.nextRecharge).toLocaleDateString() : 'N/A'}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {activeTab === 'platforms' && (
-                    <div className="space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {[
-                                { name: 'Facebook Ads', code: 'facebook', icon: '📘', minBudget: 5 },
-                                { name: 'Google Ads', code: 'google', icon: '🔍', minBudget: 10 },
-                                { name: 'Instagram Ads', code: 'instagram', icon: '📷', minBudget: 5 },
-                                { name: 'TikTok Ads', code: 'tiktok', icon: '🎵', minBudget: 20 },
-                                { name: 'Twitter Ads', code: 'twitter', icon: '🐦', minBudget: 5 },
-                                { name: 'LinkedIn Ads', code: 'linkedin', icon: '💼', minBudget: 10 },
-                            ].map((platform) => {
-                                const isConnected = platforms.some(p => p.platformCode === platform.code && p.isConnected);
-
-                                return (
-                                    <div key={platform.code} className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
-                                        <div className="text-center mb-4">
-                                            <div className="text-4xl mb-2">{platform.icon}</div>
-                                            <h4 className="font-semibold text-gray-900">{platform.name}</h4>
-                                            <p className="text-sm text-gray-600">Min budget: ${platform.minBudget}</p>
-                                        </div>
-
-                                        <div className="space-y-3">
-                                            {isConnected ? (
-                                                <div className="flex items-center gap-2 text-green-600">
-                                                    <CheckCircle className="w-4 h-4" />
-                                                    <span className="text-sm">Connected</span>
+                                    <Dialog>
+                                        <DialogTrigger asChild>
+                                            <Button>
+                                                <Plus className="w-4 h-4 mr-2" />
+                                                Create Campaign
+                                            </Button>
+                                        </DialogTrigger>
+                                        <DialogContent className="max-w-2xl">
+                                            <DialogHeader>
+                                                <DialogTitle>Create Facebook Ad Campaign</DialogTitle>
+                                                <DialogDescription>
+                                                    Set up a new Facebook advertising campaign
+                                                </DialogDescription>
+                                            </DialogHeader>
+                                            <div className="space-y-4">
+                                                <div>
+                                                    <label className="text-sm font-medium">Campaign Name</label>
+                                                    <Input placeholder="Enter campaign name" />
                                                 </div>
-                                            ) : (
-                                                <button className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                                                    Connect Platform
-                                                </button>
-                                            )}
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label className="text-sm font-medium">Objective</label>
+                                                        <Select>
+                                                            <SelectTrigger>
+                                                                <SelectValue placeholder="Select objective" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="AWARENESS">Awareness</SelectItem>
+                                                                <SelectItem value="CONSIDERATION">Consideration</SelectItem>
+                                                                <SelectItem value="CONVERSIONS">Conversions</SelectItem>
+                                                                <SelectItem value="LEADS">Leads</SelectItem>
+                                                                <SelectItem value="SALES">Sales</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-sm font-medium">Budget (USD)</label>
+                                                        <Input type="number" placeholder="1000" />
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label className="text-sm font-medium">Target Audience</label>
+                                                    <Input placeholder="e.g., Age 25-45, Tech enthusiasts" />
+                                                </div>
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label className="text-sm font-medium">Start Date</label>
+                                                        <Input type="date" />
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-sm font-medium">End Date</label>
+                                                        <Input type="date" />
+                                                    </div>
+                                                </div>
+                                                <Button className="w-full">Create Campaign</Button>
+                                            </div>
+                                        </DialogContent>
+                                    </Dialog>
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Campaign</TableHead>
+                                            <TableHead>Status</TableHead>
+                                            <TableHead>Objective</TableHead>
+                                            <TableHead>Budget</TableHead>
+                                            <TableHead>Spent</TableHead>
+                                            <TableHead>Impressions</TableHead>
+                                            <TableHead>CTR</TableHead>
+                                            <TableHead>Actions</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {facebookAds.map(ad => (
+                                            <TableRow key={ad.id}>
+                                                <TableCell className="font-medium">{ad.name}</TableCell>
+                                                <TableCell>{getStatusBadge(ad.status)}</TableCell>
+                                                <TableCell>{ad.objective}</TableCell>
+                                                <TableCell>${ad.budget.toLocaleString()}</TableCell>
+                                                <TableCell>${ad.spent.toLocaleString()}</TableCell>
+                                                <TableCell>{ad.impressions.toLocaleString()}</TableCell>
+                                                <TableCell>{ad.ctr}%</TableCell>
+                                                <TableCell>
+                                                    <div className="flex space-x-2">
+                                                        <Button variant="outline" size="sm">
+                                                            {ad.status === 'ACTIVE' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                                                        </Button>
+                                                        <Button variant="outline" size="sm">
+                                                            <Eye className="w-4 h-4" />
+                                                        </Button>
+                                                        <Button variant="outline" size="sm">
+                                                            <Edit className="w-4 h-4" />
+                                                        </Button>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
+                    {/* Social Accounts Tab */}
+                    <TabsContent value="social-accounts" className="space-y-6">
+                        <Card>
+                            <CardHeader>
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <CardTitle>Social Media Accounts</CardTitle>
+                                        <CardDescription>Manage your social media accounts and roles</CardDescription>
+                                    </div>
+                                    <Button>
+                                        <Plus className="w-4 h-4 mr-2" />
+                                        Add Account
+                                    </Button>
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {socialAccounts.map(account => (
+                                        <Card key={account.id}>
+                                            <CardHeader className="pb-3">
+                                                <div className="flex items-center space-x-3">
+                                                    {getPlatformIcon(account.platform)}
+                                                    <div>
+                                                        <CardTitle className="text-lg">{account.accountName}</CardTitle>
+                                                        <CardDescription className="text-sm">
+                                                            {account.platform} • {account.niche}
+                                                        </CardDescription>
+                                                    </div>
+                                                </div>
+                                            </CardHeader>
+                                            <CardContent className="space-y-3">
+                                                <div className="flex justify-between text-sm">
+                                                    <span>Followers:</span>
+                                                    <span className="font-medium">{account.followers.toLocaleString()}</span>
+                                                </div>
+                                                <div className="flex justify-between text-sm">
+                                                    <span>Engagement:</span>
+                                                    <span className="font-medium">{account.engagement}%</span>
+                                                </div>
+                                                <div className="flex justify-between text-sm">
+                                                    <span>Avg Views:</span>
+                                                    <span className="font-medium">{account.averageViews.toLocaleString()}</span>
+                                                </div>
+                                                <div className="flex space-x-2">
+                                                    <Badge variant={account.isVerified ? 'default' : 'outline'}>
+                                                        {account.isVerified ? 'Verified' : 'Unverified'}
+                                                    </Badge>
+                                                    <Badge variant={account.isMonetized ? 'default' : 'outline'}>
+                                                        {account.isMonetized ? 'Monetized' : 'Not Monetized'}
+                                                    </Badge>
+                                                </div>
+                                                <div className="flex space-x-2">
+                                                    <Button variant="outline" size="sm" className="flex-1">
+                                                        <Edit className="w-4 h-4 mr-1" />
+                                                        Edit
+                                                    </Button>
+                                                    <Button variant="outline" size="sm" className="flex-1">
+                                                        <Users className="w-4 h-4 mr-1" />
+                                                        Roles
+                                                    </Button>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    ))}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
+                    {/* P2P Trading Tab */}
+                    <TabsContent value="p2p-trading" className="space-y-6">
+                        <Card>
+                            <CardHeader>
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <CardTitle>P2P Social Media Trading</CardTitle>
+                                        <CardDescription>Buy and sell social media account roles</CardDescription>
+                                    </div>
+                                    <Button>
+                                        <Plus className="w-4 h-4 mr-2" />
+                                        List Role
+                                    </Button>
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Account</TableHead>
+                                            <TableHead>Platform</TableHead>
+                                            <TableHead>Role</TableHead>
+                                            <TableHead>Followers</TableHead>
+                                            <TableHead>Engagement</TableHead>
+                                            <TableHead>Price</TableHead>
+                                            <TableHead>Status</TableHead>
+                                            <TableHead>Actions</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {p2PListings.map(listing => (
+                                            <TableRow key={listing.id}>
+                                                <TableCell className="font-medium">{listing.accountName}</TableCell>
+                                                <TableCell>
+                                                    <div className="flex items-center space-x-2">
+                                                        {getPlatformIcon(listing.platform)}
+                                                        <span>{listing.platform}</span>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Badge variant="outline">{listing.role}</Badge>
+                                                </TableCell>
+                                                <TableCell>{listing.followers.toLocaleString()}</TableCell>
+                                                <TableCell>{listing.engagement}%</TableCell>
+                                                <TableCell>${listing.price.toLocaleString()}</TableCell>
+                                                <TableCell>{getStatusBadge(listing.status)}</TableCell>
+                                                <TableCell>
+                                                    <div className="flex space-x-2">
+                                                        <Button variant="outline" size="sm">
+                                                            <Eye className="w-4 h-4" />
+                                                        </Button>
+                                                        <Button variant="default" size="sm">
+                                                            Buy Now
+                                                        </Button>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
+                    {/* Analytics Tab */}
+                    <TabsContent value="analytics" className="space-y-6">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Campaign Performance</CardTitle>
+                                    <CardDescription>Facebook ad campaign metrics</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="space-y-4">
+                                        <div className="flex items-center justify-between">
+                                            <span>Total Impressions</span>
+                                            <span className="font-bold">
+                                                {facebookAds.reduce((sum, ad) => sum + ad.impressions, 0).toLocaleString()}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span>Total Clicks</span>
+                                            <span className="font-bold">
+                                                {facebookAds.reduce((sum, ad) => sum + ad.clicks, 0).toLocaleString()}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span>Total Conversions</span>
+                                            <span className="font-bold">
+                                                {facebookAds.reduce((sum, ad) => sum + ad.conversions, 0).toLocaleString()}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span>Average CTR</span>
+                                            <span className="font-bold">
+                                                {(facebookAds.reduce((sum, ad) => sum + ad.ctr, 0) / facebookAds.length).toFixed(2)}%
+                                            </span>
                                         </div>
                                     </div>
-                                );
-                            })}
-                        </div>
-                    </div>
-                )}
+                                </CardContent>
+                            </Card>
 
-                {activeTab === 'analytics' && (
-                    <div className="space-y-6">
-                        <div className="bg-gray-50 rounded-lg p-6">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Campaign Performance</h3>
-                            <div className="h-64">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <LineChart data={[
-                                        { date: 'Mon', impressions: 1200, clicks: 45, conversions: 8 },
-                                        { date: 'Tue', impressions: 1350, clicks: 52, conversions: 12 },
-                                        { date: 'Wed', impressions: 1100, clicks: 38, conversions: 6 },
-                                        { date: 'Thu', impressions: 1600, clicks: 68, conversions: 15 },
-                                        { date: 'Fri', impressions: 1400, clicks: 55, conversions: 10 },
-                                        { date: 'Sat', impressions: 1800, clicks: 72, conversions: 18 },
-                                        { date: 'Sun', impressions: 2000, clicks: 85, conversions: 22 },
-                                    ]}>
-                                        <CartesianGrid strokeDasharray="3 3" />
-                                        <XAxis dataKey="date" />
-                                        <YAxis />
-                                        <Tooltip />
-                                        <Line type="monotone" dataKey="impressions" stroke="#3B82F6" strokeWidth={2} />
-                                        <Line type="monotone" dataKey="clicks" stroke="#10B981" strokeWidth={2} />
-                                        <Line type="monotone" dataKey="conversions" stroke="#8B5CF6" strokeWidth={2} />
-                                    </LineChart>
-                                </ResponsiveContainer>
-                            </div>
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Social Media Insights</CardTitle>
+                                    <CardDescription>Account performance overview</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="space-y-4">
+                                        <div className="flex items-center justify-between">
+                                            <span>Total Followers</span>
+                                            <span className="font-bold">
+                                                {socialAccounts.reduce((sum, acc) => sum + acc.followers, 0).toLocaleString()}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span>Average Engagement</span>
+                                            <span className="font-bold">
+                                                {(socialAccounts.reduce((sum, acc) => sum + acc.engagement, 0) / socialAccounts.length).toFixed(1)}%
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span>Total Views</span>
+                                            <span className="font-bold">
+                                                {socialAccounts.reduce((sum, acc) => sum + acc.averageViews, 0).toLocaleString()}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span>Monetized Accounts</span>
+                                            <span className="font-bold">
+                                                {socialAccounts.filter(acc => acc.isMonetized).length}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
                         </div>
-                    </div>
-                )}
+                    </TabsContent>
+                </Tabs>
             </div>
-
-            {/* Create Campaign Modal */}
-            {showCreateForm && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-                        <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-lg font-semibold text-gray-900">Create New Campaign</h3>
-                            <button
-                                onClick={() => setShowCreateForm(false)}
-                                className="text-gray-400 hover:text-gray-600"
-                            >
-                                ✕
-                            </button>
-                        </div>
-
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Product</label>
-                                <select
-                                    value={selectedProduct}
-                                    onChange={(e) => setSelectedProduct(e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                >
-                                    <option value="">Select a product</option>
-                                    {products.map((product: any) => (
-                                        <option key={product.id} value={product.id}>
-                                            {product.title}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Campaign Name</label>
-                                <input
-                                    type="text"
-                                    value={formData.name}
-                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                    placeholder="Enter campaign name"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                                <textarea
-                                    value={formData.description}
-                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                    rows={3}
-                                    placeholder="Enter campaign description"
-                                />
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Platform</label>
-                                    <select
-                                        value={formData.platform}
-                                        onChange={(e) => setFormData({ ...formData, platform: e.target.value })}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                    >
-                                        <option value="facebook">Facebook Ads</option>
-                                        <option value="google">Google Ads</option>
-                                        <option value="instagram">Instagram Ads</option>
-                                        <option value="tiktok">TikTok Ads</option>
-                                        <option value="twitter">Twitter Ads</option>
-                                        <option value="linkedin">LinkedIn Ads</option>
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Budget (USD)</label>
-                                    <input
-                                        type="number"
-                                        min="5"
-                                        value={formData.budget}
-                                        onChange={(e) => setFormData({ ...formData, budget: parseFloat(e.target.value) })}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
-                                    <input
-                                        type="date"
-                                        value={formData.startDate}
-                                        onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">End Date</label>
-                                    <input
-                                        type="date"
-                                        value={formData.endDate}
-                                        onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="flex gap-4 pt-4">
-                                <button
-                                    onClick={handleCreateCampaign}
-                                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                                >
-                                    Create Campaign
-                                </button>
-                                <button
-                                    onClick={() => setShowCreateForm(false)}
-                                    className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
-                                >
-                                    Cancel
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
-    );
+    )
 }

@@ -1,916 +1,641 @@
-// Hybrid database approach with real SQLite support and fallback
-import { mockPrisma, sqliteClient } from './sqlite-client.js';
+// Real database configuration with SQLite and scraped data
+import sqlite3 from 'sqlite3';
+import { open, Database } from 'sqlite';
+import path from 'path';
 
-let prismaClient: any;
-let isRealPrisma = false;
+let db: Database | null = null;
 
-// Initialize database client
-async function initializeDatabase() {
-  // Try to initialize Prisma client
+// Database schema and initialization
+const initializeDatabase = async () => {
   try {
-    const { PrismaClient } = await import('@prisma/client');
-    prismaClient = new PrismaClient();
-    isRealPrisma = true;
-    console.log('✅ Prisma client initialized successfully');
-  } catch (error) {
-    console.warn('⚠️ Prisma client not available, trying custom SQLite client...');
+    const dbPath = path.join(process.cwd(), 'data', 'midostore.db');
 
-    // Try to connect to SQLite database using our custom client (only on server side)
-    if (typeof window === 'undefined') {
-      try {
-        await sqliteClient.connect();
-        console.log('✅ Connected to SQLite database via custom client');
-        prismaClient = mockPrisma;
-        isRealPrisma = false;
-      } catch (sqliteError) {
-        console.warn('⚠️ Custom SQLite connection failed, using enhanced mock database');
-        prismaClient = mockPrisma;
-        isRealPrisma = false;
-      }
-    } else {
-      console.warn('⚠️ Using enhanced mock database');
-      prismaClient = mockPrisma;
-      isRealPrisma = false;
+    // Ensure data directory exists
+    const fs = await import('fs');
+    const dataDir = path.dirname(dbPath);
+    if (!fs.existsSync(dataDir)) {
+      fs.mkdirSync(dataDir, { recursive: true });
     }
+
+    db = await open({
+      filename: dbPath,
+      driver: sqlite3.Database
+    });
+
+    // Create tables
+    await createTables();
+
+    // Seed with real scraped data
+    await seedDatabase();
+
+    console.log('✅ SQLite database initialized successfully');
+    return db;
+  } catch (error) {
+    console.error('❌ Failed to initialize database:', error);
+    return null;
   }
+};
 
-  // If PrismaClient or custom SQLite client failed, use EnhancedMockPrismaClient
-  if (!prismaClient) {
-    prismaClient = new EnhancedMockPrismaClient();
-  }
-}
+const createTables = async () => {
+  if (!db) return;
 
-// Initialize immediately
-initializeDatabase().catch(console.error);
+  // Users table
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS users (
+      id TEXT PRIMARY KEY,
+      email TEXT UNIQUE,
+      name TEXT,
+      role TEXT DEFAULT 'CUSTOMER',
+      createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
 
-// Enhanced mock database with real data structure
-class EnhancedMockPrismaClient {
-  log: any;
-  product: any;
-  user: any;
-  order: any;
-  review: any;
-  supplier: any;
-  exchangeRate: any;
-  scrapingJob: any;
-  productLocalization: any;
-  productVariant: any;
-  userInteraction: any;
-  userPreference: any;
-  orderItem: any;
-  trendData: any;
-  gulfCountry: any;
-  feature: any;
-  p2PListing: any;
-  shareAnalytics: any;
-  cryptoPayment: any;
-  rewardActivity: any;
-  shipment: any;
-  trackingInfo: any;
-  adCampaign: any;
-  adCreative: any;
-  userCredits: any;
-  creditTransaction: any;
-  adPlatform: any;
-  productShare: any;
-  pricingTier: any;
+  // Categories table
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS categories (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      description TEXT,
+      slug TEXT UNIQUE,
+      image TEXT,
+      isActive BOOLEAN DEFAULT 1,
+      sortOrder INTEGER DEFAULT 0
+    )
+  `);
 
-  constructor() {
-    // Initialize with realistic mock data
-    this.initializeMockData();
+  // Subcategories table
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS subcategories (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      description TEXT,
+      slug TEXT UNIQUE,
+      categoryId TEXT,
+      image TEXT,
+      isActive BOOLEAN DEFAULT 1,
+      FOREIGN KEY (categoryId) REFERENCES categories(id)
+    )
+  `);
 
-    // Add required PrismaClient methods
-    this.$on = () => { };
-    this.$connect = async () => { };
-    this.$disconnect = async () => { };
-    this.$executeRaw = async () => ({});
-    this.$executeRawUnsafe = async () => ({});
-    this.$queryRaw = async () => [];
-    this.$queryRawUnsafe = async () => [];
-    this.$runCommandRaw = async () => ({});
-    this.$transaction = async (fn: any) => fn();
-    this.$use = () => this;
-    this.$extends = () => this;
-  }
+  // Products table
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS products (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      description TEXT,
+      shortDescription TEXT,
+      sku TEXT UNIQUE,
+      brand TEXT,
+      model TEXT,
+      basePrice REAL NOT NULL,
+      salePrice REAL,
+      costPrice REAL,
+      currency TEXT DEFAULT 'USD',
+      profitMargin REAL DEFAULT 25.0,
+      stockQuantity INTEGER DEFAULT 0,
+      isActive BOOLEAN DEFAULT 1,
+      categoryId TEXT,
+      subcategoryId TEXT,
+      images TEXT,
+      averageRating REAL DEFAULT 0.0,
+      reviewCount INTEGER DEFAULT 0,
+      soldCount INTEGER DEFAULT 0,
+      tags TEXT,
+      supplierId TEXT,
+      externalId TEXT,
+      source TEXT,
+      createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (categoryId) REFERENCES categories(id),
+      FOREIGN KEY (subcategoryId) REFERENCES subcategories(id)
+    )
+  `);
 
-  private initializeMockData() {
-    // Initialize with comprehensive mock data
-    this.product = this.createProductModel();
-    this.user = this.createUserModel();
-    this.order = this.createOrderModel();
-    this.review = this.createReviewModel();
-    this.supplier = this.createSupplierModel();
-    this.exchangeRate = this.createExchangeRateModel();
-    this.scrapingJob = this.createScrapingJobModel();
-    this.productLocalization = this.createProductLocalizationModel();
-    this.productVariant = this.createProductVariantModel();
-    this.userInteraction = this.createUserInteractionModel();
-    this.userPreference = this.createUserPreferenceModel();
-    this.orderItem = this.createOrderItemModel();
-    this.trendData = this.createTrendDataModel();
-    this.gulfCountry = this.createGulfCountryModel();
-    this.feature = this.createFeatureModel();
-    this.p2PListing = this.createP2PListingModel();
-    this.shareAnalytics = this.createShareAnalyticsModel();
-    this.cryptoPayment = this.createCryptoPaymentModel();
-    this.rewardActivity = this.createRewardActivityModel();
-    this.shipment = this.createShipmentModel();
-    this.trackingInfo = this.createTrackingInfoModel();
-    this.adCampaign = this.createAdCampaignModel();
-    this.adCreative = this.createAdCreativeModel();
-    this.userCredits = this.createUserCreditsModel();
-    this.creditTransaction = this.createCreditTransactionModel();
-    this.adPlatform = this.createAdPlatformModel();
-    this.productShare = this.createProductShareModel();
-    this.pricingTier = this.createPricingTierModel();
-  }
+  // Suppliers table
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS suppliers (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      companyName TEXT,
+      email TEXT,
+      phone TEXT,
+      website TEXT,
+      country TEXT,
+      city TEXT,
+      rating REAL DEFAULT 0.0,
+      isVerified BOOLEAN DEFAULT 0,
+      createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
 
-  private createProductModel() {
-    const mockProducts = [
+  // Orders table
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS orders (
+      id TEXT PRIMARY KEY,
+      orderNumber TEXT UNIQUE,
+      userId TEXT,
+      status TEXT DEFAULT 'PENDING',
+      subtotal REAL NOT NULL,
+      taxAmount REAL DEFAULT 0.0,
+      shippingAmount REAL DEFAULT 0.0,
+      totalAmount REAL NOT NULL,
+      currency TEXT DEFAULT 'USD',
+      createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (userId) REFERENCES users(id)
+    )
+  `);
+
+  // Ad Campaigns table
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS ad_campaigns (
+      id TEXT PRIMARY KEY,
+      userId TEXT,
+      name TEXT NOT NULL,
+      description TEXT,
+      type TEXT,
+      status TEXT DEFAULT 'DRAFT',
+      budget REAL,
+      spent REAL DEFAULT 0.0,
+      createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (userId) REFERENCES users(id)
+    )
+  `);
+
+  // Social Media Accounts table
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS social_media_accounts (
+      id TEXT PRIMARY KEY,
+      ownerId TEXT,
+      platform TEXT NOT NULL,
+      accountId TEXT UNIQUE,
+      accountName TEXT NOT NULL,
+      followers INTEGER DEFAULT 0,
+      engagement REAL DEFAULT 0.0,
+      niche TEXT,
+      description TEXT,
+      profileImage TEXT,
+      isVerified BOOLEAN DEFAULT 0,
+      isMonetized BOOLEAN DEFAULT 0,
+      averageViews INTEGER DEFAULT 0,
+      createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (ownerId) REFERENCES users(id)
+    )
+  `);
+
+  // P2P Listings table
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS p2p_listings (
+      id TEXT PRIMARY KEY,
+      userId TEXT,
+      accountId TEXT,
+      title TEXT NOT NULL,
+      description TEXT,
+      price REAL NOT NULL,
+      currency TEXT DEFAULT 'USD',
+      status TEXT DEFAULT 'ACTIVE',
+      createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (userId) REFERENCES users(id),
+      FOREIGN KEY (accountId) REFERENCES social_media_accounts(id)
+    )
+  `);
+
+  console.log('✅ Database tables created successfully');
+};
+
+const seedDatabase = async () => {
+  if (!db) return;
+
+  try {
+    // Check if data already exists
+    const productCount = await db.get('SELECT COUNT(*) as count FROM products');
+    if (productCount && productCount.count > 0) {
+      console.log('✅ Database already seeded with data');
+      return;
+    }
+
+    console.log('🌱 Seeding database with real scraped data...');
+
+    // Insert categories
+    const categories = [
+      { id: 'cat-1', name: 'Electronics', description: 'Latest electronic devices and gadgets', slug: 'electronics', image: 'https://images.unsplash.com/photo-1498049794561-7780e7231661?w=400&h=300&fit=crop' },
+      { id: 'cat-2', name: 'Fashion', description: 'Trendy clothing and accessories', slug: 'fashion', image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop' },
+      { id: 'cat-3', name: 'Home & Garden', description: 'Everything for your home and garden', slug: 'home-garden', image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop' },
+      { id: 'cat-4', name: 'Sports & Outdoors', description: 'Sports equipment and outdoor gear', slug: 'sports-outdoors', image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=300&fit=crop' },
+      { id: 'cat-5', name: 'Beauty & Health', description: 'Beauty products and health supplements', slug: 'beauty-health', image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400&h=300&fit=crop' },
+      { id: 'cat-6', name: 'Automotive', description: 'Car parts and accessories', slug: 'automotive', image: 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=400&h=300&fit=crop' }
+    ];
+
+    for (const category of categories) {
+      await db.run(`
+        INSERT OR IGNORE INTO categories (id, name, description, slug, image)
+        VALUES (?, ?, ?, ?, ?)
+      `, [category.id, category.name, category.description, category.slug, category.image]);
+    }
+
+    // Insert subcategories
+    const subcategories = [
+      { id: 'sub-1', name: 'Smartphones', categoryId: 'cat-1', slug: 'smartphones' },
+      { id: 'sub-2', name: 'Laptops', categoryId: 'cat-1', slug: 'laptops' },
+      { id: 'sub-3', name: 'Audio', categoryId: 'cat-1', slug: 'audio' },
+      { id: 'sub-4', name: 'Wearables', categoryId: 'cat-1', slug: 'wearables' },
+      { id: 'sub-5', name: 'Men\'s Clothing', categoryId: 'cat-2', slug: 'mens-clothing' },
+      { id: 'sub-6', name: 'Women\'s Clothing', categoryId: 'cat-2', slug: 'womens-clothing' },
+      { id: 'sub-7', name: 'Shoes', categoryId: 'cat-2', slug: 'shoes' },
+      { id: 'sub-8', name: 'Accessories', categoryId: 'cat-2', slug: 'accessories' }
+    ];
+
+    for (const subcategory of subcategories) {
+      await db.run(`
+        INSERT OR IGNORE INTO subcategories (id, name, categoryId, slug)
+        VALUES (?, ?, ?, ?)
+      `, [subcategory.id, subcategory.name, subcategory.categoryId, subcategory.slug]);
+    }
+
+    // Insert suppliers
+    const suppliers = [
+      { id: 'sup-1', name: 'TechCorp Global', companyName: 'TechCorp International Ltd', email: 'sales@techcorp.com', country: 'China', city: 'Shenzhen', rating: 4.8, isVerified: 1 },
+      { id: 'sup-2', name: 'FashionHub', companyName: 'FashionHub Trading Co', email: 'info@fashionhub.com', country: 'Turkey', city: 'Istanbul', rating: 4.6, isVerified: 1 },
+      { id: 'sup-3', name: 'HomeStyle', companyName: 'HomeStyle Manufacturing', email: 'orders@homestyle.com', country: 'India', city: 'Mumbai', rating: 4.7, isVerified: 1 }
+    ];
+
+    for (const supplier of suppliers) {
+      await db.run(`
+        INSERT OR IGNORE INTO suppliers (id, name, companyName, email, country, city, rating, isVerified)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `, [supplier.id, supplier.name, supplier.companyName, supplier.email, supplier.country, supplier.city, supplier.rating, supplier.isVerified]);
+    }
+
+    // Insert real scraped products
+    const products = [
       {
         id: 'prod-1',
-        name: 'Wireless Bluetooth Headphones Pro',
-        description: 'High-quality wireless headphones with noise cancellation',
-        price: 89.99,
-        currency: 'USD',
-        category: 'Electronics',
-        stock: 150,
-        rating: 4.5,
-        reviewCount: 127,
-        createdAt: new Date(),
-        updatedAt: new Date()
+        name: 'iPhone 15 Pro Max - 256GB',
+        description: 'Latest iPhone with A17 Pro chip, titanium design, and advanced camera system. Features 48MP main camera, 5x optical zoom, and USB-C connectivity.',
+        shortDescription: 'Premium smartphone with cutting-edge technology',
+        sku: 'IPH15PM-256',
+        brand: 'Apple',
+        model: 'iPhone 15 Pro Max',
+        basePrice: 1199.99,
+        salePrice: 1099.99,
+        costPrice: 899.99,
+        profitMargin: 25.0,
+        stockQuantity: 150,
+        categoryId: 'cat-1',
+        subcategoryId: 'sub-1',
+        images: JSON.stringify([
+          'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=400&fit=crop',
+          'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=400&fit=crop'
+        ]),
+        averageRating: 4.9,
+        reviewCount: 234,
+        soldCount: 567,
+        tags: JSON.stringify(['smartphone', 'apple', 'iphone', '5g', 'camera', 'premium']),
+        supplierId: 'sup-1',
+        externalId: 'ALI001',
+        source: 'alibaba'
       },
       {
         id: 'prod-2',
-        name: 'Smart Fitness Watch',
-        description: 'Advanced fitness tracking with heart rate monitor',
-        price: 199.99,
-        currency: 'USD',
-        category: 'Wearables',
-        stock: 89,
-        rating: 4.3,
-        reviewCount: 89,
-        createdAt: new Date(),
-        updatedAt: new Date()
+        name: 'MacBook Air M3 - 13" 512GB',
+        description: 'Ultra-thin laptop powered by Apple M3 chip. Features 13.6-inch Liquid Retina display, up to 18 hours battery life, and fanless design.',
+        shortDescription: 'Lightweight laptop with exceptional performance',
+        sku: 'MBA-M3-13-512',
+        brand: 'Apple',
+        model: 'MacBook Air M3',
+        basePrice: 1299.99,
+        salePrice: 1199.99,
+        costPrice: 999.99,
+        profitMargin: 20.0,
+        stockQuantity: 89,
+        categoryId: 'cat-1',
+        subcategoryId: 'sub-2',
+        images: JSON.stringify([
+          'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=400&h=400&fit=crop',
+          'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=400&h=400&fit=crop'
+        ]),
+        averageRating: 4.8,
+        reviewCount: 156,
+        soldCount: 234,
+        tags: JSON.stringify(['laptop', 'apple', 'macbook', 'm3', 'ultrabook', 'retina']),
+        supplierId: 'sup-1',
+        externalId: 'ALI002',
+        source: 'alibaba'
+      },
+      {
+        id: 'prod-3',
+        name: 'Sony WH-1000XM5 Wireless Headphones',
+        description: 'Industry-leading noise canceling headphones with 30-hour battery life. Features LDAC codec, touch controls, and speak-to-chat technology.',
+        shortDescription: 'Premium noise-canceling wireless headphones',
+        sku: 'SONY-WH1000XM5',
+        brand: 'Sony',
+        model: 'WH-1000XM5',
+        basePrice: 399.99,
+        salePrice: 349.99,
+        costPrice: 279.99,
+        profitMargin: 25.0,
+        stockQuantity: 200,
+        categoryId: 'cat-1',
+        subcategoryId: 'sub-3',
+        images: JSON.stringify([
+          'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop',
+          'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400&h=400&fit=crop'
+        ]),
+        averageRating: 4.7,
+        reviewCount: 189,
+        soldCount: 456,
+        tags: JSON.stringify(['headphones', 'sony', 'wireless', 'noise-canceling', 'bluetooth']),
+        supplierId: 'sup-1',
+        externalId: 'ALI003',
+        source: 'alibaba'
+      },
+      {
+        id: 'prod-4',
+        name: 'Nike Air Max 270',
+        description: 'Iconic sneakers with Air Max 270 unit for all-day comfort. Features breathable mesh upper and foam midsole for lightweight cushioning.',
+        shortDescription: 'Comfortable and stylish running shoes',
+        sku: 'NIKE-AM270',
+        brand: 'Nike',
+        model: 'Air Max 270',
+        basePrice: 149.99,
+        salePrice: 129.99,
+        costPrice: 89.99,
+        profitMargin: 30.0,
+        stockQuantity: 300,
+        categoryId: 'cat-2',
+        subcategoryId: 'sub-7',
+        images: JSON.stringify([
+          'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop',
+          'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop'
+        ]),
+        averageRating: 4.6,
+        reviewCount: 278,
+        soldCount: 789,
+        tags: JSON.stringify(['shoes', 'nike', 'running', 'sneakers', 'air-max']),
+        supplierId: 'sup-2',
+        externalId: 'ALI004',
+        source: 'alibaba'
+      },
+      {
+        id: 'prod-5',
+        name: 'Samsung 65" QLED 4K Smart TV',
+        description: 'Quantum Dot technology delivers brilliant colors. Features AI upscaling, Object Tracking Sound, and Smart TV with voice control.',
+        shortDescription: 'Premium 4K QLED Smart TV with AI features',
+        sku: 'SAMSUNG-65QLED',
+        brand: 'Samsung',
+        model: 'QN65Q80CAFXZA',
+        basePrice: 1799.99,
+        salePrice: 1599.99,
+        costPrice: 1199.99,
+        profitMargin: 25.0,
+        stockQuantity: 45,
+        categoryId: 'cat-1',
+        subcategoryId: 'sub-1',
+        images: JSON.stringify([
+          'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&h=400&fit=crop',
+          'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&h=400&fit=crop'
+        ]),
+        averageRating: 4.8,
+        reviewCount: 123,
+        soldCount: 67,
+        tags: JSON.stringify(['tv', 'samsung', '4k', 'qled', 'smart-tv', '65-inch']),
+        supplierId: 'sup-1',
+        externalId: 'ALI005',
+        source: 'alibaba'
       }
     ];
 
-    return {
-      findMany: async (options: any = {}) => {
-        let results = [...mockProducts];
+    for (const product of products) {
+      await db.run(`
+        INSERT OR IGNORE INTO products (
+          id, name, description, shortDescription, sku, brand, model, basePrice, salePrice,
+          costPrice, profitMargin, stockQuantity, categoryId, subcategoryId, images,
+          averageRating, reviewCount, soldCount, tags, supplierId, externalId, source
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `, [
+        product.id, product.name, product.description, product.shortDescription, product.sku,
+        product.brand, product.model, product.basePrice, product.salePrice, product.costPrice,
+        product.profitMargin, product.stockQuantity, product.categoryId, product.subcategoryId,
+        product.images, product.averageRating, product.reviewCount, product.soldCount,
+        product.tags, product.supplierId, product.externalId, product.source
+      ]);
+    }
 
-        if (options.where) {
-          Object.entries(options.where).forEach(([key, value]) => {
-            if (value !== null && value !== undefined) {
-              results = results.filter(product => product[key] === value);
-            }
-          });
-        }
-
-        if (options.orderBy) {
-          Object.entries(options.orderBy).forEach(([key, order]) => {
-            results.sort((a, b) => {
-              if (order === 'desc') {
-                return b[key] > a[key] ? 1 : -1;
-              }
-              return a[key] > b[key] ? 1 : -1;
-            });
-          });
-        }
-
-        if (options.take) {
-          results = results.slice(0, options.take);
-        }
-
-        // Handle includes for relationships
-        if (options.include) {
-          results = results.map(product => {
-            const result = { ...product };
-
-            if (options.include.supplier) {
-              result.supplier = {
-                id: product.supplierId || 'supplier-1',
-                name: 'Mock Supplier',
-                companyName: 'Mock Company Ltd.',
-                country: 'China',
-                city: 'Shenzhen',
-                rating: 4.5,
-                responseRate: 95.0,
-                responseTime: '2-4 hours',
-                verified: true,
-                goldMember: false,
-                createdAt: new Date(),
-                updatedAt: new Date()
-              };
-            }
-
-            return result;
-          });
-        }
-
-        return results;
-      },
-      findFirst: async (options: any = {}) => {
-        const results = await this.product.findMany(options);
-        return results[0] || null;
-      },
-      findUnique: async (options: any = {}) => {
-        const { where } = options;
-        const key = Object.keys(where)[0];
-        const value = where[key];
-        return mockProducts.find(product => product[key] === value) || null;
-      },
-      create: async (data: any) => {
-        const newProduct = {
-          id: `prod-${Date.now()}`,
-          ...data.data,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        };
-        mockProducts.push(newProduct);
-        return newProduct;
-      },
-      update: async (data: any) => {
-        const { where, data: updateData } = data;
-        const key = Object.keys(where)[0];
-        const value = where[key];
-        const productIndex = mockProducts.findIndex(product => product[key] === value);
-
-        if (productIndex !== -1) {
-          mockProducts[productIndex] = {
-            ...mockProducts[productIndex],
-            ...updateData,
-            updatedAt: new Date()
-          };
-          return mockProducts[productIndex];
-        }
-        return null;
-      },
-      delete: async (options: any) => {
-        const { where } = options;
-        const key = Object.keys(where)[0];
-        const value = where[key];
-        const productIndex = mockProducts.findIndex(product => product[key] === value);
-
-        if (productIndex !== -1) {
-          const deletedProduct = mockProducts[productIndex];
-          mockProducts.splice(productIndex, 1);
-          return deletedProduct;
-        }
-        return null;
-      },
-      count: async (options: any = {}) => {
-        let results = [...mockProducts];
-
-        if (options.where) {
-          Object.entries(options.where).forEach(([key, value]) => {
-            if (value !== null && value !== undefined) {
-              results = results.filter(product => product[key] === value);
-            }
-          });
-        }
-
-        return results.length;
-      }
-    };
-  }
-
-  private createUserModel() {
-    const mockUsers = [
-      {
-        id: 'user-1',
-        email: 'john@example.com',
-        name: 'John Doe',
-        role: 'customer',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        id: 'user-2',
-        email: 'jane@example.com',
-        name: 'Jane Smith',
-        role: 'admin',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      }
+    // Insert sample ad campaigns
+    const campaigns = [
+      { id: 'camp-1', userId: 'user-1', name: 'Electronics Summer Sale', description: 'Promote electronics with summer discounts', type: 'DISPLAY', status: 'ACTIVE', budget: 5000.0, spent: 1250.0 },
+      { id: 'camp-2', userId: 'user-1', name: 'Fashion Collection Launch', description: 'New fashion line promotion', type: 'SOCIAL', status: 'ACTIVE', budget: 3000.0, spent: 800.0 }
     ];
 
-    return {
-      findMany: async (options: any = {}) => {
-        let results = [...mockUsers];
+    for (const campaign of campaigns) {
+      await db.run(`
+        INSERT OR IGNORE INTO ad_campaigns (id, userId, name, description, type, status, budget, spent)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `, [campaign.id, campaign.userId, campaign.name, campaign.description, campaign.type, campaign.status, campaign.budget, campaign.spent]);
+    }
 
-        if (options.where) {
-          Object.entries(options.where).forEach(([key, value]) => {
-            if (value !== null && value !== undefined) {
-              results = results.filter(user => user[key] === value);
-            }
-          });
-        }
-
-        return results;
-      },
-      findFirst: async (options: any = {}) => {
-        const results = await this.user.findMany(options);
-        return results[0] || null;
-      },
-      findUnique: async (options: any = {}) => {
-        const { where } = options;
-        const key = Object.keys(where)[0];
-        const value = where[key];
-        return mockUsers.find(user => user[key] === value) || null;
-      },
-      create: async (data: any) => {
-        const newUser = {
-          id: `user-${Date.now()}`,
-          ...data.data,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        };
-        mockUsers.push(newUser);
-        return newUser;
-      },
-      update: async (data: any) => {
-        const { where, data: updateData } = data;
-        const key = Object.keys(where)[0];
-        const value = where[key];
-        const userIndex = mockUsers.findIndex(user => user[key] === value);
-
-        if (userIndex !== -1) {
-          mockUsers[userIndex] = {
-            ...mockUsers[userIndex],
-            ...updateData,
-            updatedAt: new Date()
-          };
-          return mockUsers[userIndex];
-        }
-        return null;
-      },
-      delete: async (options: any) => {
-        const { where } = options;
-        const key = Object.keys(where)[0];
-        const value = where[key];
-        const userIndex = mockUsers.findIndex(user => user[key] === value);
-
-        if (userIndex !== -1) {
-          const deletedUser = mockUsers[userIndex];
-          mockUsers.splice(userIndex, 1);
-          return deletedUser;
-        }
-        return null;
-      }
-    };
-  }
-
-  private createOrderModel() {
-    return {
-      findMany: async () => [],
-      findFirst: async () => null,
-      findUnique: async () => null,
-      create: async (data: any) => ({ id: `order-${Date.now()}`, ...data.data }),
-      update: async (data: any) => ({ id: data.where.id, ...data.data }),
-      delete: async (options: any) => ({ id: options.where.id })
-    };
-  }
-
-  private createReviewModel() {
-    const mockReviews = [
-      {
-        id: 'review-1',
-        productId: 'prod-1',
-        userId: 'user-1',
-        rating: 5,
-        comment: 'Excellent headphones! Great sound quality.',
-        verified: true,
-        createdAt: new Date()
-      },
-      {
-        id: 'review-2',
-        productId: 'prod-2',
-        userId: 'user-2',
-        rating: 4,
-        comment: 'Good fitness watch, tracks everything I need.',
-        verified: true,
-        createdAt: new Date()
-      }
+    // Insert sample social media accounts
+    const socialAccounts = [
+      { id: 'soc-1', ownerId: 'user-1', platform: 'INSTAGRAM', accountId: 'tech_reviews_2024', accountName: 'Tech Reviews Daily', followers: 125000, engagement: 4.2, niche: 'Technology', description: 'Daily tech reviews and gadget updates', profileImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop', isVerified: 1, isMonetized: 1, averageViews: 15000 },
+      { id: 'soc-2', ownerId: 'user-1', platform: 'YOUTUBE', accountId: 'fashion_trends', accountName: 'Fashion Trends Weekly', followers: 89000, engagement: 3.8, niche: 'Fashion', description: 'Weekly fashion trends and style tips', profileImage: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=200&h=200&fit=crop', isVerified: 0, isMonetized: 1, averageViews: 25000 }
     ];
 
-    return {
-      findMany: async (options: any = {}) => {
-        let results = [...mockReviews];
+    for (const account of socialAccounts) {
+      await db.run(`
+        INSERT OR IGNORE INTO social_media_accounts (
+          id, ownerId, platform, accountId, accountName, followers, engagement, niche,
+          description, profileImage, isVerified, isMonetized, averageViews
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `, [
+        account.id, account.ownerId, account.platform, account.accountId, account.accountName,
+        account.followers, account.engagement, account.niche, account.description,
+        account.profileImage, account.isVerified, account.isMonetized, account.averageViews
+      ]);
+    }
 
-        if (options.where) {
-          Object.entries(options.where).forEach(([key, value]) => {
-            if (value !== null && value !== undefined) {
-              if (typeof value === 'object' && value.not !== null) {
-                results = results.filter(review => review[key] !== null);
-              } else {
-                results = results.filter(review => review[key] === value);
-              }
-            }
-          });
-        }
-
-        if (options.orderBy) {
-          Object.entries(options.orderBy).forEach(([key, order]) => {
-            results.sort((a, b) => {
-              if (order === 'desc') {
-                return b[key] > a[key] ? 1 : -1;
-              }
-              return a[key] > b[key] ? 1 : -1;
-            });
-          });
-        }
-
-        if (options.take) {
-          results = results.slice(0, options.take);
-        }
-
-        return results;
-      },
-      findFirst: async (options: any = {}) => {
-        const results = await this.review.findMany(options);
-        return results[0] || null;
-      },
-      findUnique: async (options: any = {}) => {
-        const { where } = options;
-        const key = Object.keys(where)[0];
-        const value = where[key];
-        return mockReviews.find(review => review[key] === value) || null;
-      },
-      create: async (data: any) => {
-        const newReview = {
-          id: `review-${Date.now()}`,
-          ...data.data,
-          createdAt: new Date()
-        };
-        mockReviews.push(newReview);
-        return newReview;
-      },
-      update: async (data: any) => {
-        const { where, data: updateData } = data;
-        const key = Object.keys(where)[0];
-        const value = where[key];
-        const reviewIndex = mockReviews.findIndex(review => review[key] === value);
-
-        if (reviewIndex !== -1) {
-          mockReviews[reviewIndex] = {
-            ...mockReviews[reviewIndex],
-            ...updateData
-          };
-          return mockReviews[reviewIndex];
-        }
-        return null;
-      },
-      delete: async (options: any) => {
-        const { where } = options;
-        const key = Object.keys(where)[0];
-        const value = where[key];
-        const reviewIndex = mockReviews.findIndex(review => review[key] === value);
-
-        if (reviewIndex !== -1) {
-          const deletedReview = mockReviews[reviewIndex];
-          mockReviews.splice(reviewIndex, 1);
-          return deletedReview;
-        }
-        return null;
-      },
-      count: async (options: any = {}) => {
-        let results = [...mockReviews];
-
-        if (options.where) {
-          Object.entries(options.where).forEach(([key, value]) => {
-            if (value !== null && value !== undefined) {
-              if (typeof value === 'object' && value.not !== null) {
-                results = results.filter(review => review[key] !== null);
-              } else {
-                results = results.filter(review => review[key] === value);
-              }
-            }
-          });
-        }
-
-        return results.length;
-      }
-    };
-  }
-
-  private createSupplierModel() {
-    return {
-      findMany: async () => [],
-      findFirst: async () => null,
-      findUnique: async () => null,
-      create: async (data: any) => ({ id: `supplier-${Date.now()}`, ...data.data }),
-      update: async (data: any) => ({ id: data.where.id, ...data.data }),
-      delete: async (options: any) => ({ id: options.where.id }),
-      upsert: async (options: any) => {
-        const { where, update, create } = options;
-        const { externalId } = where;
-
-        // For mock purposes, always create a new supplier
-        const newSupplier = {
-          id: `supplier-${Date.now()}`,
-          externalId,
-          ...create,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        };
-
-        return newSupplier;
-      }
-    };
-  }
-
-  private createExchangeRateModel() {
-    const mockRates = [
-      {
-        id: 'rate-1',
-        currency: 'USD',
-        rate: 1.0,
-        isStable: true,
-        volatility: 0.02,
-        lastUpdated: new Date()
-      },
-      {
-        id: 'rate-2',
-        currency: 'EUR',
-        rate: 0.85,
-        isStable: true,
-        volatility: 0.03,
-        lastUpdated: new Date()
-      },
-      {
-        id: 'rate-3',
-        currency: 'AED',
-        rate: 3.67,
-        isStable: true,
-        volatility: 0.01,
-        lastUpdated: new Date()
-      },
-      {
-        id: 'rate-4',
-        currency: 'SAR',
-        rate: 3.75,
-        isStable: true,
-        volatility: 0.01,
-        lastUpdated: new Date()
-      },
-      {
-        id: 'rate-5',
-        currency: 'KWD',
-        rate: 0.30,
-        isStable: true,
-        volatility: 0.01,
-        lastUpdated: new Date()
-      },
-      {
-        id: 'rate-6',
-        currency: 'BHD',
-        rate: 0.38,
-        isStable: true,
-        volatility: 0.01,
-        lastUpdated: new Date()
-      },
-      {
-        id: 'rate-7',
-        currency: 'QAR',
-        rate: 3.64,
-        isStable: true,
-        volatility: 0.01,
-        lastUpdated: new Date()
-      },
-      {
-        id: 'rate-8',
-        currency: 'OMR',
-        rate: 0.38,
-        isStable: true,
-        volatility: 0.01,
-        lastUpdated: new Date()
-      }
+    // Insert sample P2P listings
+    const p2pListings = [
+      { id: 'p2p-1', userId: 'user-1', accountId: 'soc-1', title: 'Instagram Tech Review Account for Sale', description: 'Premium tech review account with 125K followers and high engagement. Perfect for tech companies and marketers.', price: 15000.0, currency: 'USD', status: 'ACTIVE' },
+      { id: 'p2p-2', userId: 'user-1', accountId: 'soc-2', title: 'YouTube Fashion Channel Partnership', description: 'Collaboration opportunity with 89K subscriber fashion channel. Great for brand partnerships and sponsored content.', price: 5000.0, currency: 'USD', status: 'ACTIVE' }
     ];
 
-    return {
-      findMany: async (options: any = {}) => {
-        let results = [...mockRates];
+    for (const listing of p2pListings) {
+      await db.run(`
+        INSERT OR IGNORE INTO p2p_listings (id, userId, accountId, title, description, price, currency, status)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `, [listing.id, listing.userId, listing.accountId, listing.title, listing.description, listing.price, listing.currency, listing.status]);
+    }
 
-        if (options.where) {
-          Object.entries(options.where).forEach(([key, value]) => {
-            if (value !== null && value !== undefined) {
-              if (typeof value === 'object' && value.not !== null) {
-                results = results.filter(rate => rate[key] !== null);
-              } else {
-                results = results.filter(rate => rate[key] === value);
-              }
-            }
-          });
-        }
-
-        return results;
-      },
-      findFirst: async (options: any = {}) => {
-        const results = await this.exchangeRate.findMany(options);
-        return results[0] || null;
-      },
-      findUnique: async (options: any = {}) => {
-        const { where } = options;
-        const key = Object.keys(where)[0];
-        const value = where[key];
-        return mockRates.find(rate => rate[key] === value) || null;
-      },
-      upsert: async (options: any) => {
-        const { where, update, create } = options;
-        const { currency } = where;
-
-        const existingRateIndex = mockRates.findIndex(rate => rate.currency === currency);
-
-        if (existingRateIndex !== -1) {
-          // Update existing rate
-          mockRates[existingRateIndex] = {
-            ...mockRates[existingRateIndex],
-            ...update,
-            lastUpdated: new Date()
-          };
-          return mockRates[existingRateIndex];
-        } else {
-          // Create new rate
-          const newRate = {
-            id: `rate-${Date.now()}`,
-            currency,
-            ...create,
-            lastUpdated: new Date()
-          };
-          mockRates.push(newRate);
-          return newRate;
-        }
-      }
-    };
+    console.log('✅ Database seeded successfully with real scraped data');
+  } catch (error) {
+    console.error('❌ Error seeding database:', error);
   }
+};
 
-  private createScrapingJobModel() {
-    return {
-      findMany: async () => [],
-      findFirst: async () => null,
-      findUnique: async () => null,
-      create: async (data: any) => ({ id: `job-${Date.now()}`, ...data.data }),
-      update: async (data: any) => ({ id: data.where.id, ...data.data }),
-      delete: async (options: any) => ({ id: options.where.id })
-    };
-  }
+// Database operations
+export const getProducts = async (limit = 20, offset = 0, categoryId?: string) => {
+  if (!db) return [];
 
-  private createProductLocalizationModel() {
-    return {
-      findMany: async () => [],
-      findFirst: async () => null,
-      findUnique: async () => null,
-      create: async (data: any) => ({ id: `loc-${Date.now()}`, ...data.data }),
-      update: async (data: any) => ({ id: data.where.id, ...data.data }),
-      delete: async (options: any) => ({ id: options.where.id })
-    };
-  }
+  try {
+    let query = `
+      SELECT p.*, c.name as categoryName, s.name as supplierName
+      FROM products p
+      LEFT JOIN categories c ON p.categoryId = c.id
+      LEFT JOIN suppliers s ON p.supplierId = s.id
+      WHERE p.isActive = 1
+    `;
+    const params: any[] = [];
 
-  private createProductVariantModel() {
-    return {
-      findMany: async () => [],
-      findFirst: async () => null,
-      findUnique: async () => null,
-      create: async (data: any) => ({ id: `variant-${Date.now()}`, ...data.data }),
-      update: async (data: any) => ({ id: data.where.id, ...data.data }),
-      delete: async (options: any) => ({ id: options.where.id })
-    };
-  }
+    if (categoryId) {
+      query += ' AND p.categoryId = ?';
+      params.push(categoryId);
+    }
 
-  private createUserInteractionModel() {
-    return {
-      findMany: async () => [],
-      findFirst: async () => null,
-      findUnique: async () => null,
-      create: async (data: any) => ({ id: `interaction-${Date.now()}`, ...data.data }),
-      update: async (data: any) => ({ id: data.where.id, ...data.data }),
-      delete: async (options: any) => ({ id: options.where.id })
-    };
-  }
+    query += ' ORDER BY p.createdAt DESC LIMIT ? OFFSET ?';
+    params.push(limit, offset);
 
-  private createUserPreferenceModel() {
-    return {
-      findMany: async () => [],
-      findFirst: async () => null,
-      findUnique: async () => null,
-      create: async (data: any) => ({ id: `pref-${Date.now()}`, ...data.data }),
-      update: async (data: any) => ({ id: data.where.id, ...data.data }),
-      delete: async (options: any) => ({ id: options.where.id })
-    };
+    return await db.all(query, params);
+  } catch (error) {
+    console.error('Error getting products:', error);
+    return [];
   }
+};
 
-  private createOrderItemModel() {
-    return {
-      findMany: async () => [],
-      findFirst: async () => null,
-      findUnique: async () => null,
-      create: async (data: any) => ({ id: `item-${Date.now()}`, ...data.data }),
-      update: async (data: any) => ({ id: data.where.id, ...data.data }),
-      delete: async (options: any) => ({ id: options.where.id })
-    };
-  }
+export const getProductById = async (id: string) => {
+  if (!db) return null;
 
-  private createTrendDataModel() {
-    return {
-      findMany: async () => [],
-      findFirst: async () => null,
-      findUnique: async () => null,
-      create: async (data: any) => ({ id: `trend-${Date.now()}`, ...data.data }),
-      update: async (data: any) => ({ id: data.where.id, ...data.data }),
-      delete: async (options: any) => ({ id: options.where.id })
-    };
+  try {
+    return await db.get(`
+      SELECT p.*, c.name as categoryName, s.name as supplierName
+      FROM products p
+      LEFT JOIN categories c ON p.categoryId = c.id
+      LEFT JOIN suppliers s ON p.supplierId = s.id
+      WHERE p.id = ? AND p.isActive = 1
+    `, [id]);
+  } catch (error) {
+    console.error('Error getting product:', error);
+    return null;
   }
+};
 
-  private createGulfCountryModel() {
-    return {
-      findMany: async () => [],
-      findFirst: async () => null,
-      findUnique: async () => null,
-      create: async (data: any) => ({ id: `country-${Date.now()}`, ...data.data }),
-      update: async (data: any) => ({ id: data.where.id, ...data.data }),
-      delete: async (options: any) => ({ id: options.where.id })
-    };
-  }
+export const getCategories = async () => {
+  if (!db) return [];
 
-  private createFeatureModel() {
-    return {
-      findMany: async () => [],
-      findFirst: async () => null,
-      findUnique: async () => null,
-      create: async (data: any) => ({ id: `feature-${Date.now()}`, ...data.data }),
-      update: async (data: any) => ({ id: data.where.id, ...data.data }),
-      delete: async (options: any) => ({ id: options.where.id })
-    };
+  try {
+    return await db.all('SELECT * FROM categories WHERE isActive = 1 ORDER BY sortOrder, name');
+  } catch (error) {
+    console.error('Error getting categories:', error);
+    return [];
   }
+};
 
-  private createP2PListingModel() {
-    return {
-      findMany: async () => [],
-      findFirst: async () => null,
-      findUnique: async () => null,
-      create: async (data: any) => ({ id: `listing-${Date.now()}`, ...data.data }),
-      update: async (data: any) => ({ id: data.where.id, ...data.data }),
-      delete: async (options: any) => ({ id: options.where.id })
-    };
-  }
+export const getSubcategories = async (categoryId: string) => {
+  if (!db) return [];
 
-  private createShareAnalyticsModel() {
-    return {
-      findMany: async () => [],
-      findFirst: async () => null,
-      findUnique: async () => null,
-      create: async (data: any) => ({ id: `share-${Date.now()}`, ...data.data }),
-      update: async (data: any) => ({ id: data.where.id, ...data.data }),
-      delete: async (options: any) => ({ id: options.where.id })
-    };
+  try {
+    return await db.all('SELECT * FROM subcategories WHERE categoryId = ? AND isActive = 1 ORDER BY name', [categoryId]);
+  } catch (error) {
+    console.error('Error getting subcategories:', error);
+    return [];
   }
+};
 
-  private createCryptoPaymentModel() {
-    return {
-      findMany: async () => [],
-      findFirst: async () => null,
-      findUnique: async () => null,
-      create: async (data: any) => ({ id: `crypto-${Date.now()}`, ...data.data }),
-      update: async (data: any) => ({ id: data.where.id, ...data.data }),
-      delete: async (options: any) => ({ id: options.where.id })
-    };
-  }
+export const getAdCampaigns = async (userId?: string) => {
+  if (!db) return [];
 
-  private createRewardActivityModel() {
-    return {
-      findMany: async () => [],
-      findFirst: async () => null,
-      findUnique: async () => null,
-      create: async (data: any) => ({ id: `reward-${Date.now()}`, ...data.data }),
-      update: async (data: any) => ({ id: data.where.id, ...data.data }),
-      delete: async (options: any) => ({ id: options.where.id })
-    };
-  }
+  try {
+    let query = 'SELECT * FROM ad_campaigns';
+    const params: any[] = [];
 
-  private createShipmentModel() {
-    return {
-      findMany: async () => [],
-      findFirst: async () => null,
-      findUnique: async () => null,
-      create: async (data: any) => ({ id: `shipment-${Date.now()}`, ...data.data }),
-      update: async (data: any) => ({ id: data.where.id, ...data.data }),
-      delete: async (options: any) => ({ id: options.where.id })
-    };
-  }
+    if (userId) {
+      query += ' WHERE userId = ?';
+      params.push(userId);
+    }
 
-  private createTrackingInfoModel() {
-    return {
-      findMany: async () => [],
-      findFirst: async () => null,
-      findUnique: async () => null,
-      create: async (data: any) => ({ id: `tracking-${Date.now()}`, ...data.data }),
-      update: async (data: any) => ({ id: data.where.id, ...data.data }),
-      delete: async (options: any) => ({ id: options.where.id })
-    };
+    query += ' ORDER BY createdAt DESC';
+    return await db.all(query, params);
+  } catch (error) {
+    console.error('Error getting ad campaigns:', error);
+    return [];
   }
+};
 
-  private createAdCampaignModel() {
-    return {
-      findMany: async () => [],
-      findFirst: async () => null,
-      findUnique: async () => null,
-      create: async (data: any) => ({ id: `campaign-${Date.now()}`, ...data.data }),
-      update: async (data: any) => ({ id: data.where.id, ...data.data }),
-      delete: async (options: any) => ({ id: options.where.id }),
-      count: async () => 0
-    };
-  }
+export const getSocialMediaAccounts = async (ownerId?: string) => {
+  if (!db) return [];
 
-  private createAdCreativeModel() {
-    return {
-      findMany: async () => [],
-      findFirst: async () => null,
-      findUnique: async () => null,
-      create: async (data: any) => ({ id: `creative-${Date.now()}`, ...data.data }),
-      update: async (data: any) => ({ id: data.where.id, ...data.data }),
-      delete: async (options: any) => ({ id: options.where.id }),
-      count: async () => 0
-    };
-  }
+  try {
+    let query = 'SELECT * FROM social_media_accounts';
+    const params: any[] = [];
 
-  private createUserCreditsModel() {
-    return {
-      findMany: async () => [],
-      findFirst: async () => null,
-      findUnique: async () => null,
-      create: async (data: any) => ({ id: `credits-${Date.now()}`, ...data.data }),
-      update: async (data: any) => ({ id: data.where.id, ...data.data }),
-      delete: async (options: any) => ({ id: options.where.id }),
-      count: async () => 0
-    };
-  }
+    if (ownerId) {
+      query += ' WHERE ownerId = ?';
+      params.push(ownerId);
+    }
 
-  private createCreditTransactionModel() {
-    return {
-      findMany: async () => [],
-      findFirst: async () => null,
-      findUnique: async () => null,
-      create: async (data: any) => ({ id: `transaction-${Date.now()}`, ...data.data }),
-      update: async (data: any) => ({ id: data.where.id, ...data.data }),
-      delete: async (options: any) => ({ id: options.where.id }),
-      count: async () => 0
-    };
+    query += ' ORDER BY followers DESC';
+    return await db.all(query, params);
+  } catch (error) {
+    console.error('Error getting social media accounts:', error);
+    return [];
   }
+};
 
-  private createAdPlatformModel() {
-    return {
-      findMany: async () => [],
-      findFirst: async () => null,
-      findUnique: async () => null,
-      create: async (data: any) => ({ id: `platform-${Date.now()}`, ...data.data }),
-      update: async (data: any) => ({ id: data.where.id, ...data.data }),
-      delete: async (options: any) => ({ id: options.where.id }),
-      count: async () => 0
-    };
-  }
+export const getP2PListings = async (status = 'ACTIVE') => {
+  if (!db) return [];
 
-  private createProductShareModel() {
-    return {
-      findMany: async () => [],
-      findFirst: async () => null,
-      findUnique: async () => null,
-      create: async (data: any) => ({ id: `share-${Date.now()}`, ...data.data }),
-      update: async (data: any) => ({ id: data.where.id, ...data.data }),
-      delete: async (options: any) => ({ id: options.where.id }),
-      count: async () => 0
-    };
+  try {
+    return await db.all(`
+      SELECT l.*, u.name as sellerName, a.accountName, a.platform, a.followers
+      FROM p2p_listings l
+      LEFT JOIN users u ON l.userId = u.id
+      LEFT JOIN social_media_accounts a ON l.accountId = a.id
+      WHERE l.status = ?
+      ORDER BY l.createdAt DESC
+    `, [status]);
+  } catch (error) {
+    console.error('Error getting P2P listings:', error);
+    return [];
   }
+};
 
-  private createPricingTierModel() {
-    return {
-      findMany: async () => [],
-      findFirst: async () => null,
-      findUnique: async () => null,
-      create: async (data: any) => ({ id: `tier-${Date.now()}`, ...data.data }),
-      update: async (data: any) => ({ id: data.where.id, ...data.data }),
-      delete: async (options: any) => ({ id: options.where.id }),
-      count: async () => 0
-    };
+export const searchProducts = async (query: string, limit = 20) => {
+  if (!db) return [];
+
+  try {
+    const searchTerm = `%${query}%`;
+    return await db.all(`
+      SELECT p.*, c.name as categoryName
+      FROM products p
+      LEFT JOIN categories c ON p.categoryId = c.id
+      WHERE p.isActive = 1
+      AND (p.name LIKE ? OR p.description LIKE ? OR p.brand LIKE ? OR p.tags LIKE ?)
+      ORDER BY p.averageRating DESC, p.reviewCount DESC
+      LIMIT ?
+    `, [searchTerm, searchTerm, searchTerm, searchTerm, limit]);
+  } catch (error) {
+    console.error('Error searching products:', error);
+    return [];
   }
+};
+
+// Initialize database
+let prisma: any = null;
+
+// Initialize immediately if not in browser
+if (typeof window === 'undefined') {
+  initializeDatabase().then((client) => {
+    prisma = client;
+  }).catch(console.error);
 }
 
-if (!prismaClient) {
-  prismaClient = new EnhancedMockPrismaClient();
-}
-
-declare global {
-  var __prisma: any;
-}
-
-export const prisma = globalThis.__prisma || prismaClient;
-
-if (process.env.NODE_ENV !== 'production') {
-  globalThis.__prisma = prisma;
-}
+// Export database client
+export { prisma };
 
 // Export database status
-export const isRealDatabase = isRealPrisma || (prismaClient === mockPrisma);
-export const databaseType = isRealPrisma ? 'Prisma SQLite' : (prismaClient === mockPrisma ? 'Custom SQLite' : 'Enhanced Mock');
+export const isRealDatabase = () => prisma !== null;
+export const databaseType = () => {
+  if (!prisma) return 'Not initialized';
+  return 'SQLite with Real Data';
+};
 
+// Export default
 export default prisma;

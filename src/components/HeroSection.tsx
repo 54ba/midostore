@@ -3,6 +3,7 @@
 import { useId } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/app/contexts/AuthContext'
+import { useRouter } from 'next/navigation'
 
 interface HeroSectionProps {
   id?: string
@@ -17,11 +18,40 @@ export default function HeroSection({
   title = "Connect Gulf Consumers to Alibaba's Best Toys & Cosmetics",
   subtitle = "MidoHub bridges the gap between Gulf consumers and affordable, quality products from Alibaba. Discover toys and cosmetics at unbeatable prices with seamless dropshipping.",
   ctaText = "Start Shopping",
-  ctaLink = "/dashboard"
+  ctaLink = "/products"
 }: HeroSectionProps) {
   const defaultId = useId()
   const componentId = id || defaultId
   const { user, loading: authLoading } = useAuth()
+  const router = useRouter()
+
+  const handleGetStarted = () => {
+    if (user) {
+      // User is logged in, redirect to products
+      router.push('/products')
+    } else {
+      // User is not logged in, redirect to register
+      router.push('/register')
+    }
+  }
+
+  const handleSignIn = () => {
+    router.push('/auth/signin')
+  }
+
+  const handleStartSelling = () => {
+    if (user) {
+      // User is logged in, redirect to seller dashboard
+      router.push('/seller/dashboard')
+    } else {
+      // User is not logged in, redirect to seller register
+      router.push('/seller/register')
+    }
+  }
+
+  const handleBrowseProducts = () => {
+    router.push('/products')
+  }
 
   return (
     <section className="relative bg-teal-700 text-white overflow-hidden">
@@ -52,32 +82,32 @@ export default function HeroSection({
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
             {!authLoading && !user ? (
               <>
-                <Link
-                  href="/register"
+                <button
+                  onClick={handleGetStarted}
                   className="inline-flex items-center justify-center px-8 py-4 bg-amber-500 text-teal-900 font-semibold rounded-lg hover:bg-amber-400 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
                 >
                   <span id="hero-section-register-text">Get Started Free</span>
                   <svg id="hero-section-register-arrow" className="ml-2 w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
                   </svg>
-                </Link>
-                <Link
-                  href="/login"
+                </button>
+                <button
+                  onClick={handleSignIn}
                   className="inline-flex items-center justify-center px-8 py-4 bg-white/10 text-white font-semibold rounded-lg hover:bg-white/20 transition-all duration-300 backdrop-blur-sm border border-white/20 hover:border-white/40"
                 >
                   <span id="hero-section-login-text">Sign In</span>
-                </Link>
+                </button>
               </>
             ) : (
-              <Link
-                href={ctaLink}
+              <button
+                onClick={handleBrowseProducts}
                 className="inline-flex items-center justify-center px-8 py-4 bg-amber-500 text-teal-900 font-semibold rounded-lg hover:bg-amber-400 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
               >
                 <span id="hero-section-cta-text">{ctaText}</span>
                 <svg id="hero-section-cta-arrow" className="ml-2 w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
-              </Link>
+              </button>
             )}
           </div>
 
@@ -117,6 +147,28 @@ export default function HeroSection({
             <p id="hero-section-stats-text" className="text-teal-100 text-lg">
               Trusted by <span id="hero-section-stats-customers" className="text-amber-400 font-semibold">10,000+</span> customers across the Gulf region
             </p>
+          </div>
+
+          {/* Additional Action Buttons */}
+          <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <button
+              onClick={handleStartSelling}
+              className="inline-flex items-center justify-center px-6 py-3 bg-white/10 text-white font-medium rounded-lg hover:bg-white/20 transition-all duration-300 backdrop-blur-sm border border-white/20 hover:border-white/40"
+            >
+              <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
+              </svg>
+              Start Selling
+            </button>
+            <button
+              onClick={handleBrowseProducts}
+              className="inline-flex items-center justify-center px-6 py-3 bg-amber-500 text-teal-900 font-medium rounded-lg hover:bg-amber-400 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+            >
+              <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
+              </svg>
+              Browse Products
+            </button>
           </div>
         </div>
       </div>

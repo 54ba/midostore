@@ -19,7 +19,7 @@ const envSchema = z.object({
     NEXT_PUBLIC_NETLIFY_SITE_URL: z.string().default('https://midostore.netlify.app'),
 
     // Database Configuration
-    DATABASE_URL: z.string().optional(),
+    MONGODB_URI: z.string().default('mongodb://localhost:27017/midostore'),
 
     // API Keys
     STRIPE_SECRET_KEY: z.string().optional(),
@@ -32,9 +32,6 @@ const envSchema = z.object({
     // Alibaba/AliExpress API Configuration
     ALIBABA_API_BASE_URL: z.string().default('https://api.alibaba.com'),
     ALIBABA_API_KEY: z.string().optional(),
-
-    // Prisma Engine Configuration (for NixOS compatibility)
-    PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING: z.string().default('1'),
 
     // AI Location-Based Search Configuration
     NEXT_PUBLIC_WEATHER_API_KEY: z.string().optional(),
@@ -61,7 +58,7 @@ const envSchema = z.object({
     ANTHROPIC_API_KEY: z.string().optional(),
 
     // Database Type
-    DATABASE_TYPE: z.string().default('postgresql'),
+    DATABASE_TYPE: z.string().default('mongodb'),
 
     // Additional Configuration
     LOG_LEVEL: z.string().default('INFO'),
@@ -69,6 +66,12 @@ const envSchema = z.object({
 
     // Stripe Configuration
     STRIPE_WEBHOOK_SECRET: z.string().optional(),
+
+    // Bybit Configuration
+    BYBIT_API_KEY: z.string().optional(),
+    BYBIT_SECRET_KEY: z.string().optional(),
+    BYBIT_TESTNET: z.string().default('true'),
+    BYBIT_WEBHOOK_SECRET: z.string().optional(),
 
     // Analytics Configuration
     NEXT_PUBLIC_SIMPLE_ANALYTICS_DOMAIN: z.string().optional(),
@@ -119,8 +122,6 @@ const envSchema = z.object({
     PRICE_UPDATE_INTERVAL: z.string().optional(),
 
     // AI Analytics
-    OPENAI_API_KEY: z.string().optional(),
-    ANTHROPIC_API_KEY: z.string().optional(),
     AI_ANALYTICS_ENDPOINT: z.string().optional(),
 })
 

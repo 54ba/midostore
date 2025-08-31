@@ -1,21 +1,9 @@
 "use client";
 
-import React, { useState } from 'react';
-import { ArrowRight, TrendingUp, Star, Zap, Crown, Gift, Sparkles } from 'lucide-react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-
-interface Category {
-  id: string;
-  name: string;
-  icon: string;
-  description: string;
-  productCount: number;
-  featuredCount: number;
-  gradient: string;
-  isFeatured: boolean;
-  isTrending?: boolean;
-  isNew?: boolean;
-}
+import { useCategories } from '@/hooks/useDatabaseData';
+import { Category } from '@/lib/mongodb-service';
 
 interface CategoryShowcaseProps {
   title?: string;
@@ -33,264 +21,186 @@ export default function CategoryShowcase({
   const router = useRouter();
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
 
-  const categories: Category[] = [
-    {
-      id: 'electronics',
-      name: 'Electronics',
-      icon: '📱',
-      description: 'Latest gadgets, smartphones, laptops, and smart home devices',
-      productCount: 1247,
-      featuredCount: 89,
-      gradient: 'from-blue-500 via-blue-600 to-cyan-500',
-      isFeatured: true,
-      isTrending: true
-    },
-    {
-      id: 'toys-games',
-      name: 'Toys & Games',
-      icon: '🎮',
-      description: 'Educational toys, board games, and entertainment for all ages',
-      productCount: 892,
-      featuredCount: 67,
-      gradient: 'from-purple-500 via-purple-600 to-pink-500',
-      isFeatured: true,
-      isNew: true
-    },
-    {
-      id: 'beauty-health',
-      name: 'Beauty & Health',
-      icon: '💄',
-      description: 'Skincare, makeup, wellness products, and personal care',
-      productCount: 1567,
-      featuredCount: 123,
-      gradient: 'from-rose-500 via-pink-500 to-red-500',
-      isFeatured: true,
-      isTrending: true
-    },
-    {
-      id: 'home-garden',
-      name: 'Home & Garden',
-      icon: '🏠',
-      description: 'Furniture, decor, gardening tools, and home improvement',
-      productCount: 743,
-      featuredCount: 45,
-      gradient: 'from-emerald-500 via-teal-500 to-cyan-500',
-      isFeatured: false
-    },
-    {
-      id: 'fashion-accessories',
-      name: 'Fashion & Accessories',
-      icon: '👗',
-      description: 'Clothing, shoes, bags, jewelry, and fashion accessories',
-      productCount: 2341,
-      featuredCount: 156,
-      gradient: 'from-indigo-500 via-purple-500 to-pink-500',
-      isFeatured: false,
-      isTrending: true
-    },
-    {
-      id: 'sports-outdoor',
-      name: 'Sports & Outdoor',
-      icon: '⚽',
-      description: 'Sports equipment, outdoor gear, fitness, and adventure',
-      productCount: 567,
-      featuredCount: 34,
-      gradient: 'from-orange-500 via-red-500 to-pink-500',
-      isFeatured: false
-    },
-    {
-      id: 'automotive',
-      name: 'Automotive',
-      icon: '🚗',
-      description: 'Car accessories, tools, maintenance, and automotive care',
-      productCount: 423,
-      featuredCount: 28,
-      gradient: 'from-gray-500 via-gray-600 to-gray-700',
-      isFeatured: false
-    },
-    {
-      id: 'books-media',
-      name: 'Books & Media',
-      icon: '📚',
-      description: 'Books, magazines, digital content, and educational materials',
-      productCount: 678,
-      featuredCount: 52,
-      gradient: 'from-yellow-500 via-orange-500 to-red-500',
-      isFeatured: false
-    }
-  ];
+  // Use real data from database
+  const { categories, loading, error } = useCategories();
 
-  const handleCategoryClick = (categoryId: string) => {
-    router.push(`/products?category=${categoryId}`);
+  const handleCategoryClick = (categorySlug: string) => {
+    router.push(`/products?category=${categorySlug}`);
   };
 
-  const getCategoryBadge = (category: Category) => {
-    if (category.isNew) {
+  if (loading) {
       return (
-        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold text-white bg-gradient-to-r from-green-500 to-emerald-500">
-          <Sparkles className="w-3 h-3 mr-1" />
-          New
-        </span>
+      <section className={`py-16 ${className}`}>
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">{title}</h2>
+            <p className="text-lg text-gray-600">{subtitle}</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="animate-pulse">
+                <div className="bg-gray-200 rounded-lg h-48 mb-4"></div>
+                <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
       );
     }
-    if (category.isTrending) {
+
+  if (error) {
       return (
-        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold text-white bg-gradient-to-r from-orange-500 to-red-500">
-          <TrendingUp className="w-3 h-3 mr-1" />
-          Trending
-        </span>
+      <section className={`py-16 ${className}`}>
+        <div className="container mx-auto px-4 text-center">
+          <div className="text-red-600 mb-4">Error loading categories: {error}</div>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Retry
+          </button>
+        </div>
+      </section>
       );
     }
-    if (category.isFeatured) {
-      return (
-        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold text-white bg-gradient-to-r from-purple-500 to-pink-500">
-          <Crown className="w-3 h-3 mr-1" />
-          Featured
-        </span>
-      );
-    }
-    return null;
-  };
 
   return (
-    <section className={`py-20 bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 ${className}`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 mb-4">
-            <Gift className="w-4 h-4 mr-2" />
-            <span className="font-semibold">Shop by Category</span>
-          </div>
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">{title}</h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">{subtitle}</p>
+    <section className={`py-16 ${className}`}>
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">{title}</h2>
+          <p className="text-lg text-gray-600">{subtitle}</p>
         </div>
 
-        {/* Categories Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {categories.map((category) => (
             <div
-              key={category.id}
-              className={`group relative overflow-hidden rounded-2xl cursor-pointer transition-all duration-500 transform hover:scale-105 hover:rotate-1 ${category.isFeatured ? 'md:col-span-2 md:row-span-2' : ''
+              key={category._id?.toString()}
+              className={`relative group cursor-pointer transition-all duration-300 transform hover:scale-105 ${
+                hoveredCategory === category._id?.toString() ? 'z-10' : ''
                 }`}
-              onMouseEnter={() => setHoveredCategory(category.id)}
+              onMouseEnter={() => setHoveredCategory(category._id?.toString() || null)}
               onMouseLeave={() => setHoveredCategory(null)}
-              onClick={() => handleCategoryClick(category.id)}
+              onClick={() => handleCategoryClick(category.slug)}
             >
-              {/* Background */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-90 group-hover:opacity-100 transition-all duration-500`} />
+              {/* Category Card */}
+              <div className="relative overflow-hidden rounded-2xl shadow-lg group-hover:shadow-2xl transition-all duration-300">
+                {/* Background Image */}
+                <div className="relative h-48 w-full">
+                  <img
+                    src={category.image}
+                    alt={category.name}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                  />
+                  {/* Gradient Overlay */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-20 group-hover:opacity-30 transition-opacity duration-300`} />
 
-              {/* Pattern Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  {/* Category Icon */}
+                  <div className="absolute top-4 right-4 text-4xl opacity-80 group-hover:opacity-100 transition-opacity duration-300">
+                    {getCategoryIcon(category.name)}
+                  </div>
+                </div>
 
               {/* Content */}
-              <div className="relative p-6 text-white h-full flex flex-col justify-between">
-                {/* Top Section */}
-                <div>
-                  {/* Badge */}
-                  {getCategoryBadge(category) && (
-                    <div className="mb-4">
-                      {getCategoryBadge(category)}
-                    </div>
-                  )}
-
-                  {/* Icon */}
-                  <div className={`text-6xl mb-4 transform transition-transform duration-500 ${hoveredCategory === category.id ? 'scale-110 rotate-12' : ''}`}>
-                    {category.icon}
+                <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                  <div className="mb-2">
+                    <h3 className="text-xl font-bold mb-1">{category.name}</h3>
+                    {category.nameAr && (
+                      <p className="text-sm opacity-90 font-arabic">{category.nameAr}</p>
+                    )}
                   </div>
 
-                  {/* Title */}
-                  <h3 className={`font-bold mb-3 transition-all duration-300 ${category.isFeatured ? 'text-3xl' : 'text-2xl'}`}>
-                    {category.name}
-                  </h3>
-
-                  {/* Description */}
-                  <p className={`text-white/90 leading-relaxed transition-all duration-300 ${category.isFeatured ? 'text-lg' : 'text-sm'}`}>
+                  <p className="text-sm opacity-90 mb-3 line-clamp-2">
                     {category.description}
                   </p>
-                </div>
 
-                {/* Bottom Section */}
-                <div className="mt-6">
-                  {/* Stats */}
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="text-center">
-                      <div className={`font-bold ${category.isFeatured ? 'text-2xl' : 'text-lg'}`}>
-                        {category.productCount.toLocaleString()}
-                      </div>
-                      <div className="text-white/80 text-sm">Products</div>
-                    </div>
-                    <div className="text-center">
-                      <div className={`font-bold ${category.isFeatured ? 'text-2xl' : 'text-lg'}`}>
-                        {category.featuredCount}
-                      </div>
-                      <div className="text-white/80 text-sm">Featured</div>
-                    </div>
-                  </div>
-
-                  {/* CTA */}
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-white/90">
-                      Explore Category
+                    <span className="text-sm opacity-75">
+                      {category.productCount} products
                     </span>
-                    <div className={`transform transition-transform duration-300 ${hoveredCategory === category.id ? 'translate-x-2' : ''}`}>
-                      <ArrowRight className="w-5 h-5 text-white/90" />
+
+                    {/* Badges */}
+                    <div className="flex gap-2">
+                      {category.isFeatured && (
+                        <span className="px-2 py-1 bg-yellow-500 text-black text-xs rounded-full font-medium">
+                          Featured
+                        </span>
+                      )}
+                      {category.isTrending && (
+                        <span className="px-2 py-1 bg-red-500 text-white text-xs rounded-full font-medium">
+                          Trending
+                        </span>
+                      )}
+                      {category.isNew && (
+                        <span className="px-2 py-1 bg-green-500 text-white text-xs rounded-full font-medium">
+                          New
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
 
-                {/* Hover Effect Overlay */}
-                <div className={`absolute inset-0 bg-white/10 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl`}></div>
+                {/* Hover Effect */}
+                <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
               </div>
+
+              {/* Subcategories on Hover */}
+              {hoveredCategory === category._id?.toString() && category.subcategories.length > 0 && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-xl border border-gray-200 p-4 z-20">
+                  <h4 className="font-semibold text-gray-900 mb-3">Subcategories</h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    {category.subcategories.slice(0, 6).map((subcategory, index) => (
+                      <div
+                        key={index}
+                        className="text-sm text-gray-600 hover:text-blue-600 cursor-pointer transition-colors duration-200"
+                      >
+                        {subcategory}
+                      </div>
+                    ))}
+                  </div>
+                  {category.subcategories.length > 6 && (
+                    <div className="text-xs text-gray-500 mt-2">
+                      +{category.subcategories.length - 6} more
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           ))}
         </div>
 
-        {/* View All Categories Button */}
         {showViewAll && (
-          <div className="text-center">
+          <div className="text-center mt-12">
             <button
                               onClick={() => router.push('/products')}
-              className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              className="inline-flex items-center px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
             >
-              <span>View All Categories</span>
-              <ArrowRight className="w-5 h-5 ml-2" />
+              View All Categories
+              <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
             </button>
           </div>
         )}
-
-        {/* Category Stats */}
-        <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="text-center">
-            <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Zap className="w-8 h-8 text-white" />
-            </div>
-            <div className="text-3xl font-bold text-gray-900 mb-2">
-              {categories.reduce((sum, cat) => sum + cat.productCount, 0).toLocaleString()}+
-            </div>
-            <div className="text-gray-600">Total Products Available</div>
-          </div>
-
-          <div className="text-center">
-            <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Star className="w-8 h-8 text-white" />
-            </div>
-            <div className="text-3xl font-bold text-gray-900 mb-2">
-              {categories.filter(cat => cat.isFeatured).length}
-            </div>
-            <div className="text-gray-600">Featured Categories</div>
-          </div>
-
-          <div className="text-center">
-            <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <TrendingUp className="w-8 h-8 text-white" />
-            </div>
-            <div className="text-3xl font-bold text-gray-900 mb-2">
-              {categories.filter(cat => cat.isTrending).length}
-            </div>
-            <div className="text-gray-600">Trending Categories</div>
-          </div>
-        </div>
       </div>
     </section>
   );
+}
+
+// Helper function to get category icons
+function getCategoryIcon(categoryName: string): string {
+  const iconMap: { [key: string]: string } = {
+    'Electronics': '📱',
+    'Fashion & Accessories': '👗',
+    'Home & Garden': '🏠',
+    'Beauty & Health': '💄',
+    'Sports & Outdoor': '⚽',
+    'Toys & Games': '🎮',
+    'Automotive': '🚗',
+    'Books & Media': '📚'
+  };
+
+  return iconMap[categoryName] || '🛍️';
 }
