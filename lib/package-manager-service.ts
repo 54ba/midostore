@@ -3,29 +3,29 @@ import { z } from 'zod'
 
 // Package schemas
 const PackageSchema = z.object({
-    id: string,
-    name: string,
-    description: string,
-    version: string,
-    category: string,
+    id: z.string(),
+    name: z.string(),
+    description: z.string(),
+    version: z.string(),
+    category: z.string(),
     dependencies: z.array(z.string()),
     apiKeys: z.array(z.object({
-        name: string,
-        description: string,
+        name: z.string(),
+        description: z.string(),
         required: boolean,
         type: z.enum(['STRING', 'PASSWORD', 'URL', 'JSON'])
     })),
     settings: z.array(z.object({
-        key: string,
-        label: string,
+        key: z.string(),
+        label: z.string(),
         type: z.enum(['STRING', 'NUMBER', 'BOOLEAN', 'SELECT', 'MULTISELECT']),
         defaultValue: z.any(),
         options: z.array(z.string()).optional(),
         required: boolean
     })),
     files: z.array(z.object({
-        name: string,
-        path: string,
+        name: z.string(),
+        path: z.string(),
         type: z.enum(['CONFIG', 'COMPONENT', 'API', 'STYLE', 'SCRIPT']),
         content: z.string()
     })),
@@ -34,10 +34,10 @@ const PackageSchema = z.object({
 })
 
 const InstalledPackageSchema = z.object({
-    id: string,
+    id: z.string(),
     packageId: string,
     userId: string,
-    version: string,
+    version: z.string(),
     status: z.enum(['INSTALLING', 'ACTIVE', 'ERROR', 'UPDATING', 'UNINSTALLING']),
     config: z.record(z.string(), z.any()),
     apiKeys: z.record(z.string(), z.string()),

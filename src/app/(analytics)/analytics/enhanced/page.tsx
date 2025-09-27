@@ -25,11 +25,9 @@ import {
   Target,
   Zap
 } from 'lucide-react';
-import dynamic from 'next/dynamic';
 import { useWebSocket } from '@/hooks/useWebSocket';
 
 // Dynamically import Chart.js components
-const Chart = dynamic(() => import('chart.js/auto'), { ssr: false });
 
 interface EnhancedAnalyticsData {
   totalRevenue: number;
@@ -512,7 +510,7 @@ export default function EnhancedAnalyticsPage() {
                           <div className="flex items-center">
                             <Star className="h-3 w-3 text-yellow-500 fill-current mr-1" />
                             {product.rating}
-                          </span>
+                          </div>
                         </div>
                       </div>
                     </div>

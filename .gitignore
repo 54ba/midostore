@@ -43,8 +43,16 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# Environment files - NEVER commit these
+.env
+.env.local
+.env.production
+.env.development
+.env.test
+.env.*
+env
+env.*
+nnetlify.env
 
 # vercel
 .vercel
@@ -103,3 +111,26 @@ Thumbs.db
 
 # clerk configuration (can include secrets)
 /.clerk/
+
+# Sensitive files and development artifacts
+*.backup
+*.backup.*
+*-backup.txt
+*-vars.txt
+pids/
+logs/
+*.service.log
+ai-service.log
+next-service.log
+dynamic-config.json
+
+# Development databases
+*.db
+*.sqlite
+*.sqlite3
+
+# API Keys and secrets (additional protection)
+*secret*
+*key.txt
+*keys.txt
+*token*
