@@ -1,4 +1,14 @@
 import type { NextConfig } from "next";
+import { execSync } from 'child_process';
+import path from 'path';
+
+// Generate env.config.ts before Next.js build starts
+try {
+    execSync(`node ${path.join(__dirname, 'scripts', 'generate-env-config.js')}`, { stdio: 'inherit' });
+} catch (error) {
+    console.error('Failed to generate env.config.ts:', error);
+    process.exit(1);
+}
 
 /** @type {import('next').NextConfig} */
 const nextConfig: NextConfig = {

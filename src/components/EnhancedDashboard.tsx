@@ -467,8 +467,7 @@ export default function EnhancedDashboard({ className = '' }: EnhancedDashboardP
         )}
 
         {activeTab === 'shipping' && (
-          <div className="space-y-6">
-            <div className="text-center py-8">
+                     <div className="space-y-6">            <div className="text-center py-8">
               <Ship className="w-16 h-16 text-blue-500 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">Shipping & Tracking</h3>
               <p className="text-gray-600 mb-6">Monitor shipments and track deliveries worldwide</p>

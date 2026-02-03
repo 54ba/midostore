@@ -14,7 +14,9 @@ Summary of changes:
 3.  **Prisma v7 Compatibility:** Removed the `url` property from the `datasource db` block in `prisma/schema.prisma` to comply with Prisma version 7 changes.
 4.  **env.config.ts Generation Fix:**
     *   Created `scripts/generate-env-config.js` to dynamically create `env.config.ts` based on environment variables.
-    *   Modified the `build` script in `package.json` to execute `node scripts/generate-env-config.js` before `next build`, ensuring `env.config.ts` is available during the Next.js build process.
+    *   Modified `next.config.ts` to execute `node scripts/generate-env-config.js` at the top of the file using `child_process.execSync`. This ensures `env.config.ts` is generated whenever `next.config.ts` is processed during the build, resolving the module not found error in Docker builds.
+    *   Reverted the `build` script in `package.json` to its original state (`next build`), as the `env.config.ts` generation is now handled within `next.config.ts`.
 5.  **MongoDB URI Configuration:** Added a placeholder `MONGODB_URI` to the `.env` file to satisfy the application's requirement for a MongoDB connection string during the build process.
+6.  **Typo Fix:** Corrected a typo (`cl!ssName` to `className`) in `src/components/EnhancedDashboard.tsx`.
 
-The `npx prisma generate` command now runs successfully, and `npx next build` completes without errors. You can now retry your `flyctl deploy` command.
+The `npx prisma generate` command now runs successfully, and `npx next build` completes without errors, both locally and within the Docker build context. You can now retry your `flyctl deploy` command.
