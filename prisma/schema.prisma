@@ -6,327 +6,331 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider = "postgresql"
 }
 
 // User Management
 model User {
-  id                String   @id @default(cuid())
-  email             String   @unique
-  name              String?
-  phone             String?
-  avatar            String?
-  role              UserRole @default(CUSTOMER)
-  emailVerified     DateTime?
-  image             String?
-  clerkId           String?  @unique
-  stripeCustomerId  String?  @unique
-  bybitUserId       String?
+  id               String    @id @default(cuid())
+  email            String    @unique
+  name             String?
+  phone            String?
+  avatar           String?
+  role             UserRole  @default(CUSTOMER)
+  emailVerified    DateTime?
+  image            String?
+  clerkId          String?   @unique
+  stripeCustomerId String?   @unique
+  bybitUserId      String?
+  primaryAddressId String?   @unique // Foreign key for primary address // Foreign key for primary address
 
   // Profile
-  dateOfBirth       DateTime?
-  gender            Gender?
-  address           Address?
-  preferences       UserPreference?
+  dateOfBirth DateTime?
+  gender      Gender?
+  address     Address?        @relation("UserPrimaryAddress", fields: [primaryAddressId], references: [id])
+  preferences UserPreference?
 
   // Business
-  businessName      String?
-  businessType      BusinessType?
-  taxId             String?
-  businessLicense   String?
+  businessName    String?
+  businessType    BusinessType?
+  taxId           String?
+  businessLicense String?
 
   // Verification
-  isVerified        Boolean  @default(false)
-  verificationDate  DateTime?
-  kycStatus         KYCStatus @default(PENDING)
+  isVerified       Boolean   @default(false)
+  verificationDate DateTime?
+  kycStatus        KYCStatus @default(PENDING)
 
   // Timestamps
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  orders            Order[]
-  reviews           Review[]
-  wishlist          WishlistItem[]
-  cart              CartItem[]
-  addresses         Address[]
-  paymentMethods    PaymentMethod[]
-  notifications     Notification[]
-  userInteractions  UserInteraction[]
-  userPreferences   UserPreference[]
-  userCredits       UserCredits?
+  orders             Order[]
+  reviews            Review[]
+  wishlist           WishlistItem[]
+  cart               CartItem[]
+  addresses          Address[]            @relation("UserAddresses")
+  paymentMethods     PaymentMethod[]
+  notifications      Notification[]
+  userInteractions   UserInteraction[]
+  userCredits        UserCredits?
   creditTransactions CreditTransaction[]
-  adCampaigns       AdCampaign[]
-  p2PListings       P2PListing[]
-  productShares     ProductShare[]
-  rewardActivities  RewardActivity[]
-  cryptoPayments    CryptoPayment[]
-  shipments         Shipment[]
-  trackingInfos     TrackingInfo[]
-  socialAccounts    SocialMediaAccount[]
-  sellerListings    P2PTradingListing[] @relation("SellerListings")
-  buyerListings     P2PTradingListing[] @relation("BuyerListings")
-  installedPackages InstalledPackage[]
+  adCampaigns        AdCampaign[]
+  p2PListings        P2PListing[]
+  productShares      ProductShare[]
+  rewardActivities   RewardActivity[]
+  cryptoPayments     CryptoPayment[]
+  shipments          Shipment[]
+  trackingInfos      TrackingInfo[]
+  socialAccounts     SocialMediaAccount[]
+  sellerListings     P2PTradingListing[]  @relation("SellerListings")
+  buyerListings      P2PTradingListing[]  @relation("BuyerListings")
+  installedPackages  InstalledPackage[]
 
   @@map("users")
 }
 
 // Address Management
 model Address {
-  id          String   @id @default(cuid())
-  userId      String
-  type        AddressType
-  isDefault   Boolean  @default(false)
-  firstName   String
-  lastName    String
-  company     String?
-  address1    String
-  address2    String?
-  city        String
-  state       String
-  postalCode  String
-  country     String
-  phone       String?
+  id         String      @id @default(cuid())
+  userId     String
+  type       AddressType
+  isDefault  Boolean     @default(false)
+  firstName  String
+  lastName   String
+  company    String?
+  address1   String
+  address2   String?
+  city       String
+  state      String
+  postalCode String
+  country    String
+  phone      String?
 
   // Relations
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  orders      Order[]
+  user           User    @relation("UserAddresses", fields: [userId], references: [id], onDelete: Cascade)
+  primaryUser    User?   @relation("UserPrimaryAddress")
+  billingOrders  Order[] @relation("BillingAddress")
+  shippingOrders Order[] @relation("ShippingAddress")
 
   @@map("addresses")
 }
 
 // Product Management
 model Product {
-  id                String   @id @default(cuid())
-  name              String
-  description       String
-  shortDescription  String?
-  sku               String   @unique
-  barcode           String?
-  brand             String?
-  model             String?
+  id               String  @id @default(cuid())
+  name             String
+  description      String
+  shortDescription String?
+  sku              String  @unique
+  barcode          String?
+  brand            String?
+  model            String?
 
   // Pricing
-  basePrice         Float
-  salePrice         Float?
-  costPrice         Float
-  currency          String   @default("USD")
-  profitMargin      Float    @default(25.0)
+  basePrice    Float
+  salePrice    Float?
+  costPrice    Float
+  currency     String @default("USD")
+  profitMargin Float  @default(25.0)
 
   // Inventory
-  stockQuantity     Int      @default(0)
-  minStockLevel     Int      @default(5)
-  maxStockLevel     Int?
-  isActive          Boolean  @default(true)
-  isDropshipped     Boolean  @default(false)
+  stockQuantity Int     @default(0)
+  minStockLevel Int     @default(5)
+  maxStockLevel Int?
+  isActive      Boolean @default(true)
+  isDropshipped Boolean @default(false)
 
   // Categories
-  categoryId        String?
-  subcategoryId     String?
-  tags              String?
+  categoryId    String?
+  subcategoryId String?
+  tags          String?
 
   // Media
-  images            String?  // JSON array of image URLs
-  videos            String?  // JSON array of video URLs
-  documents         String?  // JSON array of document URLs
+  images    String? // JSON array of image URLs
+  videos    String? // JSON array of video URLs
+  documents String? // JSON array of document URLs
 
   // SEO
-  metaTitle         String?
-  metaDescription   String?
-  slug              String   @unique
-  seoScore          Int?
+  metaTitle       String?
+  metaDescription String?
+  slug            String  @unique
+  seoScore        Int?
 
   // Ratings
-  averageRating     Float    @default(0.0)
-  reviewCount       Int      @default(0)
+  averageRating Float @default(0.0)
+  reviewCount   Int   @default(0)
 
   // Dropshipping
-  supplierId        String?
-  supplierSku       String?
-  supplierPrice     Float?
-  supplierCurrency  String?
-  supplierStock     Int?
-  supplierLeadTime  Int?     // Days
+  supplierId       String?
+  supplierSku      String?
+  supplierPrice    Float?
+  supplierCurrency String?
+  supplierStock    Int?
+  supplierLeadTime Int? // Days
 
   // Timestamps
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  category          Category?    @relation(fields: [categoryId], references: [id])
-  subcategory       Subcategory? @relation(fields: [subcategoryId], references: [id])
-  supplier          Supplier?    @relation(fields: [supplierId], references: [id])
-  variants          ProductVariant[]
-  reviews           Review[]
-  orderItems        OrderItem[]
-  cartItems         CartItem[]
-  wishlistItems     WishlistItem[]
-  productShares     ProductShare[]
+  category             Category?             @relation(fields: [categoryId], references: [id])
+  subcategory          Subcategory?          @relation(fields: [subcategoryId], references: [id])
+  supplier             Supplier?             @relation(fields: [supplierId], references: [id])
+  variants             ProductVariant[]
+  reviews              Review[]
+  orderItems           OrderItem[]
+  cartItems            CartItem[]
+  wishlistItems        WishlistItem[]
+  productShares        ProductShare[]
   productLocalizations ProductLocalization[]
-  adCreatives       AdCreative[]
+  adCreatives          AdCreative[]
+  p2PListings          P2PListing[]
 
   @@map("products")
 }
 
 // Product Variants
 model ProductVariant {
-  id                String   @id @default(cuid())
-  productId         String
-  name              String
-  sku               String   @unique
-  barcode           String?
+  id        String  @id @default(cuid())
+  productId String
+  name      String
+  sku       String  @unique
+  barcode   String?
 
   // Attributes
-  attributes        String   // JSON object of attributes
-  color             String?
-  size              String?
-  weight            Float?
-  dimensions        String?  // JSON object
+  attributes String // JSON object of attributes
+  color      String?
+  size       String?
+  weight     Float?
+  dimensions String? // JSON object
 
   // Pricing
-  price             Float?
-  salePrice         Float?
-  costPrice         Float?
+  price     Float?
+  salePrice Float?
+  costPrice Float?
 
   // Inventory
-  stockQuantity     Int      @default(0)
-  isActive          Boolean  @default(true)
+  stockQuantity Int     @default(0)
+  isActive      Boolean @default(true)
 
   // Timestamps
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  product           Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
-  orderItems        OrderItem[]
+  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  orderItems OrderItem[]
+  cartItems  CartItem[]
 
   @@map("product_variants")
 }
 
 // Categories
 model Category {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   name        String
   description String?
-  slug        String   @unique
+  slug        String  @unique
   image       String?
   icon        String?
-  isActive    Boolean  @default(true)
-  sortOrder   Int      @default(0)
+  isActive    Boolean @default(true)
+  sortOrder   Int     @default(0)
   parentId    String? @map("parent_id") // Add this line
 
   // Relations
-  products           Product[]
-  subcategories      Subcategory[]
-  parentCategory     Category?     @relation("CategoryHierarchy", fields: [parentId], references: [id])
-  childCategories    Category[]    @relation("CategoryHierarchy")
+  products        Product[]
+  subcategories   Subcategory[]
+  parentCategory  Category?     @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  childCategories Category[]    @relation("CategoryHierarchy")
 
   @@map("categories")
 }
 
 // Subcategories
 model Subcategory {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   name        String
   description String?
-  slug        String   @unique
+  slug        String  @unique
   image       String?
   icon        String?
-  isActive    Boolean  @default(true)
-  sortOrder   Int      @default(0)
+  isActive    Boolean @default(true)
+  sortOrder   Int     @default(0)
   categoryId  String
 
   // Relations
-  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  products   Product[]
+  category Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  products Product[]
 
   @@map("subcategories")
 }
 
 // Supplier Management
 model Supplier {
-  id                String   @id @default(cuid())
-  name              String
-  companyName       String
-  contactPerson     String?
-  email             String
-  phone             String?
-  website           String?
+  id            String  @id @default(cuid())
+  name          String
+  companyName   String
+  contactPerson String?
+  email         String
+  phone         String?
+  website       String?
 
   // Address
-  country           String
-  city              String
-  address           String?
-  postalCode        String?
+  country    String
+  city       String
+  address    String?
+  postalCode String?
 
   // Business
-  businessType      String?
-  taxId             String?
-  businessLicense   String?
-  registrationDate  DateTime?
+  businessType     String?
+  taxId            String?
+  businessLicense  String?
+  registrationDate DateTime?
 
   // Performance
-  rating            Float    @default(0.0)
-  responseRate      Float    @default(0.0)
-  responseTime      String?  // e.g., "2-4 hours"
-  fulfillmentRate   Float    @default(0.0)
+  rating          Float   @default(0.0)
+  responseRate    Float   @default(0.0)
+  responseTime    String? // e.g., "2-4 hours"
+  fulfillmentRate Float   @default(0.0)
 
   // Verification
-  isVerified        Boolean  @default(false)
-  verificationDate  DateTime?
-  goldMember        Boolean  @default(false)
-  platinumMember    Boolean  @default(false)
+  isVerified       Boolean   @default(false)
+  verificationDate DateTime?
+  goldMember       Boolean   @default(false)
+  platinumMember   Boolean   @default(false)
 
   // Dropshipping
-  isDropshipper     Boolean  @default(false)
-  dropshippingFee   Float?
-  minOrderValue     Float?
-  maxOrderValue     Float?
-  leadTime          Int?     // Days
+  isDropshipper   Boolean @default(false)
+  dropshippingFee Float?
+  minOrderValue   Float?
+  maxOrderValue   Float?
+  leadTime        Int? // Days
 
   // Timestamps
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  products          Product[]
+  products  Product[]
+  shipments Shipment[]
 
   @@map("suppliers")
 }
 
 // Order Management
 model Order {
-  id                String   @id @default(cuid())
-  orderNumber       String   @unique
-  userId            String
-  status            OrderStatus @default(PENDING)
+  id          String      @id @default(cuid())
+  orderNumber String      @unique
+  userId      String
+  status      OrderStatus @default(PENDING)
 
   // Customer Info
-  customerEmail     String
-  customerName      String
-  customerPhone     String?
+  customerEmail String
+  customerName  String
+  customerPhone String?
 
   // Billing & Shipping
   billingAddressId  String
   shippingAddressId String
 
   // Pricing
-  subtotal          Float
-  taxAmount         Float    @default(0.0)
-  shippingAmount    Float    @default(0.0)
-  discountAmount    Float    @default(0.0)
-  totalAmount       Float
+  subtotal       Float
+  taxAmount      Float @default(0.0)
+  shippingAmount Float @default(0.0)
+  discountAmount Float @default(0.0)
+  totalAmount    Float
 
   // Currency
-  currency          String   @default("USD")
-  exchangeRate      Float?   @default(1.0)
+  currency     String @default("USD")
+  exchangeRate Float? @default(1.0)
 
   // Payment
-  paymentMethod     String?
-  paymentStatus     PaymentStatus @default(PENDING)
-  paymentIntentId   String?
-  transactionId     String?
+  paymentMethod   String?
+  paymentStatus   PaymentStatus @default(PENDING)
+  paymentIntentId String?
+  transactionId   String?
 
   // Shipping
   shippingMethod    String?
@@ -334,169 +338,170 @@ model Order {
   estimatedDelivery DateTime?
 
   // Notes
-  customerNotes     String?
-  internalNotes     String?
+  customerNotes String?
+  internalNotes String?
 
   // Timestamps
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  paidAt            DateTime?
-  shippedAt         DateTime?
-  deliveredAt       DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  paidAt      DateTime?
+  shippedAt   DateTime?
+  deliveredAt DateTime?
 
   // Relations
-  user              User        @relation(fields: [userId], references: [id])
-  billingAddress    Address     @relation("BillingAddress", fields: [billingAddressId], references: [id])
-  shippingAddress   Address     @relation("ShippingAddress", fields: [shippingAddressId], references: [id])
-  items             OrderItem[]
-  shipments         Shipment[]
-  trackingInfos     TrackingInfo[]
+  user            User            @relation(fields: [userId], references: [id])
+  billingAddress  Address         @relation("BillingAddress", fields: [billingAddressId], references: [id])
+  shippingAddress Address         @relation("ShippingAddress", fields: [shippingAddressId], references: [id])
+  items           OrderItem[]
+  shipments       Shipment[]
+  reviews         Review[]
+  cryptoPayments  CryptoPayment[]
 
   @@map("orders")
 }
 
 // Order Items
 model OrderItem {
-  id                String   @id @default(cuid())
-  orderId           String
-  productId         String?
-  variantId         String?
+  id        String  @id @default(cuid())
+  orderId   String
+  productId String?
+  variantId String?
 
   // Product Info
-  productName       String
-  productSku        String
-  variantName       String?
-  variantSku        String?
+  productName String
+  productSku  String
+  variantName String?
+  variantSku  String?
 
   // Pricing
-  unitPrice         Float
-  quantity          Int
-  totalPrice        Float
+  unitPrice  Float
+  quantity   Int
+  totalPrice Float
 
   // Dropshipping
-  isDropshipped     Boolean  @default(false)
-  supplierId        String?
-  supplierOrderId   String?
+  isDropshipped   Boolean @default(false)
+  supplierId      String?
+  supplierOrderId String?
 
   // Timestamps
-  createdAt         DateTime @default(now())
+  createdAt DateTime @default(now())
 
   // Relations
-  order             Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product           Product?        @relation(fields: [productId], references: [id])
-  variant           ProductVariant? @relation(fields: [variantId], references: [id])
+  order   Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product?        @relation(fields: [productId], references: [id])
+  variant ProductVariant? @relation(fields: [variantId], references: [id])
 
   @@map("order_items")
 }
 
 // Cart Management
 model CartItem {
-  id          String   @id @default(cuid())
-  userId      String
-  productId   String
-  variantId   String?
-  quantity    Int      @default(1)
+  id        String  @id @default(cuid())
+  userId    String
+  productId String
+  variantId String?
+  quantity  Int     @default(1)
 
   // Timestamps
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  product     Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
-  variant     ProductVariant? @relation(fields: [variantId], references: [id])
+  user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variant ProductVariant? @relation(fields: [variantId], references: [id])
 
   @@map("cart_items")
 }
 
 // Wishlist
 model WishlistItem {
-  id          String   @id @default(cuid())
-  userId      String
-  productId   String
-  addedAt     DateTime @default(now())
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  addedAt   DateTime @default(now())
 
   // Relations
-  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  product     Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@map("wishlist_items")
 }
 
 // Reviews
 model Review {
-  id          String   @id @default(cuid())
-  productId   String
-  userId      String
-  orderId     String?
+  id        String  @id @default(cuid())
+  productId String
+  userId    String
+  orderId   String?
 
   // Review Content
-  rating      Int      // 1-5 stars
-  title       String?
-  comment     String?
-  images      String?  // JSON array of image URLs
+  rating  Int // 1-5 stars
+  title   String?
+  comment String?
+  images  String? // JSON array of image URLs
 
   // Verification
-  isVerified  Boolean  @default(false)
-  verifiedAt  DateTime?
+  isVerified Boolean   @default(false)
+  verifiedAt DateTime?
 
   // Moderation
-  isApproved  Boolean  @default(true)
+  isApproved  Boolean   @default(true)
   moderatedAt DateTime?
   moderatorId String?
 
   // Timestamps
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  product     Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  order       Order?  @relation(fields: [orderId], references: [id])
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  order   Order?  @relation(fields: [orderId], references: [id])
 
   @@map("reviews")
 }
 
 // Payment Methods
 model PaymentMethod {
-  id                String   @id @default(cuid())
-  userId            String
-  type              PaymentMethodType
-  name              String
-  isDefault         Boolean  @default(false)
+  id        String            @id @default(cuid())
+  userId    String
+  type      PaymentMethodType
+  name      String
+  isDefault Boolean           @default(false)
 
   // Card Details
-  last4             String?
-  brand             String?
-  expMonth          Int?
-  expYear           Int?
+  last4    String?
+  brand    String?
+  expMonth Int?
+  expYear  Int?
 
   // Crypto
-  walletAddress     String?
-  walletType        String?
+  walletAddress String?
+  walletType    String?
 
   // Bybit
-  bybitAccountId    String?
+  bybitAccountId String?
 
   // Timestamps
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("payment_methods")
 }
 
 // Exchange Rates
 model ExchangeRate {
-  id            String   @id @default(cuid())
-  fromCurrency  String
-  toCurrency    String
-  rate          Float
-  isStable      Boolean  @default(true)
-  volatility    Float    @default(0.0)
-  lastUpdated   DateTime @default(now())
+  id           String   @id @default(cuid())
+  fromCurrency String
+  toCurrency   String
+  rate         Float
+  isStable     Boolean  @default(true)
+  volatility   Float    @default(0.0)
+  lastUpdated  DateTime @default(now())
 
   @@unique([fromCurrency, toCurrency])
   @@map("exchange_rates")
@@ -504,72 +509,72 @@ model ExchangeRate {
 
 // Crypto Payments
 model CryptoPayment {
-  id                String   @id @default(cuid())
-  userId            String
-  orderId           String?
+  id      String  @id @default(cuid())
+  userId  String
+  orderId String?
 
   // Payment Details
-  amount            Float
-  currency          String
-  cryptoAmount      Float
-  cryptoCurrency    String
-  walletAddress     String
-  transactionHash   String?
+  amount          Float
+  currency        String
+  cryptoAmount    Float
+  cryptoCurrency  String
+  walletAddress   String
+  transactionHash String?
 
   // Status
-  status            CryptoPaymentStatus @default(PENDING)
-  confirmedAt       DateTime?
-  failedAt          DateTime?
+  status      CryptoPaymentStatus @default(PENDING)
+  confirmedAt DateTime?
+  failedAt    DateTime?
 
   // Timestamps
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  user              User     @relation(fields: [userId], references: [id])
-  order             Order?   @relation(fields: [orderId], references: [id])
+  user  User   @relation(fields: [userId], references: [id])
+  order Order? @relation(fields: [orderId], references: [id])
 
   @@map("crypto_payments")
 }
 
 // Shipments
 model Shipment {
-  id                String   @id @default(cuid())
-  orderId           String
-  userId            String
-  supplierId        String?
+  id         String  @id @default(cuid())
+  orderId    String
+  userId     String
+  supplierId String?
 
   // Shipping Details
-  trackingNumber    String
-  carrier           String
-  service           String?
-  status            ShipmentStatus @default(PENDING)
+  trackingNumber String
+  carrier        String
+  service        String?
+  status         ShipmentStatus @default(PENDING)
 
   // Package Info
-  weight            Float?
-  dimensions        String?  // JSON object
-  packageCount      Int      @default(1)
+  weight       Float?
+  dimensions   String? // JSON object
+  packageCount Int     @default(1)
 
   // Timestamps
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  shippedAt         DateTime?
-  deliveredAt       DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  shippedAt   DateTime?
+  deliveredAt DateTime?
 
   // Relations
-  order             Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  user              User      @relation(fields: [userId], references: [id])
-  supplier          Supplier? @relation(fields: [supplierId], references: [id])
-  trackingInfos     TrackingInfo[]
+  order         Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  user          User           @relation(fields: [userId], references: [id])
+  supplier      Supplier?      @relation(fields: [supplierId], references: [id])
+  trackingInfos TrackingInfo[]
 
   @@map("shipments")
 }
 
 // Tracking Information
 model TrackingInfo {
-  id          String   @id @default(cuid())
-  shipmentId  String
-  userId      String
+  id         String @id @default(cuid())
+  shipmentId String
+  userId     String
 
   // Tracking Details
   status      String
@@ -578,67 +583,67 @@ model TrackingInfo {
   timestamp   DateTime
 
   // Relations
-  shipment    Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
-  user        User     @relation(fields: [userId], references: [id])
+  shipment Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id])
 
   @@map("tracking_infos")
 }
 
 // User Interactions
 model UserInteraction {
-  id          String   @id @default(cuid())
-  userId      String
-  type        InteractionType
-  targetId    String?
-  targetType  String?
-  metadata    String?  // JSON object
+  id         String          @id @default(cuid())
+  userId     String
+  type       InteractionType
+  targetId   String?
+  targetType String?
+  metadata   String? // JSON object
 
   // Timestamps
-  createdAt   DateTime @default(now())
+  createdAt DateTime @default(now())
 
   // Relations
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("user_interactions")
 }
 
 // User Preferences
 model UserPreference {
-  id                String   @id @default(cuid())
-  userId            String   @unique
+  id     String @id @default(cuid())
+  userId String @unique
 
   // Preferences
-  language          String   @default("en")
-  currency          String   @default("USD")
-  timezone          String?
-  notifications     String?  // JSON object
-  privacy           String?  // JSON object
+  language      String  @default("en")
+  currency      String  @default("USD")
+  timezone      String?
+  notifications String? // JSON object
+  privacy       String? // JSON object
 
   // Timestamps
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("user_preferences")
 }
 
 // Product Localization
 model ProductLocalization {
-  id          String   @id @default(cuid())
-  productId   String
-  locale      String
+  id        String @id @default(cuid())
+  productId String
+  locale    String
 
   // Localized Content
-  name        String
-  description String
+  name             String
+  description      String
   shortDescription String?
-  metaTitle   String?
-  metaDescription String?
+  metaTitle        String?
+  metaDescription  String?
 
   // Relations
-  product     Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@unique([productId, locale])
   @@map("product_localizations")
@@ -646,139 +651,139 @@ model ProductLocalization {
 
 // Ad Campaigns
 model AdCampaign {
-  id                String   @id @default(cuid())
-  userId            String
-  name              String
-  description       String?
+  id          String  @id @default(cuid())
+  userId      String
+  name        String
+  description String?
 
   // Campaign Details
-  type              AdCampaignType
-  status            AdCampaignStatus @default(DRAFT)
-  budget            Float?
-  spent             Float    @default(0.0)
+  type   AdCampaignType
+  status AdCampaignStatus @default(DRAFT)
+  budget Float?
+  spent  Float            @default(0.0)
 
   // Targeting
-  targetAudience    String?  // JSON object
-  targetLocations   String?  // JSON array
-  targetInterests   String?  // JSON array
+  targetAudience  String? // JSON object
+  targetLocations String? // JSON array
+  targetInterests String? // JSON array
 
   // Timestamps
-  startDate         DateTime?
-  endDate           DateTime?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  startDate DateTime?
+  endDate   DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   // Relations
-  user              User        @relation(fields: [userId], references: [id])
-  adCreatives       AdCreative[]
+  user        User         @relation(fields: [userId], references: [id])
+  adCreatives AdCreative[]
 
   @@map("ad_campaigns")
 }
 
 // Ad Creatives
 model AdCreative {
-  id                String   @id @default(cuid())
-  campaignId        String
-  productId         String?
+  id         String  @id @default(cuid())
+  campaignId String
+  productId  String?
 
   // Creative Content
-  title             String
-  description       String?
-  imageUrl          String?
-  videoUrl          String?
-  callToAction      String?
+  title        String
+  description  String?
+  imageUrl     String?
+  videoUrl     String?
+  callToAction String?
 
   // Performance
-  impressions       Int      @default(0)
-  clicks            Int      @default(0)
-  conversions       Int      @default(0)
+  impressions Int @default(0)
+  clicks      Int @default(0)
+  conversions Int @default(0)
 
   // Status
-  status            AdCreativeStatus @default(ACTIVE)
+  status AdCreativeStatus @default(ACTIVE)
 
   // Timestamps
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  campaign          AdCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  product           Product?   @relation(fields: [productId], references: [id])
+  campaign AdCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  product  Product?   @relation(fields: [productId], references: [id])
 
   @@map("ad_creatives")
 }
 
 // P2P Listings
 model P2PListing {
-  id                String   @id @default(cuid())
-  userId            String
-  productId         String?
+  id        String  @id @default(cuid())
+  userId    String
+  productId String?
 
   // Listing Details
-  title             String
-  description       String
-  price             Float
-  currency          String
-  quantity          Int
+  title       String
+  description String
+  price       Float
+  currency    String
+  quantity    Int
 
   // Status
-  status            P2PListingStatus @default(ACTIVE)
-  isVerified        Boolean  @default(false)
+  status     P2PListingStatus @default(ACTIVE)
+  isVerified Boolean          @default(false)
 
   // Timestamps
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  user              User     @relation(fields: [userId], references: [id])
-  product           Product? @relation(fields: [productId], references: [id])
+  user    User     @relation(fields: [userId], references: [id])
+  product Product? @relation(fields: [productId], references: [id])
 
   @@map("p2p_listings")
 }
 
 // Product Shares
 model ProductShare {
-  id          String   @id @default(cuid())
-  userId      String
-  productId   String
-  platform    String
-  shareUrl    String?
+  id        String  @id @default(cuid())
+  userId    String
+  productId String
+  platform  String
+  shareUrl  String?
 
   // Performance
-  clicks      Int      @default(0)
-  conversions Int      @default(0)
-  revenue     Float    @default(0.0)
+  clicks      Int   @default(0)
+  conversions Int   @default(0)
+  revenue     Float @default(0.0)
 
   // Timestamps
-  createdAt   DateTime @default(now())
+  createdAt DateTime @default(now())
 
   // Relations
-  user        User     @relation(fields: [userId], references: [id])
-  product     Product  @relation(fields: [productId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
 
   @@map("product_shares")
 }
 
 // User Credits
 model UserCredits {
-  id          String   @id @default(cuid())
-  userId      String   @unique
-  balance     Float    @default(0.0)
-  totalEarned Float   @default(0.0)
-  totalSpent  Float   @default(0.0)
+  id          String @id @default(cuid())
+  userId      String @unique
+  balance     Float  @default(0.0)
+  totalEarned Float  @default(0.0)
+  totalSpent  Float  @default(0.0)
 
   // Timestamps
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("user_credits")
 }
 
 // Credit Transactions
 model CreditTransaction {
-  id          String   @id @default(cuid())
+  id          String                @id @default(cuid())
   userId      String
   type        CreditTransactionType
   amount      Float
@@ -786,50 +791,50 @@ model CreditTransaction {
   referenceId String?
 
   // Timestamps
-  createdAt   DateTime @default(now())
+  createdAt DateTime @default(now())
 
   // Relations
-  user        User     @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 
   @@map("credit_transactions")
 }
 
 // Reward Activities
 model RewardActivity {
-  id          String   @id @default(cuid())
+  id          String             @id @default(cuid())
   userId      String
   type        RewardActivityType
   points      Int
   description String?
 
   // Timestamps
-  createdAt   DateTime @default(now())
+  createdAt DateTime @default(now())
 
   // Relations
-  user        User     @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 
   @@map("reward_activities")
 }
 
 // Notifications
 model Notification {
-  id          String   @id @default(cuid())
-  userId      String
-  type        NotificationType
-  title       String
-  message     String
-  isRead      Boolean  @default(false)
+  id      String           @id @default(cuid())
+  userId  String
+  type    NotificationType
+  title   String
+  message String
+  isRead  Boolean          @default(false)
 
   // Metadata
-  metadata    String?  // JSON object
-  actionUrl   String?
+  metadata  String? // JSON object
+  actionUrl String?
 
   // Timestamps
-  createdAt   DateTime @default(now())
-  readAt      DateTime?
+  createdAt DateTime  @default(now())
+  readAt    DateTime?
 
   // Relations
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("notifications")
 }
@@ -993,60 +998,60 @@ enum NotificationType {
 
 // Social Media Accounts
 model SocialMediaAccount {
-  id                String   @id @default(cuid())
-  ownerId           String
-  platform          SocialMediaPlatform
-  accountId         String   @unique
-  accountName       String
-  accountType       SocialMediaAccountType
-  followers         Int      @default(0)
-  engagement        Float    @default(0.0)
-  niche             String
-  description       String
-  profileImage      String
-  coverImage        String?
-  isVerified        Boolean  @default(false)
-  isMonetized       Boolean  @default(false)
-  averageViews      Int      @default(0)
-  averageLikes      Int      @default(0)
-  averageComments   Int      @default(0)
-  averageShares     Int      @default(0)
-  metadata          String?  // JSON object
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id              String                 @id @default(cuid())
+  ownerId         String
+  platform        SocialMediaPlatform
+  accountId       String                 @unique
+  accountName     String
+  accountType     SocialMediaAccountType
+  followers       Int                    @default(0)
+  engagement      Float                  @default(0.0)
+  niche           String
+  description     String
+  profileImage    String
+  coverImage      String?
+  isVerified      Boolean                @default(false)
+  isMonetized     Boolean                @default(false)
+  averageViews    Int                    @default(0)
+  averageLikes    Int                    @default(0)
+  averageComments Int                    @default(0)
+  averageShares   Int                    @default(0)
+  metadata        String? // JSON object
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
 
   // Relations
-  owner             User                @relation(fields: [ownerId], references: [id])
-  roles             SocialMediaRole[]
-  p2PListings       P2PTradingListing[]
+  owner       User                @relation(fields: [ownerId], references: [id])
+  roles       SocialMediaRole[]
+  p2PListings P2PTradingListing[]
 
   @@map("social_media_accounts")
 }
 
 // Social Media Roles
 model SocialMediaRole {
-  id                String   @id @default(cuid())
-  accountId         String
-  role              SocialMediaRoleType
-  permissions       String   // JSON array of permissions
-  isForSale         Boolean  @default(false)
-  price             Float?
-  currency          String   @default("USD")
-  description       String?
-  requirements      String?  // JSON array of requirements
-  metadata          String?  // JSON object
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id           String              @id @default(cuid())
+  accountId    String
+  role         SocialMediaRoleType
+  permissions  String // JSON array of permissions
+  isForSale    Boolean             @default(false)
+  price        Float?
+  currency     String              @default("USD")
+  description  String?
+  requirements String? // JSON array of requirements
+  metadata     String? // JSON object
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
 
   // Relations
-  account           SocialMediaAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  account SocialMediaAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
 
   @@map("social_media_roles")
 }
 
 // P2P Trading for Social Media
 model P2PTradingListing {
-  id                    String   @id @default(cuid())
+  id                    String              @id @default(cuid())
   sellerId              String
   buyerId               String?
   accountId             String
@@ -1054,43 +1059,43 @@ model P2PTradingListing {
   price                 Float
   currency              String
   paymentMethod         P2PPaymentMethod
-  status                P2PTradingStatus @default(LISTED)
+  status                P2PTradingStatus    @default(LISTED)
   description           String
-  terms                 String   // JSON array of terms
-  escrowFee             Float    @default(0.0)
+  terms                 String // JSON array of terms
+  escrowFee             Float               @default(0.0)
   transferMethod        TransferMethod
-  estimatedTransferTime Int      // Hours
-  verificationRequired  Boolean  @default(true)
-  kycRequired           Boolean  @default(false)
-  metadata              String?  // JSON object
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  estimatedTransferTime Int // Hours
+  verificationRequired  Boolean             @default(true)
+  kycRequired           Boolean             @default(false)
+  metadata              String? // JSON object
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
 
   // Relations
-  seller                User                @relation("SellerListings", fields: [sellerId], references: [id])
-  buyer                 User?               @relation("BuyerListings", fields: [buyerId], references: [id])
-  account               SocialMediaAccount @relation(fields: [accountId], references: [id])
-  transactions          P2PTransaction[]
+  seller       User               @relation("SellerListings", fields: [sellerId], references: [id])
+  buyer        User?              @relation("BuyerListings", fields: [buyerId], references: [id])
+  account      SocialMediaAccount @relation(fields: [accountId], references: [id])
+  transactions P2PTransaction[]
 
   @@map("p2p_trading_listings")
 }
 
 // P2P Transactions
 model P2PTransaction {
-  id                String   @id @default(cuid())
-  listingId         String
-  buyerId           String
-  sellerId          String
-  amount            Float
-  currency          String
-  paymentMethod     P2PPaymentMethod
-  status            P2PTransactionStatus @default(PENDING)
-  metadata          String?  // JSON object
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id            String               @id @default(cuid())
+  listingId     String
+  buyerId       String
+  sellerId      String
+  amount        Float
+  currency      String
+  paymentMethod P2PPaymentMethod
+  status        P2PTransactionStatus @default(PENDING)
+  metadata      String? // JSON object
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
 
   // Relations
-  listing           P2PTradingListing @relation(fields: [listingId], references: [id])
+  listing P2PTradingListing @relation(fields: [listingId], references: [id])
 
   @@map("p2p_transactions")
 }
@@ -1150,21 +1155,21 @@ enum TransferMethod {
 
 // Package Management
 model InstalledPackage {
-  id                String   @id @default(cuid())
-  packageId         String
-  userId            String
-  version           String
-  status            PackageStatus @default(INSTALLING)
-  config            String?  // JSON object
-  apiKeys           String?  // JSON object
-  settings          String?  // JSON object
-  installedAt       DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  lastUsed          DateTime?
-  usageStats        String?  // JSON object
+  id          String        @id @default(cuid())
+  packageId   String
+  userId      String
+  version     String
+  status      PackageStatus @default(INSTALLING)
+  config      String? // JSON object
+  apiKeys     String? // JSON object
+  settings    String? // JSON object
+  installedAt DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  lastUsed    DateTime?
+  usageStats  String? // JSON object
 
   // Relations
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("installed_packages")
 }

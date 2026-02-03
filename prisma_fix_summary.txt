@@ -1,0 +1,15 @@
+The Prisma schema has been successfully updated and validated for PostgreSQL.
+
+Summary of changes:
+1.  **Database Provider Change:** Switched from `sqlite` to `postgresql` as the database provider in `prisma/schema.prisma`.
+2.  **Ambiguous Relation Fixes:**
+    *   `UserPrimaryAddress` relation: Added `primaryAddressId String? @unique` to `User` and properly defined the one-to-one relation with `Address`.
+    *   `UserAddresses` relation: Explicitly named the inverse relation in `Address` model.
+    *   `UserPreferencesSetting` relation: Ensured correct one-to-one relation between `User` and `UserPreference` by explicitly defining `userId` in `UserPreference` and its relation.
+    *   Removed `User.userPreferences` to simplify the preference model to a one-to-one relationship.
+    *   `Address.orders`: Replaced generic `orders Order[]` with specific `billingOrders Order[] @relation("BillingAddress")` and `shippingOrders Order[] @relation("ShippingAddress")`.
+    *   Removed `Order.trackingInfos` as it was a nested relation.
+    *   Added opposite relations for `CartItem.variant`, `Review.order`, `CryptoPayment.order`, `Shipment.supplier`, and `P2PListing.product`.
+3.  **Prisma v7 Compatibility:** Removed the `url` property from the `datasource db` block in `prisma/schema.prisma` to comply with Prisma version 7 changes.
+
+The `npx prisma generate` command now runs successfully, generating the Prisma Client. You can now retry your `flyctl deploy` command.
