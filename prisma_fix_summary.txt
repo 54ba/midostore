@@ -23,10 +23,14 @@ Summary of changes:
 
 The `npx prisma generate` command should now run successfully during the Docker build.
 
-**ACTION REQUIRED:** You must manually update your Dockerfile:
-1.  **Change the build command**: Replace `RUN npx next build --experimental-build-mode compile` with `RUN npm run build --experimental-build-mode compile`. This is the cleaner solution and allows npm lifecycle scripts to run correctly.
-2.  **Update the `DATABASE_URL` environment variable**:
-    *   Remove or comment out `ENV DATABASE_URL="file:///data/sqlite.db"`.
-    *   Ensure `DATABASE_URL` for PostgreSQL is set as a secret in your Fly.io app.
+**IMPORTANT:** Since Fly.io generates the Dockerfile, direct modification is not possible. You must ensure `DATABASE_URL` is set as a secret in your Fly.io app.
 
-After you've made these two changes in your Dockerfile, you can retry the `flyctl deploy` command.
+**ACTION REQUIRED:**
+1.  **Set your `DATABASE_URL` as a secret in your Fly.io application.** Replace `your_postgresql_connection_string` with your actual PostgreSQL database URL:
+
+    ```bash
+    flyctl secrets set DATABASE_URL='your_postgresql_connection_string' -a midostore-oumala
+    ```
+
+    Ensure your connection string uses `postgresql://` protocol.
+2.  **Retry your deployment** after setting the secret. Fly.io will automatically trigger a new build with the updated secrets.
