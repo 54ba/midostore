@@ -70,7 +70,8 @@
     "health": "node scripts/check-services.js",
     "build:deploy": "./scripts/build-and-deploy.sh",
     "quick:start": "./scripts/quick-start.sh",
-    "services:manage": "./scripts/service-manager.sh"
+    "services:manage": "./scripts/service-manager.sh",
+    "postbuild": "node scripts/readd-prisma-url.js"
   },
   "dependencies": {
     "@ethersproject/contracts": "^5.8.0",
