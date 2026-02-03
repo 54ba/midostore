@@ -17,14 +17,14 @@ Summary of changes:
 4.  **env.config.ts Generation Fix:**
     *   Created `scripts/generate-env-config.js` to dynamically create `env.config.ts` based on environment variables.
     *   The `build` script in `package.json` now executes `node scripts/generate-env-config.js` before `next build`, ensuring `env.config.ts` is available during the Next.js build process.
-    *   The `execSync` workaround in `next.config.ts` has been removed.
+    *   The `execSync` workaround in `next.config.ts` has been **re-added** to ensure `env.config.ts` is generated even when `npx next build` is called directly in the Dockerfile.
 5.  **MongoDB URI Configuration:** Added a placeholder `MONGODB_URI` to the `.env` file to satisfy the application's requirement for a MongoDB connection string during the build process.
 6.  **Typo Fix:** Corrected a typo (`cl!ssName` to `className`) in `src/components/EnhancedDashboard.tsx`.
 
 The `npx prisma generate` command should now run successfully during the Docker build.
 
 **ACTION REQUIRED:** You must manually update your Dockerfile:
-1.  **Change the build command**: Replace `RUN npx next build --experimental-build-mode compile` with `RUN npm run build --experimental-build-mode compile`. This is crucial for `env.config.ts` to be generated.
+1.  **Change the build command**: Replace `RUN npx next build --experimental-build-mode compile` with `RUN npm run build --experimental-build-mode compile`. This is the cleaner solution and allows npm lifecycle scripts to run correctly.
 2.  **Update the `DATABASE_URL` environment variable**:
     *   Remove or comment out `ENV DATABASE_URL="file:///data/sqlite.db"`.
     *   Ensure `DATABASE_URL` for PostgreSQL is set as a secret in your Fly.io app.
