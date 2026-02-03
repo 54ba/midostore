@@ -10,6 +10,8 @@ Summary of changes:
     *   `Address.orders`: Replaced generic `orders Order[]` with specific `billingOrders Order[] @relation("BillingAddress")` and `shippingOrders Order[] @relation("ShippingAddress")`.
     *   Removed `Order.trackingInfos` as it was a nested relation.
     *   Added opposite relations for `CartItem.variant`, `Review.order`, `CryptoPayment.order`, `Shipment.supplier`, and `P2PListing.product`.
+    *   Removed duplicate `cryptoPayments` field from the `Order` model.
 3.  **Prisma v7 Compatibility:** Removed the `url` property from the `datasource db` block in `prisma/schema.prisma` to comply with Prisma version 7 changes.
+4.  **env.config.ts Missing Module Fix:** Created a placeholder `env.config.ts` file at the project root to resolve "Module not found: Can't resolve '../env.config'" errors during the Next.js build process. This file exports environment variables.
 
-The `npx prisma generate` command now runs successfully, generating the Prisma Client. You can now retry your `flyctl deploy` command.
+The `npx prisma generate` command now runs successfully, and `npx next build` completes without module not found errors. You can now retry your `flyctl deploy` command.
