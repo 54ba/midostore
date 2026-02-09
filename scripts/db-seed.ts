@@ -1,6 +1,4 @@
-#!/usr/bin/env tsx
-// @ts-nocheck
-
+import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
 import config from '../env.config';
 import { ExchangeRateService } from '../lib/exchange-rate-service';

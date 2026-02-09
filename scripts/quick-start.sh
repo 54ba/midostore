@@ -85,9 +85,75 @@ start_dev_server() {
     fi
 }
 
+# Function to detect package manager
+get_pkg_manager() {
+    if [ -f "pnpm-lock.yaml" ]; then
+        echo "pnpm"
+    elif [ -f "yarn.lock" ]; then
+        echo "yarn"
+    else
+        echo "npm"
+    fi
+}
+
+PKG_MANAGER=$(get_pkg_manager)
+
+# Function to start development server
+start_dev_server() {
+    echo -e "${BLUE}🚀 Starting development server...${NC}"
+
+    if port_in_use 3000; then
+        echo -e "${YELLOW}⚠️ Port 3000 is already in use${NC}"
+        echo -e "${BLUE}🔍 Checking what's running on port 3000...${NC}"
+        lsof -i :3000
+        echo ""
+        # In non-interactive environments (VPS/CI), we might want to kill it automatically or skip
+        if [ -n "$AUTO_KILL_PORT" ] || [[ "$-" == *i* ]]; then
+            read -p "Do you want to kill the process on port 3000? (y/N): " -n 1 -r
+            echo
+            if [[ $REPLY =~ ^[Yy]$ ]]; then
+                lsof -ti :3000 | xargs kill -9
+                echo -e "${GREEN}✅ Process killed${NC}"
+            else
+                echo -e "${YELLOW}⚠️ Please free up port 3000 and try again${NC}"
+                return 1
+            fi
+        else
+            echo -e "${YELLOW}⚠️ Skipping port kill in non-interactive shell${NC}"
+        fi
+    fi
+
+    echo -e "${CYAN}Starting Next.js development server with memory optimizations...${NC}"
+    
+    # Set memory limits for stable compilation on VPS
+    export NODE_OPTIONS="--max-old-space-size=4096"
+    
+    $PKG_MANAGER run dev &
+    DEV_PID=$!
+    echo $DEV_PID > .dev-server.pid
+    
+    # Wait for server to be ready
+    wait_for_service "http://localhost:3000" "Next.js Dev Server"
+
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}✅ Development server started successfully!${NC}"
+        echo -e "${BLUE}🌐 Open http://localhost:3000 in your browser${NC}"
+        return 0
+    else
+        echo -e "${RED}❌ Failed to start development server${NC}"
+        return 1
+    fi
+}
+
 # Function to setup environment
 setup_environment() {
     echo -e "${BLUE}🔧 Setting up environment...${NC}"
+
+    # Clean stale build cache to avoid ENOENT errors
+    if [ -d ".next" ]; then
+        echo -e "${CYAN}🧹 Cleaning previous build cache...${NC}"
+        rm -rf .next
+    fi
 
     # Check if .env file exists
     if [ ! -f ".env" ]; then
@@ -107,7 +173,7 @@ setup_environment() {
 
     # Check environment variables
     echo -e "${BLUE}🔍 Checking environment configuration...${NC}"
-    npm run env:check
+    $PKG_MANAGER run env:check
 
     return 0
 }
@@ -118,15 +184,15 @@ setup_database() {
 
     # Generate Prisma client
     echo -e "${CYAN}Generating Prisma client...${NC}"
-    npm run db:generate
+    $PKG_MANAGER run db:generate
 
     # Push database schema
     echo -e "${CYAN}Pushing database schema...${NC}"
-    npm run db:push
+    $PKG_MANAGER run db:push
 
     # Seed database
     echo -e "${CYAN}Seeding database...${NC}"
-    npm run db:seed
+    $PKG_MANAGER run db:seed
 
     echo -e "${GREEN}✅ Database setup completed${NC}"
 }
@@ -141,7 +207,7 @@ start_background_services() {
     # Start AI services if available
     if [ -d "ai" ] && [ -f "ai/requirements.txt" ]; then
         echo -e "${CYAN}Starting AI services...${NC}"
-        npm run ai:start &
+        $PKG_MANAGER run ai:start &
         AI_PID=$!
         echo $AI_PID > pids/ai-service.pid
         echo -e "${GREEN}✅ AI services started (PID: $AI_PID)${NC}"
@@ -149,14 +215,14 @@ start_background_services() {
 
     # Start dynamic services
     echo -e "${CYAN}Starting dynamic services...${NC}"
-    npm run services:start &
+    $PKG_MANAGER run services:start &
     DYNAMIC_PID=$!
     echo $DYNAMIC_PID > pids/dynamic-services.pid
     echo -e "${GREEN}✅ Dynamic services started (PID: $DYNAMIC_PID)${NC}"
 
     # Start Web3 services
     echo -e "${CYAN}Starting Web3 services...${NC}"
-    npm run services:web3 &
+    $PKG_MANAGER run services:web3 &
     WEB3_PID=$!
     echo $WEB3_PID > pids/web3-services.pid
     echo -e "${GREEN}✅ Web3 services started (PID: $WEB3_PID)${NC}"
@@ -236,8 +302,12 @@ main() {
 
     # Install dependencies if needed
     if [ ! -d "node_modules" ]; then
-        echo -e "${BLUE}📦 Installing dependencies...${NC}"
-        npm install
+        echo -e "${BLUE}📦 Installing dependencies with $PKG_MANAGER...${NC}"
+        if [ "$PKG_MANAGER" = "pnpm" ]; then
+            pnpm install --no-frozen-lockfile
+        else
+            $PKG_MANAGER install
+        fi
     fi
 
     # Setup environment
