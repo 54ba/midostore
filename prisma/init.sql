@@ -274,6 +274,7 @@ CREATE TABLE "exchange_rates" (
     "rate" DOUBLE PRECISION NOT NULL,
     "isStable" BOOLEAN NOT NULL DEFAULT true,
     "volatility" DOUBLE PRECISION NOT NULL DEFAULT 0.0,
+    "source" TEXT NOT NULL DEFAULT 'manual',
     "lastUpdated" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "exchange_rates_pkey" PRIMARY KEY ("id")

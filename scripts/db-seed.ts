@@ -106,6 +106,7 @@ async function main() {
         maxOrderQuantity: 1000,
         shippingWeight: 0.1,
         shippingDimensions: '10x5x3 cm',
+        sku: 'EARBUDS-001',
         supplierExternalId: 'supplier_001',
         profitMargin: 20,
       },
@@ -127,6 +128,7 @@ async function main() {
         maxOrderQuantity: 500,
         shippingWeight: 0.3,
         shippingDimensions: '30x20x2 cm',
+        sku: 'DRESS-001',
         supplierExternalId: 'supplier_002',
         profitMargin: 30,
       },
@@ -150,6 +152,7 @@ async function main() {
             costPrice: price * 0.7,
             categoryId: categories[categoryName],
             supplierId: supplier.id,
+            sku: pData.sku,
             slug: `${pData.externalId}-${Date.now()}`,
           },
           create: {
@@ -160,6 +163,7 @@ async function main() {
             costPrice: price * 0.7,
             categoryId: categories[categoryName],
             supplierId: supplier.id,
+            sku: pData.sku,
             slug: `${pData.externalId}-${Date.now()}`,
           },
         });

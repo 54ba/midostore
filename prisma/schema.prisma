@@ -508,6 +508,7 @@ model ExchangeRate {
   rate         Float
   isStable     Boolean  @default(true)
   volatility   Float    @default(0.0)
+  source       String   @default("manual") // Added for compatibility
   lastUpdated  DateTime @default(now())
 
   @@unique([fromCurrency, toCurrency])

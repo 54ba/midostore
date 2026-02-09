@@ -175,7 +175,6 @@ export class ExchangeRateService {
                     fromCurrency,
                     toCurrency,
                     rate,
-                    source: 'api',
                 },
             });
         } catch (error) {
