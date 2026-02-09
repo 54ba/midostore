@@ -239,7 +239,7 @@ export class ReviewSeedingService {
             where: { id: productId },
             data: {
                 reviewCount: reviews.length,
-                rating: parseFloat(avgRating.toFixed(1)),
+                averageRating: parseFloat(avgRating.toFixed(1)),
             },
         });
 
@@ -256,7 +256,7 @@ export class ReviewSeedingService {
         const products = await this.prisma.product.findMany({
             select: {
                 id: true,
-                title: true,
+                name: true,
                 category: true,
                 reviewCount: true,
             },
@@ -267,20 +267,20 @@ export class ReviewSeedingService {
         for (const product of products) {
             // Skip products that already have reviews
             if (product.reviewCount > 0) {
-                console.log(`⏭️ Skipping ${product.title} - already has ${product.reviewCount} reviews`);
+                console.log(`⏭️ Skipping ${product.name} - already has ${product.reviewCount} reviews`);
                 continue;
             }
 
             try {
                 await this.generateReviewsForProduct(
                     product.id,
-                    product.title,
-                    product.category || 'general',
+                    product.name,
+                    (product.category as any)?.slug || 'electronics',
                     reviewsPerProduct,
                     source
                 );
             } catch (error) {
-                console.error(`❌ Failed to generate reviews for ${product.title}:`, error);
+                console.error(`❌ Failed to generate reviews for ${product.name}:`, error);
             }
         }
 
@@ -296,11 +296,10 @@ export class ReviewSeedingService {
         console.log(`🎯 Generating reviews for category: ${category}`);
 
         const products = await this.prisma.product.findMany({
-            where: { category },
+            where: { category: { slug: category } },
             select: {
                 id: true,
-                title: true,
-                category: true,
+                name: true,
                 reviewCount: true,
             },
         });
@@ -309,20 +308,20 @@ export class ReviewSeedingService {
 
         for (const product of products) {
             if (product.reviewCount > 0) {
-                console.log(`⏭️ Skipping ${product.title} - already has reviews`);
+                console.log(`⏭️ Skipping ${product.name} - already has reviews`);
                 continue;
             }
 
             try {
                 await this.generateReviewsForProduct(
                     product.id,
-                    product.title,
-                    product.category || 'general',
+                    product.name,
+                    category,
                     reviewsPerProduct,
                     source
                 );
             } catch (error) {
-                console.error(`❌ Failed to generate reviews for ${product.title}:`, error);
+                console.error(`❌ Failed to generate reviews for ${product.name}:`, error);
             }
         }
 

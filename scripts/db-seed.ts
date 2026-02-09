@@ -140,48 +140,49 @@ async function main() {
       });
 
       if (supplier) {
-        const { categoryName, subcategoryName, supplierExternalId, title, price, ...rest } = pData;
+        const { categoryName, title, price, ...rest } = pData;
 
         const product = await prisma.product.upsert({
           where: { externalId: pData.externalId },
           update: {
-            ...rest,
             name: title,
-            title: title,
             basePrice: price,
             costPrice: price * 0.7,
             categoryId: categories[categoryName],
             supplierId: supplier.id,
             sku: pData.sku,
             slug: `${pData.externalId}-${Date.now()}`,
+            averageRating: pData.rating,
           },
           create: {
-            ...rest,
+            externalId: pData.externalId,
+            source: pData.source,
+            description: pData.description,
+            currency: pData.currency,
+            images: pData.images,
+            tags: pData.tags,
+            reviewCount: pData.reviewCount,
+            soldCount: pData.soldCount,
+            minOrderQuantity: pData.minOrderQuantity,
+            maxOrderQuantity: pData.maxOrderQuantity,
+            shippingWeight: pData.shippingWeight,
+            shippingDimensions: pData.shippingDimensions,
+            profitMargin: pData.profitMargin,
             name: title,
-            title: title,
             basePrice: price,
             costPrice: price * 0.7,
             categoryId: categories[categoryName],
             supplierId: supplier.id,
             sku: pData.sku,
             slug: `${pData.externalId}-${Date.now()}`,
+            averageRating: pData.rating,
           },
         });
 
-        // Create localizations for Gulf countries with dynamic rates
+        // Create localizations for Gulf countries
         console.log(`🌍 Creating localizations for product: ${product.name}`);
         for (const gulfCountry of config.gulfCountries) {
           try {
-            // Get dynamic exchange rate
-            const localPrice = await exchangeRateService.convertPrice(
-              price,
-              pData.currency,
-              gulfCountry.currency
-            );
-
-            const pm = pData.profitMargin;
-            const finalPrice = localPrice * (1 + pm / 100);
-
             await prisma.productLocalization.upsert({
               where: {
                 productId_locale: {
@@ -190,49 +191,18 @@ async function main() {
                 },
               },
               update: {
-                price: finalPrice,
-                currency: gulfCountry.currency,
-                title: title,
                 name: title,
               },
               create: {
                 productId: product.id,
                 locale: gulfCountry.locale,
-                title: title,
                 name: title,
                 description: pData.description,
-                price: finalPrice,
-                currency: gulfCountry.currency,
               },
             });
-
-            console.log(`  ✅ ${gulfCountry.name}: ${finalPrice.toFixed(2)} ${gulfCountry.currency}`);
           } catch (error) {
             console.error(`  ❌ Failed to create localization for ${gulfCountry.name}:`, error);
           }
-        }
-
-        // Update main product with Gulf price (using UAE as default)
-        try {
-          const uaePrice = await exchangeRateService.convertPrice(
-            price,
-            pData.currency,
-            'AED'
-          );
-          const pm = pData.profitMargin;
-          const gulfPrice = uaePrice * (1 + pm / 100);
-
-          await prisma.product.update({
-            where: { id: product.id },
-            data: {
-              gulfPrice,
-              gulfCurrency: 'AED',
-            },
-          });
-
-          console.log(`  ✅ Gulf price updated: ${gulfPrice.toFixed(2)} AED`);
-        } catch (error) {
-          console.error(`  ❌ Failed to update Gulf price:`, error);
         }
       }
     }
