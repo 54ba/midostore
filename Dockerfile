@@ -18,7 +18,7 @@ FROM base AS build
 
 # Install packages needed to build node modules
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential node-gyp openssl pkg-config python-is-python3
+    apt-get install --no-install-recommends -y build-essential node-gyp openssl pkg-config python-is-python3 python3-pip python3-dev
 
 # Install node modules
 COPY package-lock.json package.json ./
@@ -32,6 +32,15 @@ RUN npx prisma generate
 COPY . .
 # Copy docker-entrypoint.js into the app directory
 COPY docker-entrypoint.js .
+
+# Setup Python virtual environment for AI services (DISABLED due to missing files)
+# RUN python3 -m venv /app/ai/venv
+# ENV PATH="/app/ai/venv/bin:$PATH"
+# RUN pip install --no-cache-dir -r /app/ai/requirements.txt
+
+# Copy the combined startup script
+COPY start-combined.sh .
+RUN chmod +x start-combined.sh
 
 # Build application - Changed from npx next build to npm run build
 RUN npm run build --experimental-build-mode compile
@@ -62,4 +71,4 @@ ENTRYPOINT [ "/app/docker-entrypoint.js" ]
 EXPOSE 3000
 # DATABASE_URL is now managed via Fly.io secrets for PostgreSQL
 ENV PUPPETEER_EXECUTABLE_PATH="/usr/bin/chromium"
-CMD [ "npm", "run", "start" ]
+CMD [ "/app/start-combined.sh" ]

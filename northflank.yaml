@@ -1,0 +1,31 @@
+name: midostore-service
+type: deployment
+git_repo: https://github.com/54ba/midostore # Your actual repo
+git_branch: main # Or your deployment branch (e.g., master, develop)
+build:
+  type: dockerfile
+  path: Dockerfile
+  context: ./
+ports:
+  - port: 3000
+    type: http
+env:
+  - key: DATABASE_URL
+    value: postgresql://user:password@host:port/database # <<< REPLACE THIS WITH YOUR ACTUAL CONNECTION STRING >>>
+    secret: true # Mark as secret
+  - key: PUPPETEER_EXECUTABLE_PATH
+    value: "/usr/bin/chromium"
+  - key: MONGO_URI
+    value: mongodb+srv://<username>:<password>@<cluster>.mongodb.net/<database>?retryWrites=true&w=majority # <<< REPLACE THIS WITH YOUR ACTUAL MONGODB CONNECTION STRING >>>
+    secret: true # Mark as secret
+resources:
+  cpu: 1000m # 1 CPU core
+  memory: 2048Mi # 2GB RAM
+replicas: 1
+health_checks:
+  startup:
+    path: / # Or your specific health endpoint
+    port: 3000
+    interval_seconds: 5
+    timeout_seconds: 3
+    retries: 5
