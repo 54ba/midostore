@@ -101,7 +101,10 @@ model Address {
 // Product Management
 model Product {
   id               String  @id @default(cuid())
+  externalId       String? @unique
+  source           String?
   name             String
+  title            String? // Added for compatibility with db-seed.ts
   description      String
   shortDescription String?
   sku              String  @unique
@@ -112,6 +115,8 @@ model Product {
   // Pricing
   basePrice    Float
   salePrice    Float?
+  gulfPrice    Float? // Added for gulf region
+  gulfCurrency String? // Added for gulf region
   costPrice    Float
   currency     String @default("USD")
   profitMargin Float  @default(25.0)
@@ -251,10 +256,12 @@ model Subcategory {
 // Supplier Management
 model Supplier {
   id            String  @id @default(cuid())
+  externalId    String? @unique
+  source        String?
   name          String
   companyName   String
   contactPerson String?
-  email         String
+  email         String  @default("contact@supplier.com")
   phone         String?
   website       String?
 
@@ -638,8 +645,11 @@ model ProductLocalization {
 
   // Localized Content
   name             String
+  title            String? // Added for compatibility with db-seed.ts
   description      String
   shortDescription String?
+  price            Float?  // Added for localized pricing
+  currency         String? // Added for localized currency
   metaTitle        String?
   metaDescription  String?
 
@@ -1181,4 +1191,20 @@ enum PackageStatus {
   ERROR
   UPDATING
   UNINSTALLING
+}
+
+model GulfCountry {
+  id         String   @id @default(cuid())
+  code       String   @unique
+  name       String
+  nameAr     String?
+  currency   String
+  currencyAr String?
+  timezone   String?
+  locale     String   @default("ar-SA")
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("gulf_countries")
 }
