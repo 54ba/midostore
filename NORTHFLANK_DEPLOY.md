@@ -50,8 +50,67 @@ Navigate to **Environment** > **Variables** in your service settings. Add the fo
 2. Monitor the **Build Logs**. The build process (installing dependencies, building Next.js) may take 3-5 minutes.
 3. Once the build succeeds, check **Runtime Logs** to ensure the app starts (look for `Ready in ...`).
 
-## Troubleshooting
+### 3. Deploy via Northflank CLI (Verified)
 
-- **Build Fails (Memory)**: Increasing memory to 2GB or 4GB usually fixes Next.js build issues.
-- **Database Errors**: Verify your `DATABASE_URL` and `MONGODB_URI` are correct and accessible (allow Northflank IP ranges if using external DBs).
-- **Missing AI**: As noted, AI features are disabled. To enable them, restore the `ai/` directory to the repo and uncomment the lines in `Dockerfile` and `start-combined.sh`.
+If the automatic build fails or uses buildpacks by mistake, use these commands to correctly configure and redeploy:
+
+#### A. Initial Project Audit
+
+```bash
+# Verify project and service existence
+northflank list projects
+northflank list services --project midostore
+```
+
+#### B. Setup Environment Variables
+
+If your service needs the database URLs, set them now:
+
+```bash
+northflank update service runtime-environment \
+  --projectId midostore \
+  --serviceId midostore \
+  --input '{"runtimeEnvironment": {"DATABASE_URL": "your_db_url", "MONGODB_URI": "your_mongo_url"}}' \
+  --noDefaults
+```
+
+#### C. Force Dockerfile Engine
+
+If Northflank is trying to use Buildpacks (Detection phase in logs), you may need to recreate the service with the correct engine:
+
+```bash
+# 1. Delete the misconfigured service
+northflank delete service --projectId midostore --serviceId midostore --force
+
+# 2. Recreate with Docker Engine
+# (Replace projectUrl with your actual repo)
+northflank create service combined \
+  --projectId midostore \
+  --input '{
+    "name": "midostore",
+    "billing": { "deploymentPlan": "nf-compute-10" },
+    "deployment": { "instances": 1, "region": "us-central" },
+    "buildEngineConfiguration": { "buildEngine": "docker" },
+    "buildSettings": { "dockerfile": { "dockerFilePath": "/Dockerfile", "dockerWorkDir": "/" } },
+    "vcsData": { "projectUrl": "https://github.com/54ba/midostore", "projectType": "github", "projectBranch": "main" },
+    "ports": [{ "name": "site", "internalPort": 3000, "protocol": "HTTP", "public": true }]
+  }' --noDefaults
+```
+
+#### D. Monitor Build
+
+```bash
+# Get the new build ID
+northflank get service builds --projectId midostore --serviceId midostore --output json
+
+# Stream logs
+northflank get service build-logs --projectId midostore --serviceId midostore --buildId [BUILD_ID]
+```
+
+---
+
+## 🛠️ Troubleshooting
+
+- **409 Conflict**: Only one build can run at a time on free plans. Use `northflank abort service build` to clear old builds.
+- **Port Mismatch**: Ensure `internalPort` matches the `EXPOSE` port in your Dockerfile (3000).
+- **Missing AI**: This deployment disables the AI service because the `ai/` directory was missing in the repository.
