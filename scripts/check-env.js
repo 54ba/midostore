@@ -1,9 +1,9 @@
-#!/usr/bin/env node
-
 /**
  * Environment Variable Check Script for Netlify
  * Ensures all required environment variables are set before building
  */
+
+require('dotenv').config();
 
 const requiredEnvVars = [
     'DATABASE_URL',
