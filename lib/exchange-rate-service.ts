@@ -105,16 +105,11 @@ export class ExchangeRateService {
             }
         }
 
-        // Process updates in batches to avoid overwhelming APIs
-        const batchSize = 5;
-        for (let i = 0; i < updatePromises.length; i += batchSize) {
-            const batch = updatePromises.slice(i, i + batchSize);
-            await Promise.allSettled(batch);
-
-            // Small delay between batches
-            if (i + batchSize < updatePromises.length) {
-                await new Promise(resolve => setTimeout(resolve, 1000));
-            }
+        // Process updates sequentially to avoid connection pool timeouts (P2024)
+        for (const updatePromise of updatePromises) {
+            await updatePromise;
+            // Add a small delay between updates to avoid API rate limits
+            await new Promise(resolve => setTimeout(resolve, 500));
         }
 
         console.log('✅ Exchange rate update completed');
