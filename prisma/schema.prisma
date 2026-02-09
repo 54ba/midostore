@@ -128,6 +128,12 @@ model Product {
   maxStockLevel Int?
   isActive      Boolean @default(true)
   isDropshipped Boolean @default(false)
+  soldCount        Int     @default(0)
+  minOrderQuantity Int     @default(1)
+  maxOrderQuantity Int?    
+  shippingWeight   Float?  
+  shippingDimensions String? 
+
 
   // Categories
   categoryId    String?

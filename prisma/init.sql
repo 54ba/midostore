@@ -178,6 +178,12 @@ CREATE TABLE "products" (
     "maxStockLevel" INTEGER,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "isDropshipped" BOOLEAN NOT NULL DEFAULT false,
+    "soldCount" INTEGER NOT NULL DEFAULT 0,
+    "minOrderQuantity" INTEGER NOT NULL DEFAULT 1,
+    "maxOrderQuantity" INTEGER,
+    "shippingWeight" DOUBLE PRECISION,
+    "shippingDimensions" TEXT,
+
     "categoryId" TEXT,
     "subcategoryId" TEXT,
     "tags" TEXT,
