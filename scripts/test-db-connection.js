@@ -3,7 +3,25 @@ const { Client } = require('pg');
 
 async function testConnection() {
     const url = process.env.DATABASE_URL;
-    console.log('🔍 Testing connection to:', url ? url.split('@')[1] : 'UNDEFINED');
+    if (!url) {
+        console.error('❌ DATABASE_URL is not set in .env');
+        process.exit(1);
+    }
+
+    try {
+        const parsed = new URL(url.replace('postgresql://', 'http://')); // URL parser trick
+        console.log('🔍 URI Components:');
+        console.log('   - Host:', parsed.hostname);
+        console.log('   - Port:', parsed.port);
+        console.log('   - Path (DB Name):', parsed.pathname);
+        console.log('   - Search (Options):', parsed.search);
+
+        if (!parsed.search.includes('?')) {
+            console.warn('⚠️  Warning: No "?" found in connection string. Options might be seen as part of the DB name.');
+        }
+    } catch (e) {
+        console.error('❌ Failed to parse DATABASE_URL. Check for special characters in password.');
+    }
 
     const client = new Client({
         connectionString: url,
