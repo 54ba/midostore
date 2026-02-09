@@ -45,8 +45,9 @@ async function main() {
         rating: 4.8,
         responseRate: 98.5,
         responseTime: '2 hours',
-        verified: true,
+        isVerified: true,
         goldMember: true,
+        email: 'electronics@premium.com',
       },
       {
         externalId: 'supplier_002',
@@ -58,8 +59,9 @@ async function main() {
         rating: 4.6,
         responseRate: 95.2,
         responseTime: '4 hours',
-        verified: true,
+        isVerified: true,
         goldMember: false,
+        email: 'fashion@global.com',
       },
     ];
 
@@ -69,6 +71,18 @@ async function main() {
         update: supplier,
         create: supplier,
       });
+    }
+
+    // Handle Categories
+    const categories: Record<string, string> = {};
+    const categoryNames = ['Electronics', 'Clothing'];
+    for (const name of categoryNames) {
+      const cat = await prisma.category.upsert({
+        where: { name },
+        update: {},
+        create: { name, slug: name.toLowerCase() },
+      });
+      categories[name.toLowerCase()] = cat.id;
     }
 
     // Create sample products
@@ -81,10 +95,10 @@ async function main() {
         description: 'High-quality wireless earbuds with noise cancellation',
         price: 25.99,
         currency: 'USD',
-        images: ['https://example.com/earbuds1.jpg', 'https://example.com/earbuds2.jpg'],
-        category: 'electronics',
-        subcategory: 'audio',
-        tags: ['wireless', 'bluetooth', 'earbuds', 'noise-cancellation'],
+        images: JSON.stringify(['https://example.com/earbuds1.jpg', 'https://example.com/earbuds2.jpg']),
+        categoryName: 'electronics',
+        subcategoryName: 'audio',
+        tags: 'wireless, bluetooth, earbuds, noise-cancellation',
         rating: 4.7,
         reviewCount: 1250,
         soldCount: 8500,
@@ -92,7 +106,7 @@ async function main() {
         maxOrderQuantity: 1000,
         shippingWeight: 0.1,
         shippingDimensions: '10x5x3 cm',
-        supplierId: 'supplier_001',
+        supplierExternalId: 'supplier_001',
         profitMargin: 20,
       },
       {
@@ -102,10 +116,10 @@ async function main() {
         description: 'Comfortable and stylish summer dress for women',
         price: 18.50,
         currency: 'USD',
-        images: ['https://example.com/dress1.jpg', 'https://example.com/dress2.jpg'],
-        category: 'clothing',
-        subcategory: 'women',
-        tags: ['dress', 'summer', 'casual', 'women', 'fashion'],
+        images: JSON.stringify(['https://example.com/dress1.jpg', 'https://example.com/dress2.jpg']),
+        categoryName: 'clothing',
+        subcategoryName: 'women',
+        tags: 'dress, summer, casual, women, fashion',
         rating: 4.5,
         reviewCount: 890,
         soldCount: 3200,
@@ -113,39 +127,56 @@ async function main() {
         maxOrderQuantity: 500,
         shippingWeight: 0.3,
         shippingDimensions: '30x20x2 cm',
-        supplierId: 'supplier_002',
+        supplierExternalId: 'supplier_002',
         profitMargin: 30,
       },
     ];
 
-    for (const productData of sampleProducts) {
-      const supplier = await prisma.supplier.findFirst({
-        where: { externalId: productData.supplierId },
+    for (const pData of sampleProducts) {
+      const supplier = await prisma.supplier.findUnique({
+        where: { externalId: pData.supplierExternalId },
       });
 
       if (supplier) {
+        const { categoryName, subcategoryName, supplierExternalId, title, price, ...rest } = pData;
+
         const product = await prisma.product.upsert({
-          where: { externalId: productData.externalId },
-          update: productData,
-          create: {
-            ...productData,
+          where: { externalId: pData.externalId },
+          update: {
+            ...rest,
+            name: title,
+            title: title,
+            basePrice: price,
+            costPrice: price * 0.7,
+            categoryId: categories[categoryName],
             supplierId: supplier.id,
+            slug: `${pData.externalId}-${Date.now()}`,
+          },
+          create: {
+            ...rest,
+            name: title,
+            title: title,
+            basePrice: price,
+            costPrice: price * 0.7,
+            categoryId: categories[categoryName],
+            supplierId: supplier.id,
+            slug: `${pData.externalId}-${Date.now()}`,
           },
         });
 
         // Create localizations for Gulf countries with dynamic rates
-        console.log(`🌍 Creating localizations for product: ${product.title}`);
+        console.log(`🌍 Creating localizations for product: ${product.name}`);
         for (const gulfCountry of config.gulfCountries) {
           try {
             // Get dynamic exchange rate
             const localPrice = await exchangeRateService.convertPrice(
-              productData.price,
-              productData.currency,
+              price,
+              pData.currency,
               gulfCountry.currency
             );
 
-            const profitMargin = productData.profitMargin;
-            const finalPrice = localPrice * (1 + profitMargin / 100);
+            const pm = pData.profitMargin;
+            const finalPrice = localPrice * (1 + pm / 100);
 
             await prisma.productLocalization.upsert({
               where: {
@@ -157,12 +188,15 @@ async function main() {
               update: {
                 price: finalPrice,
                 currency: gulfCountry.currency,
+                title: title,
+                name: title,
               },
               create: {
                 productId: product.id,
                 locale: gulfCountry.locale,
-                title: productData.title,
-                description: productData.description,
+                title: title,
+                name: title,
+                description: pData.description,
                 price: finalPrice,
                 currency: gulfCountry.currency,
               },
@@ -177,12 +211,12 @@ async function main() {
         // Update main product with Gulf price (using UAE as default)
         try {
           const uaePrice = await exchangeRateService.convertPrice(
-            productData.price,
-            productData.currency,
+            price,
+            pData.currency,
             'AED'
           );
-          const profitMargin = productData.profitMargin;
-          const gulfPrice = uaePrice * (1 + profitMargin / 100);
+          const pm = pData.profitMargin;
+          const gulfPrice = uaePrice * (1 + pm / 100);
 
           await prisma.product.update({
             where: { id: product.id },
@@ -204,16 +238,11 @@ async function main() {
     // Generate reviews for all products
     console.log('🌟 Generating reviews for all products...');
     try {
-      await reviewService.generateReviewsForAllProducts(15, 'generated');
+      await reviewService.generateReviewsForAllProducts(5, 'generated');
       console.log('✅ Reviews generated successfully!');
     } catch (error) {
       console.error('⚠️ Warning: Could not generate reviews:', error);
-      console.log('📝 You can manually generate reviews later using the review seeding script');
     }
-
-    // Display cache statistics
-    const cacheStats = exchangeRateService.getCacheStats();
-    console.log('📊 Cache Statistics:', cacheStats);
 
   } catch (error) {
     console.error('❌ Database seeding failed:', error);
