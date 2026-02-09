@@ -45,11 +45,11 @@ const mockCategories = [
 export const getProducts = async (limit = 20, offset = 0, categoryId?: string) => {
   try {
     let products = [...mockProducts];
-    
+
     if (categoryId) {
       products = products.filter(p => p.categoryId === categoryId);
     }
-    
+
     return products.slice(offset, offset + limit);
   } catch (error) {
     console.error("Error getting products:", error);
@@ -114,7 +114,7 @@ export const getP2PListings = async (status = "ACTIVE") => {
 export const searchProducts = async (query: string, limit = 20) => {
   try {
     const searchTerm = query.toLowerCase();
-    return mockProducts.filter(p => 
+    return mockProducts.filter(p =>
       p.name.toLowerCase().includes(searchTerm) ||
       p.description.toLowerCase().includes(searchTerm) ||
       p.brand.toLowerCase().includes(searchTerm)
@@ -125,23 +125,35 @@ export const searchProducts = async (query: string, limit = 20) => {
   }
 };
 
-// Mock database client for compatibility
-let prisma: any = null;
+// Database client initialization
+import { PrismaClient } from '@prisma/client';
 
-// Initialize immediately if not in browser
-if (typeof window === "undefined") {
-  console.log("✅ In-memory database initialized successfully");
-  prisma = { isMock: true };
+let prisma: any;
+
+if (process.env.NODE_ENV === 'production' || process.env.DATABASE_URL) {
+  const globalPrisma = global as unknown as { prisma: PrismaClient };
+  if (!globalPrisma.prisma) {
+    globalPrisma.prisma = new PrismaClient();
+  }
+  prisma = globalPrisma.prisma;
+  console.log('✅ Real database client initialized');
+} else {
+  // Initialize mock if not in browser and no DB URL
+  if (typeof window === "undefined") {
+    console.log("✅ In-memory database initialized successfully");
+    prisma = { isMock: true };
+  }
 }
 
 // Export database client
 export { prisma };
 
 // Export database status
-export const isRealDatabase = () => prisma !== null;
+export const isRealDatabase = () => prisma !== null && !prisma.isMock;
 export const databaseType = () => {
   if (!prisma) return "Not initialized";
-  return "In-Memory Mock Data";
+  if (prisma.isMock) return "In-Memory Mock Data";
+  return "Real PostgreSQL Database";
 };
 
 // Export default

@@ -78,7 +78,7 @@ async function main() {
     const categoryNames = ['Electronics', 'Clothing'];
     for (const name of categoryNames) {
       const cat = await prisma.category.upsert({
-        where: { name },
+        where: { slug: name.toLowerCase() },
         update: {},
         create: { name, slug: name.toLowerCase() },
       });

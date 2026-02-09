@@ -18,7 +18,27 @@ CREATE TYPE "ShipmentStatus" AS ENUM ('PENDING', 'PROCESSING', 'SHIPPED', 'DELIV
 CREATE TYPE "CreditTransactionType" AS ENUM ('EARN', 'SPEND', 'REFUND', 'BONUS');
 CREATE TYPE "BusinessType" AS ENUM ('INDIVIDUAL', 'COMPANY');
 
--- CreateTable Gulf Countries
+-- CreateTable users
+CREATE TABLE "users" (
+    "id" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "name" TEXT,
+    "phone" TEXT,
+    "avatar" TEXT,
+    "role" "UserRole" NOT NULL DEFAULT 'CUSTOMER',
+    "emailVerified" TIMESTAMP(3),
+    "image" TEXT,
+    "clerkId" TEXT,
+    "stripeCustomerId" TEXT,
+    "isVerified" BOOLEAN NOT NULL DEFAULT false,
+    "kycStatus" "KYCStatus" NOT NULL DEFAULT 'PENDING',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "users_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable gulf_countries
 CREATE TABLE "gulf_countries" (
     "id" TEXT NOT NULL,
     "code" TEXT NOT NULL,
@@ -35,7 +55,7 @@ CREATE TABLE "gulf_countries" (
     CONSTRAINT "gulf_countries_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable Categories
+-- CreateTable categories
 CREATE TABLE "categories" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
@@ -50,7 +70,7 @@ CREATE TABLE "categories" (
     CONSTRAINT "categories_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable Subcategories
+-- CreateTable subcategories
 CREATE TABLE "subcategories" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
@@ -65,7 +85,7 @@ CREATE TABLE "subcategories" (
     CONSTRAINT "subcategories_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable Suppliers
+-- CreateTable suppliers
 CREATE TABLE "suppliers" (
     "id" TEXT NOT NULL,
     "externalId" TEXT,
@@ -103,7 +123,7 @@ CREATE TABLE "suppliers" (
     CONSTRAINT "suppliers_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable Products
+-- CreateTable products
 CREATE TABLE "products" (
     "id" TEXT NOT NULL,
     "externalId" TEXT,
@@ -152,7 +172,7 @@ CREATE TABLE "products" (
     CONSTRAINT "products_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable Product Localizations
+-- CreateTable product_localizations
 CREATE TABLE "product_localizations" (
     "id" TEXT NOT NULL,
     "productId" TEXT NOT NULL,
@@ -169,7 +189,7 @@ CREATE TABLE "product_localizations" (
     CONSTRAINT "product_localizations_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable Product Variants
+-- CreateTable product_variants
 CREATE TABLE "product_variants" (
     "id" TEXT NOT NULL,
     "productId" TEXT NOT NULL,
@@ -192,12 +212,13 @@ CREATE TABLE "product_variants" (
     CONSTRAINT "product_variants_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable Reviews
+-- CreateTable reviews
 CREATE TABLE "reviews" (
     "id" TEXT NOT NULL,
     "productId" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
+    "userId" TEXT,
     "orderId" TEXT,
+    "reviewerName" TEXT,
     "rating" INTEGER NOT NULL,
     "title" TEXT,
     "comment" TEXT,
@@ -207,13 +228,15 @@ CREATE TABLE "reviews" (
     "isApproved" BOOLEAN NOT NULL DEFAULT true,
     "moderatedAt" TIMESTAMP(3),
     "moderatorId" TEXT,
+    "source" TEXT NOT NULL DEFAULT 'generated',
+    "externalId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "reviews_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable Exchange Rates
+-- CreateTable exchange_rates
 CREATE TABLE "exchange_rates" (
     "id" TEXT NOT NULL,
     "fromCurrency" TEXT NOT NULL,
@@ -226,7 +249,9 @@ CREATE TABLE "exchange_rates" (
     CONSTRAINT "exchange_rates_pkey" PRIMARY KEY ("id")
 );
 
--- CreateIndex
+-- CreateUniqueIndex
+CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+CREATE UNIQUE INDEX "users_clerkId_key" ON "users"("clerkId");
 CREATE UNIQUE INDEX "gulf_countries_code_key" ON "gulf_countries"("code");
 CREATE UNIQUE INDEX "categories_slug_key" ON "categories"("slug");
 CREATE UNIQUE INDEX "subcategories_slug_key" ON "subcategories"("slug");
@@ -238,6 +263,11 @@ CREATE UNIQUE INDEX "product_localizations_productId_locale_key" ON "product_loc
 CREATE UNIQUE INDEX "product_variants_sku_key" ON "product_variants"("sku");
 CREATE UNIQUE INDEX "exchange_rates_fromCurrency_toCurrency_key" ON "exchange_rates"("fromCurrency", "toCurrency");
 
+-- CreateIndex
+CREATE INDEX "reviews_productId_idx" ON "reviews"("productId");
+CREATE INDEX "reviews_rating_idx" ON "reviews"("rating");
+CREATE INDEX "reviews_source_idx" ON "reviews"("source");
+
 -- AddForeignKey
 ALTER TABLE "categories" ADD CONSTRAINT "categories_parent_id_fkey" FOREIGN KEY ("parent_id") REFERENCES "categories"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 ALTER TABLE "subcategories" ADD CONSTRAINT "subcategories_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "categories"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -247,3 +277,4 @@ ALTER TABLE "products" ADD CONSTRAINT "products_supplierId_fkey" FOREIGN KEY ("s
 ALTER TABLE "product_localizations" ADD CONSTRAINT "product_localizations_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE "product_variants" ADD CONSTRAINT "product_variants_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE "reviews" ADD CONSTRAINT "reviews_productId_fkey" FOREIGN KEY ("productId") REFERENCES "products"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "reviews" ADD CONSTRAINT "reviews_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;

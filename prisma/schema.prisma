@@ -439,35 +439,33 @@ model WishlistItem {
 
 // Reviews
 model Review {
-  id        String  @id @default(cuid())
-  productId String
-  userId    String
-  orderId   String?
-
-  // Review Content
-  rating  Int // 1-5 stars
-  title   String?
-  comment String?
-  images  String? // JSON array of image URLs
-
-  // Verification
-  isVerified Boolean   @default(false)
-  verifiedAt DateTime?
-
-  // Moderation
-  isApproved  Boolean   @default(true)
-  moderatedAt DateTime?
-  moderatorId String?
-
-  // Timestamps
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String    @id @default(cuid())
+  productId    String
+  userId       String?
+  orderId      String?
+  reviewerName String?   // Added for compatibility with seeding
+  rating       Int       // 1-5 stars
+  title        String?
+  comment      String?
+  images       String?   // JSON array of image URLs
+  isVerified   Boolean   @default(false)
+  verifiedAt   DateTime?
+  isApproved   Boolean   @default(true)
+  moderatedAt  DateTime?
+  moderatorId  String?
+  source       String    @default("generated") // Added for compatibility
+  externalId   String?   // Added for compatibility
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   // Relations
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user    User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
   order   Order?  @relation(fields: [orderId], references: [id])
 
+  @@index([productId])
+  @@index([rating])
+  @@index([source])
   @@map("reviews")
 }
 
