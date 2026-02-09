@@ -28,7 +28,7 @@ model User {
   // Profile
   dateOfBirth DateTime?
   gender      Gender?
-  address     Address?        @relation("UserPrimaryAddress", fields: [primaryAddressId], references: [id])
+  address     Address?        @relation("UserPrimaryAddress", fields: [primaryAddressId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   preferences UserPreference?
 
   // Business
@@ -363,8 +363,8 @@ model Order {
 
   // Relations
   user            User            @relation(fields: [userId], references: [id])
-  billingAddress  Address         @relation("BillingAddress", fields: [billingAddressId], references: [id])
-  shippingAddress Address         @relation("ShippingAddress", fields: [shippingAddressId], references: [id])
+  billingAddress  Address         @relation("BillingAddress", fields: [billingAddressId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  shippingAddress Address         @relation("ShippingAddress", fields: [shippingAddressId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   items           OrderItem[]
   shipments       Shipment[]
   reviews         Review[]
