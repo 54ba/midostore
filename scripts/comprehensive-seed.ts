@@ -1,5 +1,4 @@
-#!/usr/bin/env tsx
-
+import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 
@@ -69,12 +68,12 @@ const productCategories = [
 
 // Supplier data
 const supplierData = [
-    { name: 'TechPro Solutions', companyName: 'TechPro Solutions Ltd.', country: 'China', city: 'Shenzhen', rating: 4.8, responseRate: 98, responseTime: '2-4 hours', verified: true, goldMember: true },
-    { name: 'Fashion Forward', companyName: 'Fashion Forward International', country: 'Turkey', city: 'Istanbul', rating: 4.6, responseRate: 95, responseTime: '4-6 hours', verified: true, goldMember: true },
-    { name: 'Home Essentials', companyName: 'Home Essentials Co.', country: 'India', city: 'Mumbai', rating: 4.5, responseRate: 92, responseTime: '6-8 hours', verified: true, goldMember: false },
-    { name: 'Beauty World', companyName: 'Beauty World Ltd.', country: 'South Korea', city: 'Seoul', rating: 4.7, responseRate: 96, responseTime: '3-5 hours', verified: true, goldMember: true },
-    { name: 'Sports Elite', companyName: 'Sports Elite Manufacturing', country: 'Vietnam', city: 'Ho Chi Minh City', rating: 4.4, responseRate: 90, responseTime: '8-12 hours', verified: true, goldMember: false },
-    { name: 'Toy Kingdom', companyName: 'Toy Kingdom International', country: 'Thailand', city: 'Bangkok', rating: 4.6, responseRate: 94, responseTime: '4-6 hours', verified: true, goldMember: true },
+    { name: 'TechPro Solutions', companyName: 'TechPro Solutions Ltd.', country: 'China', city: 'Shenzhen', rating: 4.8, responseRate: 98, responseTime: '2-4 hours', isVerified: true, goldMember: true },
+    { name: 'Fashion Forward', companyName: 'Fashion Forward International', country: 'Turkey', city: 'Istanbul', rating: 4.6, responseRate: 95, responseTime: '4-6 hours', isVerified: true, goldMember: true },
+    { name: 'Home Essentials', companyName: 'Home Essentials Co.', country: 'India', city: 'Mumbai', rating: 4.5, responseRate: 92, responseTime: '6-8 hours', isVerified: true, goldMember: false },
+    { name: 'Beauty World', companyName: 'Beauty World Ltd.', country: 'South Korea', city: 'Seoul', rating: 4.7, responseRate: 96, responseTime: '3-5 hours', isVerified: true, goldMember: true },
+    { name: 'Sports Elite', companyName: 'Sports Elite Manufacturing', country: 'Vietnam', city: 'Ho Chi Minh City', rating: 4.4, responseRate: 90, responseTime: '8-12 hours', isVerified: true, goldMember: false },
+    { name: 'Toy Kingdom', companyName: 'Toy Kingdom International', country: 'Thailand', city: 'Bangkok', rating: 4.6, responseRate: 94, responseTime: '4-6 hours', isVerified: true, goldMember: true },
 ];
 
 // Product templates for each category
@@ -108,7 +107,8 @@ const productTemplates = {
         { title: 'Facial Cleanser', description: 'Gentle facial cleanser for all skin types', price: 19.99, originalPrice: 34.99 },
     ],
     'Sports & Outdoors': [
-        { title: 'Yoga Mat', description: 'Non-slip yoga mat with carrying strap', price: 24.99, originalPrice: 39.99 },
+        {
+            title: 'Yoga Mat', description: 'Non-slip yoga mat with carrying strap', price: 24.99, originalPrice: 39. Mat with carrying strap', price: 24.99, originalPrice: 39.99 },
         { title: 'Dumbbell Set', description: 'Adjustable dumbbell set for home workouts', price: 89.99, originalPrice: 149.99 },
         { title: 'Tent', description: '4-person camping tent with rain fly', price: 149.99, originalPrice: 249.99 },
         { title: 'Bicycle Helmet', description: 'Safety-certified bicycle helmet with ventilation', price: 39.99, originalPrice: 69.99 },
@@ -135,13 +135,6 @@ const reviewTemplates = [
     { rating: 4, title: 'Great Purchase', content: 'Happy with my purchase. Good quality and reasonable price. Recommended!' },
 ];
 
-// Reviewer names (Gulf region)
-const reviewerNames = [
-    'Ahmed Hassan', 'Fatima Kuwait', 'Omar Qatar', 'Layla Dubai', 'Khalid Oman', 'Aisha UAE',
-    'Mohammed Saudi', 'Noor Bahrain', 'Ali Kuwait', 'Sara Qatar', 'Hassan Dubai', 'Mariam UAE',
-    'Abdullah Saudi', 'Huda Bahrain', 'Youssef Oman', 'Rania Kuwait', 'Tariq Qatar', 'Lina Dubai',
-];
-
 async function seedGulfCountries() {
     console.log('🌍 Seeding Gulf countries...');
 
@@ -163,11 +156,12 @@ async function seedSuppliers() {
     for (const supplier of supplierData) {
         const created = await prisma.supplier.upsert({
             where: { externalId: supplier.name.toLowerCase().replace(/\s+/g, '-') },
-            update: supplier,
+            update: { ...supplier, email: `contact@${supplier.name.toLowerCase().replace(/\s+/g, '')}.com` },
             create: {
                 ...supplier,
                 externalId: supplier.name.toLowerCase().replace(/\s+/g, '-'),
                 source: 'alibaba',
+                email: `contact@${supplier.name.toLowerCase().replace(/\s+/g, '')}.com`,
             },
         });
         suppliers.push(created);
@@ -193,31 +187,26 @@ async function seedProducts(suppliers: any[]) {
 
                 const product = await prisma.product.create({
                     data: {
-                        externalId: `${category.name.toLowerCase()}-${Date.now()}-${i}`,
+                        externalId: `${category.name.toLowerCase()}-${Date.now()}-${i}-${Math.random().toString(36).substr(2, 5)}`,
                         source: 'alibaba',
+                        name: `${template.title}${variation}`,
                         title: `${template.title}${variation}`,
                         description: template.description,
-                        price: template.price + (Math.random() * 20 - 10),
-                        originalPrice: template.originalPrice,
+                        basePrice: template.price + (Math.random() * 20 - 10),
+                        costPrice: template.price * 0.7,
                         currency: 'USD',
-                        images: Array.from({ length: 3 }, () => faker.image.urlLoremFlickr({ category: category.name.toLowerCase() })),
-                        category: category.name,
-                        subcategory: category.subcategories[Math.floor(Math.random() * category.subcategories.length)],
-                        tags: [...category.tags, faker.commerce.productAdjective()],
-                        rating: 4 + Math.random(),
+                        images: JSON.stringify(Array.from({ length: 3 }, () => faker.image.urlLoremFlickr({ category: category.name.toLowerCase() }))),
+                        category: { create: { name: category.name, slug: category.name.toLowerCase() } },
+                        tags: [...category.tags, faker.commerce.productAdjective()].join(','),
+                        sku: `SKU-${Date.now()}-${i}-${Math.random().toString(36).substr(2, 5)}`,
+                        slug: `product-${Date.now()}-${i}-${Math.random().toString(36).substr(2, 5)}`,
+                        averageRating: 4 + Math.random(),
                         reviewCount: Math.floor(Math.random() * 100) + 10,
-                        soldCount: Math.floor(Math.random() * 1000) + 100,
-                        minOrderQuantity: 1,
-                        maxOrderQuantity: Math.floor(Math.random() * 100) + 10,
-                        shippingWeight: Math.random() * 5 + 0.5,
-                        shippingDimensions: `${Math.floor(Math.random() * 50) + 10}x${Math.floor(Math.random() * 30) + 10}x${Math.floor(Math.random() * 20) + 5}cm`,
                         supplierId: supplier.id,
                         profitMargin: category.profitMargin + (Math.random() * 10 - 5),
                         gulfPrice: (template.price + (Math.random() * 20 - 10)) * 3.67, // Convert to AED
                         gulfCurrency: 'AED',
-                        isFeatured: Math.random() > 0.7, // 30% chance to be featured
                         isActive: true,
-                        lastScraped: new Date(),
                     },
                 });
 
@@ -231,24 +220,8 @@ async function seedProducts(suppliers: any[]) {
                             data: {
                                 productId: product.id,
                                 name: 'Size',
-                                value: size,
-                                price: product.price + (Math.random() * 10 - 5),
-                                stock: Math.floor(Math.random() * 100) + 20,
-                                sku: `${product.externalId}-${size}`,
-                                isActive: true,
-                            },
-                        });
-                    }
-
-                    for (const color of colors.slice(0, 3)) {
-                        await prisma.productVariant.create({
-                            data: {
-                                productId: product.id,
-                                name: 'Color',
-                                value: color,
-                                price: product.price,
-                                stock: Math.floor(Math.random() * 50) + 10,
-                                sku: `${product.externalId}-${color}`,
+                                sku: `${product.sku}-${size}`,
+                                stockQuantity: Math.floor(Math.random() * 100) + 20,
                                 isActive: true,
                             },
                         });
@@ -263,90 +236,6 @@ async function seedProducts(suppliers: any[]) {
     console.log(`✅ ${productCount} products seeded successfully`);
 }
 
-async function seedReviews() {
-    console.log('⭐ Seeding reviews...');
-
-    const products = await prisma.product.findMany();
-    let reviewCount = 0;
-
-    for (const product of products) {
-        // Create 3-8 reviews per product
-        const numReviews = Math.floor(Math.random() * 6) + 3;
-
-        for (let i = 0; i < numReviews; i++) {
-            const template = reviewTemplates[Math.floor(Math.random() * reviewTemplates.length)];
-            const reviewer = reviewerNames[Math.floor(Math.random() * reviewerNames.length)];
-
-            await prisma.review.create({
-                data: {
-                    productId: product.id,
-                    reviewerName: reviewer,
-                    rating: template.rating,
-                    title: template.title,
-                    content: template.content,
-                    helpful: Math.floor(Math.random() * 50),
-                    verified: Math.random() > 0.3, // 70% verified
-                    source: 'generated',
-                    externalId: `review_${product.id}_${i}`,
-                },
-            });
-
-            reviewCount++;
-        }
-    }
-
-    console.log(`✅ ${reviewCount} reviews seeded successfully`);
-}
-
-async function seedExchangeRates() {
-    console.log('💱 Seeding exchange rates...');
-
-    const currencies = ['USD', 'EUR', 'GBP', 'CNY', 'JPY'];
-    const gulfCurrencies = ['AED', 'SAR', 'KWD', 'QAR', 'BHD', 'OMR'];
-
-    for (const fromCurrency of currencies) {
-        for (const toCurrency of gulfCurrencies) {
-            if (fromCurrency !== toCurrency) {
-                let rate = 1;
-
-                // Set realistic exchange rates
-                if (fromCurrency === 'USD') {
-                    switch (toCurrency) {
-                        case 'AED': rate = 3.67; break;
-                        case 'SAR': rate = 3.75; break;
-                        case 'KWD': rate = 0.31; break;
-                        case 'QAR': rate = 3.64; break;
-                        case 'BHD': rate = 0.38; break;
-                        case 'OMR': rate = 0.38; break;
-                    }
-                } else {
-                    // Generate realistic rates for other currencies
-                    rate = Math.random() * 2 + 0.5;
-                }
-
-                await prisma.exchangeRate.upsert({
-                    where: {
-                        fromCurrency_toCurrency: {
-                            fromCurrency,
-                            toCurrency,
-                        },
-                    },
-                    update: { rate, lastUpdated: new Date() },
-                    create: {
-                        fromCurrency,
-                        toCurrency,
-                        rate,
-                        source: 'manual',
-                        lastUpdated: new Date(),
-                    },
-                });
-            }
-        }
-    }
-
-    console.log('✅ Exchange rates seeded successfully');
-}
-
 async function main() {
     console.log('🚀 Starting comprehensive database seeding...');
 
@@ -355,22 +244,8 @@ async function main() {
         await seedGulfCountries();
         const suppliers = await seedSuppliers();
         await seedProducts(suppliers);
-        await seedReviews();
-        await seedExchangeRates();
 
         console.log('🎉 All seeding completed successfully!');
-
-        // Display summary
-        const productCount = await prisma.product.count();
-        const reviewCount = await prisma.review.count();
-        const supplierCount = await prisma.supplier.count();
-        const categoryCount = await prisma.$queryRaw`SELECT COUNT(DISTINCT category) as count FROM "Product"`;
-
-        console.log('\n📊 Seeding Summary:');
-        console.log(`   Products: ${productCount}`);
-        console.log(`   Reviews: ${reviewCount}`);
-        console.log(`   Suppliers: ${supplierCount}`);
-        console.log(`   Categories: ${(categoryCount as any)[0].count}`);
 
     } catch (error) {
         console.error('❌ Error during seeding:', error);
@@ -380,6 +255,4 @@ async function main() {
     }
 }
 
-if (require.main === module) {
-    main();
-}
+main();
