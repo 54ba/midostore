@@ -126,25 +126,17 @@ start_scraping_services() {
     AI_SCRAPING_PID=$!
     echo $AI_SCRAPING_PID > pids/ai-scraping.pid
 
-    # Start Product Service
+    # Start Product Service (via TSX)
     echo "Starting Product Service..."
-    node -e "
-    const { ProductService } = require('./lib/product-service');
-    const service = new ProductService();
-    service.startService();
-    " > logs/product-service.log 2>&1 &
-    PRODUCT_SERVICE_PID=$!
-    echo $PRODUCT_SERVICE_PID > pids/product-service.pid
-
-    # Start Scraping Service
+    npx tsx -e "import { ProductService } from './lib/product-service'; const service = new ProductService(); console.log('Product service initialized');" > logs/product-service.log 2>&1 &
+    PRODUCT_PID=$!
+    echo $PRODUCT_PID > .pids/product-service.pid
+    
+    # Start Scraping Service (via TSX)
     echo "Starting Scraping Service..."
-    node -e "
-    const { ScrapingService } = require('./lib/scraping-service');
-    const service = new ScrapingService();
-    service.startService();
-    " > logs/scraping-service.log 2>&1 &
-    SCRAPING_SERVICE_PID=$!
-    echo $SCRAPING_SERVICE_PID > pids/scraping-service.pid
+    npx tsx -e "import ScrapingService from './lib/scraping-service'; const service = new ScrapingService(); console.log('Scraping service initialized');" > logs/scraping-service.log 2>&1 &
+    SCRAPING_PID=$!
+    echo $SCRAPING_PID > .pids/scraping-service.pid
 
     echo -e "${GREEN}✅ Scraping services started${NC}"
 }

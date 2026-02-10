@@ -52,6 +52,10 @@ const envConfig = {
     { name: 'Bahrain', code: 'BH', currency: 'BHD', locale: 'ar-BH' },
     { name: 'Oman', code: 'OM', currency: 'OMR', locale: 'ar-OM' },
   ],
+
+  // Scraping Configuration
+  scrapingSources: ['alibaba', 'aliexpress'],
+  scrapingCategories: ['electronics', 'clothing', 'home', 'beauty', 'sports'],
 };
 
 export const config = envConfig;

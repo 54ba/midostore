@@ -17,13 +17,16 @@ async function main() {
         const category = args[1] || 'electronics';
         const pageCount = parseInt(args[2]) || 1;
 
-        if (!config.scrapingSources.includes(source)) {
-            console.error(`❌ Invalid source: ${source}. Must be one of: ${config.scrapingSources.join(', ')}`);
+        const sources = config.scrapingSources || ['alibaba', 'aliexpress'];
+        const categories = config.scrapingCategories || ['electronics', 'clothing', 'home', 'beauty', 'sports'];
+
+        if (!sources.includes(source)) {
+            console.error(`❌ Invalid source: ${source}. Must be one of: ${sources.join(', ')}`);
             process.exit(1);
         }
 
-        if (!config.scrapingCategories.includes(category)) {
-            console.error(`❌ Invalid category: ${category}. Must be one of: ${config.scrapingCategories.join(', ')}`);
+        if (!categories.includes(category)) {
+            console.error(`❌ Invalid category: ${category}. Must be one of: ${categories.join(', ')}`);
             process.exit(1);
         }
 
