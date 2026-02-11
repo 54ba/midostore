@@ -130,13 +130,13 @@ start_scraping_services() {
     echo "Starting Product Service..."
     npx tsx -e "import { ProductService } from './lib/product-service'; const service = new ProductService(); console.log('Product service initialized');" > logs/product-service.log 2>&1 &
     PRODUCT_PID=$!
-    echo $PRODUCT_PID > .pids/product-service.pid
+    echo $PRODUCT_PID > pids/product-service.pid
     
     # Start Scraping Service (via TSX)
     echo "Starting Scraping Service..."
     npx tsx -e "import ScrapingService from './lib/scraping-service'; const service = new ScrapingService(); console.log('Scraping service initialized');" > logs/scraping-service.log 2>&1 &
     SCRAPING_PID=$!
-    echo $SCRAPING_PID > .pids/scraping-service.pid
+    echo $SCRAPING_PID > pids/scraping-service.pid
 
     echo -e "${GREEN}✅ Scraping services started${NC}"
 }

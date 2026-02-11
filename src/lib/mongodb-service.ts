@@ -485,7 +485,7 @@ class MongoDBService {
         if (this.client) return;
 
         try {
-            const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/midostore';
+            const uri = process.env.DATABASE_URL || process.env.MONGODB_URI || 'mongodb://localhost:27017/midostore';
             this.client = new MongoClient(uri);
             await this.client.connect();
 
