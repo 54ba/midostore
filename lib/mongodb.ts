@@ -1,10 +1,12 @@
 import { MongoClient } from 'mongodb';
 
-if (!process.env.MONGODB_URI) {
-    throw new Error('Please add your MongoDB URI to .env.local');
+// Check for DATABASE_URL first (Prisma standard), then MONGODB_URI
+const uri = process.env.DATABASE_URL || process.env.MONGODB_URI;
+
+if (!uri || !uri.includes('mongodb')) {
+    throw new Error('Please add your MongoDB URI to .env as DATABASE_URL or MONGODB_URI');
 }
 
-const uri = process.env.MONGODB_URI;
 const options = {};
 
 let client;
